@@ -1,0 +1,50 @@
+footer {
+    margin: 1rem 1rem;
+    padding: 1rem 1vw 0 1vw;
+    color: rgb(201, 201, 201);
+    height: 10vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 98vw;
+    flex-wrap: wrap;
+}
+
+a {
+    color: rgb(201, 201, 201);
+    text-decoration: none;
+}
+
+.derechosRes {
+    width: 30vw;
+    font-size: .8rem;
+    margin: 0;
+}
+
+.socialMediaIcons {
+    display: flex;
+    justify-content: center;
+}
+
+.socialMediaIcons a {
+    margin: 0 .5rem;
+}
+
+.logoJPCdiv {
+    width: 30vw;
+    font-size: .8rem;
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    justify-content: end;
+    align-items: center;
+}
+
+.logoJPC {
+    filter: invert(.8);
+    width: 1.5rem;
+}
+
+.logoJPCdiv p {
+    margin: 0;
+}

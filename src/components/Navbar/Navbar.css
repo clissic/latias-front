@@ -1,0 +1,24 @@
+.navbar {
+    width: 98vw;
+    padding: 1rem 1vw 0 1vw;
+}
+
+.logoHorizontal {
+    width: 25vh;
+}
+
+.nav-item {
+    color: white;
+    margin: 0 .8rem;
+}
+
+.btnPlataforma {
+    border-radius: 5px;
+    border: solid 1px white;
+    padding: 5px 15px;
+    background-color: black;
+}
+
+.nav-item:hover, .btnPlataforma:hover {
+    color: orange;
+}

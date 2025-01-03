@@ -26,8 +26,14 @@ a {
     justify-content: center;
 }
 
+.socialMediaIcons a:hover {
+    color: orange;
+    transition: .5s all;
+}
+
 .socialMediaIcons a {
     margin: 0 .5rem;
+    transition: .5s all;
 }
 
 .logoJPCdiv {

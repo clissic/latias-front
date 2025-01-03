@@ -5,7 +5,7 @@ import { Footer } from './components/Footer/Footer.jsx'
 
 export function App () {
     return (
-        <div class="indexDiv container">
+        <div className="indexDiv container">
             <Navbar />
             <LogoBienvenida />
             <Footer />

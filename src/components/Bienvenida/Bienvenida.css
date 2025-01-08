@@ -1,0 +1,9 @@
+.topBoat {
+    text-align: center;
+}
+
+.topBoat img {
+    width: 70%;
+    border-radius: 800px;
+    filter: contrast(1.1) brightness(1.1) drop-shadow(0 0 10px black);
+}

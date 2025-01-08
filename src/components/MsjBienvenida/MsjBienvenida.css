@@ -1,0 +1,11 @@
+.mainTitle {
+    font-size: 3rem;
+    text-align: start;
+    color: orange;
+}
+
+.subTitle {
+    font-size: 1.5rem;
+    text-align: start;
+    color: #eeeeee;
+}

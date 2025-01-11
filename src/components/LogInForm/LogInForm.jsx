@@ -14,7 +14,7 @@ export function LogInForm() {
 
   return (
     <div className="login-form-container">
-        <h2>Iniciar Sesión</h2>
+        <i className="bi bi-person-circle display-1 text-orange text-center"></i>
         <form>
             <div className="input-group">
                 <label htmlFor="email">Correo Electrónico</label>
@@ -43,8 +43,8 @@ export function LogInForm() {
             </button>
         </form>
         <div>
-            <Link to="/signin" className="signIn"><p>Crear cuenta nueva</p></Link>
-            <Link to="/recuperarPass" className="signIn"><p>Olvidé mi contraseña</p></Link>
+            <Link to="/signup" className="signUn"><p>Crear cuenta nueva</p></Link>
+            <Link to="/recuperarPass" className="signUn"><p>Olvidé mi contraseña</p></Link>
         </div>
     </div>
   );

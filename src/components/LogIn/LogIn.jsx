@@ -1,7 +1,7 @@
-import './Plataforma.css';
+import './LogIn.css';
 import { LogInForm } from '../LogInForm/LogInForm';
 
-export function Plataforma () {
+export function LogIn () {
     return (
                 <div>
                     <h1 className="d-none">LATIAS</h1>

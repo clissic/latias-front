@@ -1,5 +1,6 @@
 import './SignUpForm.css';
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 
 export function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -117,7 +118,7 @@ export function SignUpForm() {
             required
           />
           <label htmlFor="terms">
-            He leído y estoy de acuerdo con los <a href="/terminos" target="_blank">Términos y Condiciones</a>.
+            He leído y estoy de acuerdo con los <Link to="/terminosycondiciones">Términos y Condiciones</Link>.
           </label>
         </div>
         <button type="submit" className="btn btn-primary">

@@ -11,22 +11,13 @@
     font-size: 1.2rem;
     color: white;
     margin: 5px .8rem;
-    background-color: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px) saturate(100%);
-    -webkit-backdrop-filter: blur(10px) saturate(100%);
-    border: none;
-    border-radius: 7px;
+/*  */
     transition: .5s all;
     text-align: center;
 }
 
 .btnPlataforma {
     color: orange;
-    background-color: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px) saturate(100%);
-    -webkit-backdrop-filter: blur(10px) saturate(100%);
-    border: none;
-    border-radius: 7px;
     transition: .5s all;
 }
 
@@ -35,7 +26,6 @@
     filter: drop-shadow(0 0 3px black);
     transition: .5s all;
 }
-
 
 .nav-item:hover {
     color: orange;

@@ -1,5 +1,5 @@
 .cartaCurso {
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
     transition: all .5s ease;
 }

@@ -1,0 +1,26 @@
+.filtro-column label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.filtro-column select,
+.filtro-column input[type="text"],
+.filtro-column input[type="range"] {
+    width: 100%;
+    background: transparent;
+    color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.filtro-column h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.filtro-column span {
+    display: block;
+    color: white;
+    margin-top: 10px;
+}

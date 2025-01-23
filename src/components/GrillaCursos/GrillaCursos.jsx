@@ -1,24 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { CartaCurso } from "../CartaCurso/CartaCurso";
 
-export function GrillaCursos() {
-  const [courses, setCourses] = React.useState([]);
-
-  useEffect(() => {
-    // Aca se va a hacer el fetch a la API para obtener los cursos
-    fetch(
-      "https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/cursos.json"
-    ) // Cambia esto por tu URL real
-      .then((response) => response.json())
-      .then((data) => setCourses(data))
-      .catch((error) => console.error("Error fetching courses:", error));
-    }, []);
-
+export function GrillaCursos({ courses }) {
   return (
-    <div className="container mt-4">
+    <div className="col-12 col-md-9 mx-auto">
       <div className="row g-4">
         {courses.map((course) => (
-          <div key={course.id} className="col-12 col-sm-6 col-md-4 col-lg-3">
+          <div key={course.id} className="col-12 col-sm-6 col-md-6 col-lg-4 h-100 p-2">
             <CartaCurso
               id={course.id}
               name={course.name}
@@ -27,7 +15,7 @@ export function GrillaCursos() {
               image={course.image}
               shortDescription={course.shortDescription}
               duration={course.duration}
-              difficulty= {course.difficulty}
+              difficulty={course.difficulty}
             />
           </div>
         ))}

@@ -19,3 +19,9 @@ body {
 .text-orange {
     color: orange;
 }	
+
+.badge-orange {
+    background-color: orange;
+    padding: .1rem;
+    color: black;
+}

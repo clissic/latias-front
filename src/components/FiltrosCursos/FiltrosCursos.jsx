@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./FiltrosCursos.css";
 
-export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros }) => {
+export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros, categories, durations, difficulties }) => {
     const [precios, setPrecios] = useState({ min: 0, max: 1000 });
 
     const handleFilterChange = (e) => {
@@ -49,7 +49,11 @@ export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros }) =>
                     className="form-select" 
                     onChange={handleFilterChange}>
                     <option value="">Todas</option>
-                    {/* Las categorías deben ser pasadas como props */}
+                    {categories.map((category, index) => (
+                        <option key={index} value={category}>
+                            {category}
+                        </option>
+                    ))}
                 </select>
             </div>
             <div className="mb-3">
@@ -60,7 +64,26 @@ export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros }) =>
                     className="form-select" 
                     onChange={handleFilterChange}>
                     <option value="">Todas</option>
-                    {/* Las dificultades deben ser pasadas como props */}
+                    {difficulties.map((difficulty, index) => (
+                        <option key={index} value={difficulty}>
+                            {difficulty}
+                        </option>
+                    ))}
+                </select>
+            </div>
+            <div className="mb-3">
+                <label className="text-orange" htmlFor="dificultad">Duración:</label>
+                <select 
+                    name="duracion" 
+                    id="duracion" 
+                    className="form-select" 
+                    onChange={handleFilterChange}>
+                    <option value="">Todas</option>
+                    {durations.map((duration, index) => (
+                        <option key={index} value={duration}>
+                            {duration}
+                        </option>
+                    ))}
                 </select>
             </div>
             <div className="mb-3">

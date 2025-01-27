@@ -24,3 +24,7 @@
     color: white;
     margin-top: 10px;
 }
+
+select:focus {
+    background-color: black;
+}

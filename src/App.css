@@ -25,3 +25,8 @@ body {
     padding: .1rem;
     color: black;
 }
+
+.text-money {
+    color: rgb(82, 185, 82);
+    font-size: 1.5rem;
+}

@@ -76,12 +76,12 @@ export function Cursos() {
             difficulties={[...new Set(allCourses.map((c) => c.difficulty))]}
             durations={[...new Set(allCourses.map((c) => c.duration))]}
           />
-        <section className="col-12 col-md-10">
-          <div className="row g-4">
+        <section className="col-12 col-lg-9">
+          <div className="containerCursos row g-4">
             {courses.map((course) => (
               <div
                 key={course.id}
-                className="col-12 col-sm-6 col-md-4 col-lg-3"
+                className="col-12 col-sm-6 col-md-6 col-lg-6"
               >
                 <CartaCurso
                   id={course.id}

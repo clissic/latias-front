@@ -29,7 +29,7 @@ export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros, cate
     }, [precios, setFiltros]);
 
     return (
-        <aside className="filtro-column col-12 col-md-2">
+        <aside className="filtro-column col-12 col-lg-3">
             <h2 className="mb-4">Filtros</h2>
             <div className="mb-3">
                 <label className="text-orange" htmlFor="keywords">Palabras clave:</label>
@@ -95,7 +95,7 @@ export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros, cate
                     min="0"
                     max="1000"
                     value={precios.min}
-                    className="form-range"
+                    className="form-range border-0"
                     onChange={handlePriceChange}
                 />
                 <input
@@ -104,10 +104,10 @@ export const FiltrosCursos = ({ setFiltros, aplicarFiltros, limpiarFiltros, cate
                     min="0"
                     max="1000"
                     value={precios.max}
-                    className="form-range"
+                    className="form-range border-0"
                     onChange={handlePriceChange}
                 />
-                <span>{`$${precios.min} - $${precios.max}`}</span>
+                <span>{`U$D ${precios.min} - U$D ${precios.max}`}</span>
             </div>
             <div className="mb-3 d-grid gap-3">
                 <button 

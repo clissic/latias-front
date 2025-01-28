@@ -1,11 +1,17 @@
 .cartaCurso {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
     color: white;
     transition: all .5s ease;
+    border: #082b557c 1px solid;
 }
 
 .cartaCurso:hover {
     transition: all .5s ease;
     transform: translatey(-1px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .4);
+}
+
+.cartaCurso hr {
+    border: 1px solid #082b55;
 }

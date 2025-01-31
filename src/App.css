@@ -30,3 +30,7 @@ body {
     color: rgb(82, 185, 82);
     font-size: 1.5rem;
 }
+
+.text-justify {
+    text-align: justify;
+}	

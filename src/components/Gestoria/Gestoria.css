@@ -1,0 +1,14 @@
+.services-card-div {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    align-items: center;
+}
+
+.services-card-div i {
+    font-size: xx-large;
+}
+
+.transform-180 {
+    transform: rotate(180deg);
+}

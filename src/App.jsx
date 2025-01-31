@@ -11,6 +11,7 @@ import { Footer } from './components/Footer/Footer.jsx'
 import { TerYCon } from './components/TerYCon/TerYCon.jsx'
 import { RecuperarPass } from './components/RecuperarPass/RecuperarPass.jsx'
 import { Cursos } from './components/Cursos/Cursos.jsx'
+import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 
 export function App () {
     return (
@@ -21,6 +22,7 @@ export function App () {
                     <Routes>
                         <Route path='/' element={<Bienvenida />} />
                         {/* <Route path='/instructores' element={<Instructores />} /> */}
+                        <Route path='/gestoria' element={<Gestoria />} />
                         <Route path='/cursos' element={<Cursos />} />
                         <Route path='/login' element={<LogIn />} />
                         <Route path='/signup' element={<SignUp />} />

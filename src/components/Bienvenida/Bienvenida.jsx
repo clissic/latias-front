@@ -7,7 +7,7 @@ export function Bienvenida() {
             <h1 className="d-none">LATIAS</h1>
             <MsjBienvenida />
             <div className="topBoat d-none d-lg-block">
-                <img className="img-fluid" src="./src/assets/latiasImgLogo.png" alt="Logo Latias"/>
+                <img className="img-fluid" src="./src/assets/tall-ship.png" alt="Logo Latias"/>
             </div>
         </div>
     )

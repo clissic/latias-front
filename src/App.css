@@ -16,14 +16,14 @@ body {
     min-height: 100vh;
 }
 
-.text-orange {
-    color: orange;
-}	
-
 .badge-orange {
     background-color: orange;
     padding: .1rem;
     color: black;
+}
+
+.text-orange {
+    color: orange;
 }
 
 .text-money {
@@ -34,3 +34,8 @@ body {
 .text-justify {
     text-align: justify;
 }	
+
+.money-decimal {
+    font-size: 1.5rem;
+    font-weight: 100;
+}

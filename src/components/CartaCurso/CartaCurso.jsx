@@ -35,12 +35,15 @@ export function CartaCurso({
         </div>
         <hr />
         <div className="card-text">
-          <h2 className="d-flex justify-content-center align-items-center gap-2"><span className="text-money">{currency}</span> <strong>{price}</strong></h2>
+          <h2 className="d-flex justify-content-center align-items-center gap-2"><span className="text-money">{currency}</span> <strong>{price}<span className="money-decimal">.00</span></strong></h2>
         </div>
         <hr />
-        <div>
-          <Link to={`/course/${id}`} className="btn btn-warning w-100">
+        <div className="d-flex f-row gap-3">
+          <Link to={`/course/${id}`} className="btn btn-warning w-50">
             Ver detalles
+          </Link>
+          <Link to={`/course/buy/${id}`} className="btn btn-success w-50">
+            <strong>Enrolarte ahora</strong>
           </Link>
         </div>
       </div>

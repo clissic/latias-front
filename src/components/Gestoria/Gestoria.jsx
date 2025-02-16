@@ -2,7 +2,7 @@ import "./Gestoria.css";
 
 export function Gestoria() {
   return (
-    <div className="text-white">
+    <div className="text-white mb-5">
       <div className="text-center mt-5">
         <div className="mb-3">
             <i className="bi bi-folder-fill text-orange display-1"></i>
@@ -10,8 +10,8 @@ export function Gestoria() {
         <h1 className="fw-bold">GESTORÍA</h1>
       </div>
       <div className="container services-div mb-5">
-        <div className="d-flex f-row align-items-center mt-5">
-          <h2 className="index-sub-title me-3">SIEMPRE PENSANDO EN VOS</h2>
+        <div className="text-orange d-flex flex-column justify-content-center align-items-start mt-5 gestoria-banner text-white p-5">
+          <h2 className="index-sub-title">SIEMPRE PENSANDO EN VOS</h2>
           <h4>
             <strong>Nuestros servicios:</strong>
           </h4>
@@ -22,7 +22,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
                 <i className="bi bi-cash-coin text-orange"></i>
-                <h5>PAGO DE TRIBUTOS</h5>
+                <h3>PAGO DE TRIBUTOS</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -32,7 +32,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
               <i className="bi bi-file-earmark-check-fill text-orange"></i>
-                <h5>MATRICULACIONES</h5>
+                <h3>MATRICULACIONES</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -42,7 +42,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
                 <i className="bi bi-passport-fill text-orange"></i>
-                <h5>PATENTES</h5>
+                <h3>PATENTES</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -52,7 +52,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
                 <i className="bi bi-patch-check-fill text-orange"></i>
-                <h5>CERTIFICADOS</h5>
+                <h3>CERTIFICADOS</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -62,7 +62,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
                 <i className="bi bi-incognito text-orange"></i>
-                <h5>PERITAJES</h5>
+                <h3>PERITAJES</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -72,7 +72,7 @@ export function Gestoria() {
             <div className="services-card mt-3 col-lg-4 col-md-6 col-12">
               <div className="services-card-div">
                 <i className="bi bi-shield-fill-plus text-orange"></i>
-                <h5>Y MÁS...</h5>
+                <h3>Y MÁS...</h3>
               </div>
               <br></br>
               <p className="text-justify">
@@ -85,6 +85,44 @@ export function Gestoria() {
               En la gestoría de LATIAS, nuestra misión es hacer realidad tus proyectos marítimos, ofreciendo servicios que no solo sean eficientes y profesionales, sino que también se adapten a tus necesidades y aspiraciones como nauta. Queremos que cada trámite, desde la matriculación hasta los seguros, te brinde la tranquilidad y el respaldo necesario para que puedas disfrutar del mar con total confianza y seguridad.
               </h3>
               <i className="bi bi-quote display-1 text-orange transform-180"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="contact">
+        <h2 className="text-orange my-5">CONTACTANOS</h2>
+        <div className="contact-div row">
+          <form 
+            className="contact-subdiv text-white col-12 col-md-6" 
+            action="https://formsubmit.co/joaquin.perez.coria@gmail.com" 
+            method="post"
+          >
+            <div className="input-v1">
+              <label htmlFor="name">Nombre: </label>
+              <input className="text-white" type="text" name="name" required />
+            </div>
+            <div className="input-v1">
+              <label htmlFor="email">Email: </label>
+              <input className="text-white" type="email" name="email" required />
+            </div>
+            <div className="input-textarea">
+              <label htmlFor="body">Texto: </label>
+              <textarea 
+                className="text-white" 
+                name="body" 
+                cols="80" 
+                rows="2" 
+                placeholder="Quiero saber más sobre..." 
+                required
+              ></textarea>
+            </div>
+            <div className="submit-cont">
+              <button type="submit" id="submit-btn">ENVIAR</button>
+            </div>
+          </form>
+          <div className="contact-subdiv personal-quote col-12 col-md-6 d-md-block p-0">
+            <div>
+              <img className="img-fluid" src="../src/assets/latias.png" alt="Latias logo" />
             </div>
           </div>
         </div>

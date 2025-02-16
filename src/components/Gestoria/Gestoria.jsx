@@ -9,6 +9,9 @@ export function Gestoria() {
         </div>
         <h1 className="fw-bold">GESTORÍA</h1>
       </div>
+      <div className="mt-5">
+        <p className="text-center">Cada embarcación es más que un medio de transporte; es <strong>libertad, aventura y pasión</strong> por el mar. Pero detrás de cada travesía hay responsabilidades que no deberían ser una carga. Nuestra gestoría náutica está pensada para que disfrutes del agua sin preocupaciones, asegurándonos de que cada trámite se resuelva con eficiencia y respaldo. Sabemos que el tiempo en el mar es invaluable, por eso nos ocupamos de todo lo necesario para que solo pienses en navegar. Desde el primer documento hasta el último detalle, estamos para acompañarte en cada ola, asegurando que solo tengas que preocuparte por el viento y el horizonte.</p>
+      </div>
       <div className="container services-div mb-5">
         <div className="text-orange d-flex flex-column justify-content-center align-items-start mt-5 gestoria-banner text-white p-5">
           <h2 className="index-sub-title">SIEMPRE PENSANDO EN VOS</h2>
@@ -116,14 +119,12 @@ export function Gestoria() {
                 required
               ></textarea>
             </div>
-            <div className="submit-cont">
+            <div className="submit-cont col-12 col-md-4">
               <button type="submit" id="submit-btn">ENVIAR</button>
             </div>
           </form>
-          <div className="contact-subdiv personal-quote col-12 col-md-6 d-md-block p-0">
-            <div>
-              <img className="img-fluid" src="../src/assets/latias.png" alt="Latias logo" />
-            </div>
+          <div className="contact-subdiv personal-quote col-12 col-md-6 d-md-block p-0 d-none d-md-flex align-items-center justify-content-center">
+            <img className="img-fluid" src="../src/assets/logo-gestoria.png" alt="Latias logo gestoria" />
           </div>
         </div>
       </div>

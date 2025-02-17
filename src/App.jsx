@@ -12,25 +12,26 @@ import { TerYCon } from './components/TerYCon/TerYCon.jsx'
 import { RecuperarPass } from './components/RecuperarPass/RecuperarPass.jsx'
 import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
+import { Instructores } from './components/Instructores/Instructores.jsx'
 
 export function App () {
     return (
         <div className="indexDiv container">
-            <BrowserRouter>
-                <ScrollToTop />
-                <Navbar />
-                    <Routes>
-                        <Route path='/' element={<Bienvenida />} />
-                        {/* <Route path='/instructores' element={<Instructores />} /> */}
-                        <Route path='/gestoria' element={<Gestoria />} />
-                        <Route path='/cursos' element={<Cursos />} />
-                        <Route path='/login' element={<LogIn />} />
-                        <Route path='/signup' element={<SignUp />} />
-                        <Route path='/recuperarPass' element={<RecuperarPass />} />
-                        <Route path='/terminosycondiciones' element={<TerYCon />} />
-                    </Routes>
-                <Footer />
-            </BrowserRouter>
+                <BrowserRouter>
+                    <ScrollToTop />
+                    <Navbar />
+                        <Routes>
+                            <Route path='/' element={<Bienvenida />} />
+                            <Route path='/instructores' element={<Instructores />} />
+                            <Route path='/gestoria' element={<Gestoria />} />
+                            <Route path='/cursos' element={<Cursos />} />
+                            <Route path='/login' element={<LogIn />} />
+                            <Route path='/signup' element={<SignUp />} />
+                            <Route path='/recuperarPass' element={<RecuperarPass />} />
+                            <Route path='/terminosycondiciones' element={<TerYCon />} />
+                        </Routes>
+                    <Footer />
+                </BrowserRouter>
         </div>
     )
 }

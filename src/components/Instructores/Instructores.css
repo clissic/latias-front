@@ -1,0 +1,29 @@
+.loading-text {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.img-inst-end {
+    margin-top: 3rem;
+    height: 30vh;
+    width: 100%;
+    background-image: url("../../assets/topBoat.webp");
+    background-size: cover;
+    background-position: center;
+}
+
+.custom-margin {
+    margin: 10rem 0 10rem 0 !important;
+}

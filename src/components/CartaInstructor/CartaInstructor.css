@@ -1,0 +1,7 @@
+.cartaInstructor {
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
+    color: white;
+    transition: all .5s ease;
+    border: #082b557c 1px solid;
+}

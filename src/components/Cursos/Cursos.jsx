@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { CartaCurso } from "../CartaCurso/CartaCurso";
 import { FiltrosCursos } from "../FiltrosCursos/FiltrosCursos";
+import { FadeIn } from "../FadeIn/FadeIn";
 
 export function Cursos() {
-  const [allCourses, setAllCourses] = useState([]); // Cursos originales
-  const [courses, setCourses] = useState([]); // Cursos filtrados
+  const [allCourses, setAllCourses] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [filtros, setFiltros] = useState({
     keywords: "",
     categoria: "",
@@ -65,8 +66,10 @@ export function Cursos() {
 
   return (
     <div className="container mt-4">
-      <h6 className="text-warning">INSCRIBITE AHORA</h6>
-      <h1 className="text-white mb-5">Explorá todos nuestros cursos:</h1>
+      <FadeIn>
+        <h6 className="text-warning">INSCRIBITE AHORA</h6>
+        <h1 className="text-white mb-5">Explorá todos nuestros cursos:</h1>
+      </FadeIn>
       <div className="row">
           <FiltrosCursos
             setFiltros={setFiltros}

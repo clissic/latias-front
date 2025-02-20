@@ -13,6 +13,7 @@ import { RecuperarPass } from './components/RecuperarPass/RecuperarPass.jsx'
 import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 import { Instructores } from './components/Instructores/Instructores.jsx'
+import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
 
 export function App () {
     return (
@@ -29,6 +30,7 @@ export function App () {
                             <Route path='/signup' element={<SignUp />} />
                             <Route path='/recuperarPass' element={<RecuperarPass />} />
                             <Route path='/terminosycondiciones' element={<TerYCon />} />
+                            <Route path='/course/:id' element={<CursoDetalle />} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

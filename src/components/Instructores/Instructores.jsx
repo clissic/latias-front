@@ -187,7 +187,7 @@ export function Instructores() {
             <p>
             En nuestra academia náutica, ofrecemos una instrucción verdaderamente
             personalizada, permitiendo que cada estudiante avance a su propio
-            ritmo con el respaldo directo de nuestros instructores. A través del
+            ritmo con el respaldo directo de nuestros instructores. A través de WhatsApp y
             correo electrónico, los alumnos pueden realizar consultas, aclarar
             dudas y recibir orientación específica sobre los contenidos del curso.
             </p>
@@ -213,7 +213,7 @@ export function Instructores() {
       </FadeIn>
       <p className="text-secondary text-end mt-5">
         <strong>AVISO:</strong> Los instructores que aparecen en este apartado son elegidos
-        aleatoriamente por el sistema.
+        aleatoriamente por la aplicación.
       </p>
     </div>
   );

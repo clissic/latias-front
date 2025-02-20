@@ -1,10 +1,11 @@
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import logoLatias from "../../assets/latias-horizontal.png";
 
 export function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-none d-flex justify-content-between">
-            <Link to="/" className="navbar-brand"><img className="img-fluid logoHorizontal" src="./src/assets/latias-horizontal.png" alt="logo Latias horizontal"/></Link>
+            <Link to="/" className="navbar-brand"><img className="img-fluid logoHorizontal" src={logoLatias} alt="logo Latias horizontal"/></Link>
             <div>                
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>

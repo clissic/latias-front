@@ -106,6 +106,7 @@ export function CursoDetalle() {
                     </div>
                     <div>
                         <h5 className="text-orange mb-4">Certificación:</h5>
+                        <p className="text-white text-justify">Al finalizar el curso habiendo cumplido con todas las exigencias, se hace entrega de un certificado.</p>
                         <img className="img-fluid rounded" src="../../src/assets/Certificado-muestra.webp" alt="cert" />
                     </div>
                 </div>

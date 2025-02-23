@@ -25,7 +25,7 @@ export function CartaInstructor({
   );
 
   return (
-    <div key={firstName+id} className="card h-100 cartaInstructor bg-transparent text-white">
+    <div key={firstName+id} className="card cartaInstructor bg-transparent text-white">
       <div className="overflow-hidden">
         <img src={profileImage} className="card-img-top" alt={firstName + " profile pic"} />
       </div>

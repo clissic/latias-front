@@ -39,7 +39,7 @@ export function CursoDetalle() {
         <div className="container">
             <div className="img-course-top mb-5" style={{ backgroundImage: `url(${course.image})` }}></div>
             <h2 className="text-orange">{course.name.toUpperCase()}</h2>
-            <p className="text-white">{course.shortDescription}</p>
+            <p className="text-white mb-5">{course.shortDescription}</p>
             <div className="row">
                 <div className="col-12 col-lg-4">
                     <h5 className="text-orange mb-4">Detalles del curso:</h5>
@@ -75,8 +75,7 @@ export function CursoDetalle() {
                     <img className="img-fluid rounded" src={course.shortImage} alt="Img IA Curso" />
                 </div>
             </div>
-            <hr />
-            <div className="row gap-4">
+            <div className="row gap-4 mt-5">
                 {instructor && (
                     <div className="col-12 col-sm-4 col-lg-3">
                         <h5 className="text-orange mb-4">Instructor:</h5>

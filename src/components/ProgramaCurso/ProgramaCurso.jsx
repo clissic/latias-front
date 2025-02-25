@@ -7,7 +7,7 @@ export function ProgramaCurso({ courseModules }) {
               <i className="bi bi-book-half text-orange me-3"></i> Unidad{" "}
               {index + 1 < 10 ? `0${index + 1}` : index + 1}:
             </p>
-            <strong className="custom-display-6">{module.name}</strong>{" "}
+            <strong className="">{module.name}</strong>{" "}
           </li>
         ))}
       </ul>

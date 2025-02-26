@@ -64,7 +64,7 @@ export function CursoDetalle() {
                                 <i className="display-6 text-orange bi bi-currency-dollar"></i>
                                 <div>
                                     <p className="text-white mb-0">Precio:</p>
-                                    <strong className="m-0 custom-display-5 text-success">${course.price}</strong>
+                                    <strong className="text-white m-0 custom-display-5 text-">${course.price}</strong>
                                 </div>
                             </div>
                         </div>

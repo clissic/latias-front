@@ -1,5 +1,5 @@
 .cartaCurso {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(3px);
     color: white;
     transition: all .5s ease;
@@ -8,7 +8,7 @@
 
 .cartaCurso:hover {
     transition: all .5s ease;
-    transform: translatey(-1px);
+    transform: translatey(-2px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, .4);
 }
 

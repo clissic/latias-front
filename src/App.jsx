@@ -14,6 +14,7 @@ import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 import { Instructores } from './components/Instructores/Instructores.jsx'
 import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
+import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 
 export function App () {
     return (
@@ -31,6 +32,8 @@ export function App () {
                             <Route path='/recuperarPass' element={<RecuperarPass />} />
                             <Route path='/terminosycondiciones' element={<TerYCon />} />
                             <Route path='/course/:id' element={<CursoDetalle />} />
+                            {/* <Route path='/course/buy/:id' element={<CursoDetalle />} /> */}
+                            <Route path='/dashboard/*' element={<Dashboard />} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

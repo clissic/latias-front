@@ -125,6 +125,7 @@ export function Dashboard() {
         }
     ]
   };
+  console.log(user)
 
   return (
     <div className="container">

@@ -8,7 +8,7 @@ export function General(user) {
   const circumference = 2 * Math.PI * radius; // Circunferencia
   const offset = circumference - (progress / 100) * circumference; // Offset dinámico
   const rankImg = `../src/assets/ranks/${user.user.rank.title}.webp`;
-  console.log(rankImg);
+
   const ranksImgs = {
     grumete: "../src/assets/ranks/grumete.webp",
     marinero: "../src/assets/ranks/marinero.webp",
@@ -61,7 +61,7 @@ export function General(user) {
           </div>
           <div>
             <h4>
-              <i class="bi bi-trophy-fill"></i> {user.user.rank.title}
+              <i className="bi bi-trophy-fill"></i> {user.user.rank.title}
             </h4>
             <h6>
               <i>{user.user.rank.description}</i>
@@ -125,7 +125,7 @@ export function General(user) {
           <div>
             <h2>{course.courseName}</h2>
             <p>
-              <i class="bi bi-bar-chart-fill"></i> Progreso: {progress}%
+              <i className="bi bi-bar-chart-fill"></i> Progreso: {progress}%
             </p>
           </div>
           <Link

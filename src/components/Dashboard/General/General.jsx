@@ -137,7 +137,7 @@ export function General(user) {
         </div>
       </div>
 
-      <div className="text-white dashboard-item-build-general col-11">
+      <div className="text-white col-11">
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
       </div>
     </div>

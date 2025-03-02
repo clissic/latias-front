@@ -174,7 +174,7 @@ export function Dashboard() {
                   to={to}
                   className={({ isActive }) => (isActive ? "active" : "")}
                 >
-                  <li className="dashboard-menu-item custom-display-6">
+                  <li className="dashboard-menu-item">
                     <i className={`me-2 bi ${icon}`}></i> {label}
                   </li>
                 </NavLink>

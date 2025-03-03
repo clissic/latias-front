@@ -7,17 +7,7 @@ export function General(user) {
   const radius = 45; // Radio del círculo
   const circumference = 2 * Math.PI * radius; // Circunferencia
   const offset = circumference - (progress / 100) * circumference; // Offset dinámico
-  const rankImg = `../src/assets/ranks/${user.user.rank.title}.webp`;
-
-  const ranksImgs = {
-    grumete: "../src/assets/ranks/grumete.webp",
-    marinero: "../src/assets/ranks/marinero.webp",
-    cabo: "../src/assets/ranks/cabo.webp",
-    contramaestre: "../src/assets/ranks/contramaestre.webp",
-    teniente: "../src/assets/ranks/teniente.webp",
-    capitan: "../src/assets/ranks/capitan.webp",
-    almirante: "../src/assets/ranks/almirante.webp",
-  };
+  const rankImg = `../src/assets/ranks/${user.user.rank.title.toLowerCase()}.webp`;
 
   return (
     <div className="d-flex justify-content-evenly flex-wrap">

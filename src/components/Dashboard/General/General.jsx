@@ -66,6 +66,27 @@ export function General(user) {
         </div>
       </div>
 
+      <div className="text-white col-11 my-4">
+        <h3 className="mb-3 text-orange">Estadísticas:</h3>
+        <div className="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+          <div className="col-4 d-flex flex-row flex-md-column text-center">
+            <i className="bi bi-stopwatch-fill text-orange custom-display-1"></i>
+            <p className="display-4 m-md-0">{user.user.statistics.timeConnected}</p>
+            <p>Horas conectado/a</p>
+          </div>
+          <div className="col-4 d-flex flex-row flex-md-column text-center">
+            <i className="bi bi-calendar-event-fill text-orange custom-display-1"></i>
+            <p className="display-4 m-md-0">{user.user.statistics.eventsAttended}</p>
+            <p>Eventos atendidos</p>
+          </div>
+          <div className="col-4 d-flex flex-row flex-md-column text-center">
+            <i className="bi bi-award-fill text-orange custom-display-1"></i>
+            <p className="display-4 m-md-0">{user.user.statistics.certificatesQuantity}</p>
+            <p>Certificados obtenidos</p>
+          </div>
+        </div>
+      </div>
+
       <div className="text-white dashboard-item-build-general col-11">
         <h3 className="mb-3 text-orange">¡Continúa donde quedaste!</h3>
         <div className="d-flex gap-4 mt-3 px-2 align-items-center justify-content-between">
@@ -127,9 +148,6 @@ export function General(user) {
         </div>
       </div>
 
-      <div className="text-white col-11">
-        <h3 className="mb-3 text-orange">Estadísticas:</h3>
-      </div>
     </div>
   );
 }

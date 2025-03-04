@@ -35,8 +35,9 @@ export function Dashboard() {
       notifications: true,
     },
     statistics: {
-      eventsAttended: 0,
-      timeConnected: 0,
+      eventsAttended: 3,
+      timeConnected: 45,
+      certificatesQuantity: 2,
     },
     settings: {
       theme: "dark",
@@ -128,10 +129,10 @@ export function Dashboard() {
   console.log(user)
 
   return (
-    <div className="container">
+    <div className="container mt-5">
       <FadeIn>
         <div className="d-flex gap-0">
-          <aside className="text-white dashboard-item-build col-12 col-md-3">
+          <aside className="text-white dashboard-item-build col-12 col-md-3 h-auto">
             <div className="mb-5">
               <p className="text-white mb-1">Bienvenido/a,</p>
               <h3 className="text-orange"><strong>{user.firstName} {user.lastName}</strong></h3>

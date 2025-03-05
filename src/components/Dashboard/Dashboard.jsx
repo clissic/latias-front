@@ -2,11 +2,11 @@ import React from "react";
 import { Routes, Route, NavLink } from "react-router-dom";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { General } from "./General/General";
+import { Cursos } from "./Cursos/Cursos";
+import { Eventos } from "./Eventos/Eventos";
 import "./Dashboard.css";
 
 // Componentes de cada sección
-const Cursos = () => <h1 className="text-white">Cursos</h1>;
-const Eventos = () => <h1 className="text-white">Eventos</h1>;
 const Certificados = () => <h1 className="text-white">Certificados</h1>;
 const Ajustes = () => <h1 className="text-white">Ajustes</h1>;
 const CerrarSesion = () => <h1 className="text-white">Cerrar Sesión</h1>;
@@ -63,23 +63,288 @@ export function Dashboard() {
               {
                 lessonId: 1,
                 lessonName: "Presentación docente",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Metodología y objetivos",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "¿Qué aprenderás?",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: false,
+          },
+          {
+            moduleId: 2,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: false,
+          },
+          {
+            moduleId: 3,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: false,
+          },
+          {
+            moduleId: 4,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 5,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 6,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 7,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 8,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 9,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          },
+          {
+            moduleId: 10,
+            moduleName: "Cartas Náuticas",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "La carta náutica",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 2,
+                lessonName: "Simbología",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+              {
+                lessonId: 3,
+                lessonName: "Errores comunes al interpretar la carta",
+                completed: false,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
+              },
+            ],
+            completed: true,
+          }
+        ],
+        finished: true,
+      },
+      {
+        courseId: 2,
+        courseName: "Navegación Costera - Introducción",
+        bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
+        dateEnrolled: "2023-09-30",
+        status: "Completed",
+        dateCompleted: "2023-10-15",
+        certificate: {
+          credentialNumber: "CERT-12345-67890",
+          certificateLink: "https://example.com/certificates/CERT-12345-67890",
+        },
+        modulesCompleted: [
+          {
+            moduleId: 1,
+            moduleName: "Introducción",
+            lessons: [
+              {
+                lessonId: 1,
+                lessonName: "Presentación docente",
+                completed: true,
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
               {
                 lessonId: 2,
                 lessonName: "Metodología y objetivos",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
               {
                 lessonId: 3,
                 lessonName: "¿Qué aprenderás?",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
             ],
-            progress: 100,
+            completed: true,
           },
           {
             moduleId: 2,
@@ -89,39 +354,38 @@ export function Dashboard() {
                 lessonId: 1,
                 lessonName: "La carta náutica",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
               {
                 lessonId: 2,
                 lessonName: "Simbología",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
               {
                 lessonId: 3,
                 lessonName: "Errores comunes al interpretar la carta",
                 completed: true,
-                videoUrl: "",
+                videoUrl: "https://www.youtube.com/watch?v=DcvvWjExea4",
               },
             ],
-            progress: 100,
+            completed: true,
           },
         ],
-        progress: 36,
         finished: true,
-      },
+      }
     ],
-    finishedCourses: [
+    approvedCourses: [
         {
-            "courseId": 1,
-            "courseName": "Navegación Costera - Avanzado",
-            "bannerUrl": "https://wallpapercave.com/wp/wp2485810.jpg",
-            "dateEnrolled": "2023-10-15",
-            "status": "Completed",
-            "dateCompleted": "2023-11-01",
-            "certificate": {
-                "credentialNumber": "CERT-54321-09876",
-                "certificateLink": "https://example.com/certificates/CERT-54321-09876"
+            courseId: 1,
+            courseName: "Navegación Costera - Avanzado",
+            bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
+            dateEnrolled: "2023-10-15",
+            status: "Completed",
+            dateCompleted: "2023-11-01",
+            certificate: {
+                credentialNumber: "CERT-54321-09876",
+                certificateLink: "https://example.com/certificates/CERT-54321-09876"
             }
         }
     ]
@@ -131,7 +395,7 @@ export function Dashboard() {
   return (
     <div className="container mt-5">
       <FadeIn>
-        <div className="d-flex gap-0">
+        <div className="d-flex gap-0 flex-wrap">
           <aside className="text-white dashboard-item-build col-12 col-md-3 h-auto">
             <div className="mb-5">
               <p className="text-white mb-1">Bienvenido/a,</p>
@@ -186,7 +450,7 @@ export function Dashboard() {
           <section className="dashboard-content-column col-12 col-md-9">
             <Routes>
               <Route path="general" element={<General user={user} />} />
-              <Route path="cursos" element={<Cursos />} />
+              <Route path="cursos" element={<Cursos user={user} />} />
               <Route path="eventos" element={<Eventos />} />
               <Route path="certificados" element={<Certificados />} />
               <Route path="ajustes" element={<Ajustes />} />

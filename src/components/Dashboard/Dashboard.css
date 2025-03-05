@@ -9,14 +9,34 @@
 }
 
 .dashboard-item-build-general {
-    height: auto;
-    border: #082b557c 1px solid;
-    border-radius: 1rem;
-    background-color: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(3px);
-    margin-bottom: 1rem;
-    padding: 1rem;
-  }
+  height: auto;
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.dashboard-item-build-cursos {
+  height: auto;
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
+
+.dashboard-item-build-eventos {
+  height: auto;
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
 
 .dashboard-menu {
   padding: 0;

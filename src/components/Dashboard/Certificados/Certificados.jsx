@@ -14,7 +14,7 @@ export function Certificados({user}) {
                 {cursosAprobados.map((curso, index) => (
                     <div key={index} className="d-flex flex-row col-12 p-4 gap-4 rounded certificate-banner" style={{ backgroundImage: `url(${curso.bannerUrl})`}}>
                         <div className="col-3 my-auto">
-                            <img className={`img-fluid rounded certificate-frontline ${curso.category}-brd`} src={curso.certificate.certificateLink} alt="certificado" />
+                            <img className="img-fluid rounded certificate-frontline" src="../../src/assets/certificate-placeholder.webp" alt="certificado" />
                         </div>
                         <div className="col-9">
                             <h3 className="text-orange certificate-frontline">{curso.courseName || "Curso Aprobado"}</h3>

@@ -56,7 +56,7 @@ export function Cursos({ user }) {
                 </div>
 
                 <div className="col-12 col-lg-6 text-center text-lg-start">
-                  <h2>{curso.courseName}</h2>
+                  <h2 className="text-orange">{curso.courseName}</h2>
                   <p className="d-flex align-items-center justify-content-center justify-content-lg-start gap-2 m-0">
                     <i className="bi bi-bar-chart-fill"></i> Progreso: {progress}%
                   </p>

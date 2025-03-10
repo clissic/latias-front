@@ -65,12 +65,12 @@ export function Eventos() {
                   <i className="bi bi-calendar2-event-fill text-orange custom-display-1"></i>
                 </div>
                 <div className="col-12 col-lg-6">
-                  <h3>{evento.title}</h3>
-                  <p className="m-0">{evento.description}</p>
-                  <p className="m-0">Fecha: {evento.date}</p>
-                  <p className="m-0">Hora: {evento.hour}</p>
-                  <p className="m-0">Ubicación: {evento.location}</p>
-                  <p className="m-0">Orador: {evento.speaker.name}, {evento.speaker.position}</p>
+                  <h3 className="text-orange">{evento.title}</h3>
+                  <h6 className="my-2">{evento.description}</h6>
+                  <p className="m-0">Fecha: <strong>{evento.date}</strong></p>
+                  <p className="m-0">Hora: <strong>{evento.hour}</strong></p>
+                  <p className="m-0">Ubicación: <strong>{evento.location}</strong></p>
+                  <p className="m-0">Orador: <strong>{evento.speaker.name}, {evento.speaker.position}</strong></p>
                 </div>
                 <div className="col-5 col-lg-2 d-flex flex-column justify-content-center">
                   <button className="h-auto btn btn-warning">Agenda</button>

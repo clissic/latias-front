@@ -4,10 +4,10 @@ import { FadeIn } from "../FadeIn/FadeIn";
 import { General } from "./General/General";
 import { Cursos } from "./Cursos/Cursos";
 import { Eventos } from "./Eventos/Eventos";
+import { Certificados } from "./Certificados/Certificados";
 import "./Dashboard.css";
 
 // Componentes de cada sección
-const Certificados = () => <h1 className="text-white">Certificados</h1>;
 const Ajustes = () => <h1 className="text-white">Ajustes</h1>;
 const CerrarSesion = () => <h1 className="text-white">Cerrar Sesión</h1>;
 
@@ -380,12 +380,39 @@ export function Dashboard() {
             courseId: 1,
             courseName: "Navegación Costera - Avanzado",
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
+            category: "Astronómica",
             dateEnrolled: "2023-10-15",
             status: "Completed",
             dateCompleted: "2023-11-01",
             certificate: {
                 credentialNumber: "CERT-54321-09876",
-                certificateLink: "https://example.com/certificates/CERT-54321-09876"
+                certificateLink: "https://ekdmmus6foz.exactdn.com/wp-content/plugins/elementor/assets/images/placeholder.png?fit=265,177"
+            }
+        },
+        {
+            courseId: 2,
+            courseName: "Navegación Costera - Avanzado",
+            bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
+            category: "Marinería",
+            dateEnrolled: "2023-10-15",
+            status: "Completed",
+            dateCompleted: "2023-11-01",
+            certificate: {
+                credentialNumber: "CERT-54321-09876",
+                certificateLink: "https://ekdmmus6foz.exactdn.com/wp-content/plugins/elementor/assets/images/placeholder.png?fit=265,177"
+            }
+        },
+        {
+            courseId: 3,
+            courseName: "Navegación Costera - Avanzado",
+            bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
+            category: "Costera",
+            dateEnrolled: "2023-10-15",
+            status: "Completed",
+            dateCompleted: "2023-11-01",
+            certificate: {
+                credentialNumber: "CERT-54321-09876",
+                certificateLink: "https://ekdmmus6foz.exactdn.com/wp-content/plugins/elementor/assets/images/placeholder.png?fit=265,177"
             }
         }
     ]
@@ -452,7 +479,7 @@ export function Dashboard() {
               <Route path="general" element={<General user={user} />} />
               <Route path="cursos" element={<Cursos user={user} />} />
               <Route path="eventos" element={<Eventos />} />
-              <Route path="certificados" element={<Certificados />} />
+              <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes />} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />

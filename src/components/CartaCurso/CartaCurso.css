@@ -15,3 +15,23 @@
 .cartaCurso hr {
     border: 1px solid #082b55;
 }
+
+.Costera-bg {
+    background-color: skyblue;
+    color: black;
+}
+
+.Astronómica-bg {
+    background-color: darkblue;
+    color: white;
+}
+
+.Marinería-bg {
+    background-color: yellow;
+    color: black;
+}
+
+.Maquinaria-bg {
+    background-color: darkred;
+    color: white;
+}

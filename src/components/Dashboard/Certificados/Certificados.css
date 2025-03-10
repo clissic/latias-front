@@ -1,0 +1,40 @@
+.certificate-banner {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.certificate-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.certificate-banner > * {
+    position: relative;
+    z-index: 2;
+}
+
+.Costera-brd {
+    border-bottom: skyblue solid 2px;
+}
+
+.Astronómica-brd {
+    border-bottom: darkblue solid 2px;
+}
+
+.Marinería-brd {
+    border-bottom: yellow solid 2px;
+}
+
+.Maquinaria-brd {
+    border-bottom: darkred solid 2px;
+}

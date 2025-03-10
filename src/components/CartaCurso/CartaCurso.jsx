@@ -22,7 +22,7 @@ export function CartaCurso({
         </div>
         <div className="card-body d-flex flex-column justify-content-between">
           <div className="card-text mb-2">
-              <span className="badge text-bg-dark">{category}</span>
+              <span className= {`badge ${category}-bg`}>{category}</span>
           </div>
           <h5 className="card-title">{name}</h5>
           <hr />

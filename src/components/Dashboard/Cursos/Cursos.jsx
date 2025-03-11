@@ -111,7 +111,6 @@ export function Cursos({ user }) {
         })
       )}
       </div>
-        
     </div>
   );
 }

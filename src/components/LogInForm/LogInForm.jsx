@@ -1,15 +1,24 @@
 import './LogInForm.css';
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export function LogInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   function handleSubmit(e) {
     e.preventDefault();
     // Aca se va a manejar el envío del formulario, como enviar los datos al servidor
-    console.log("Email:", email, "Password:", password);
+    const user = {
+        password: password,
+        email: email
+    };
+    login(user);
+
+    navigate("/dashboard/general");
   };
 
   return (

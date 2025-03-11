@@ -5,11 +5,11 @@ import { General } from "./General/General";
 import { Cursos } from "./Cursos/Cursos";
 import { Eventos } from "./Eventos/Eventos";
 import { Certificados } from "./Certificados/Certificados";
+import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import "./Dashboard.css";
 
 // Componentes de cada sección
 const Ajustes = () => <h1 className="text-white">Ajustes</h1>;
-const CerrarSesion = () => <h1 className="text-white">Cerrar Sesión</h1>;
 
 export function Dashboard() {
   const user = {

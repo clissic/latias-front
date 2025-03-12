@@ -7,7 +7,7 @@ export function Navbar() {
     const { isAuthenticated } = useAuth();
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-none d-flex justify-content-between">
+        <nav id="goToTop" className="navbar navbar-expand-lg navbar-dark bg-none d-flex justify-content-between">
             <Link to="/" className="navbar-brand">
                 <img className="img-fluid logoHorizontal" src={logoLatias} alt="logo Latias horizontal"/>
             </Link>

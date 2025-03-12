@@ -379,7 +379,13 @@ export function Dashboard() {
     approvedCourses: [
         {
             courseId: 1,
-            courseName: "Navegación Costera - Avanzado",
+            courseName: "Navegación Costera I",
+            difficulty: "Principiante",
+            professor: {
+              firstName: "Sofía",
+              lastName: "López",
+              profession: "Instructora de Supervivencia y Marinería"
+            },
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Astronómica",
             duration: "2 semanas",
@@ -393,7 +399,13 @@ export function Dashboard() {
         },
         {
             courseId: 2,
-            courseName: "Navegación Costera - Avanzado",
+            courseName: "Navegación Costera II",
+            difficulty: "Intermedio",
+            professor: {
+              firstName: "Carlos",
+              lastName: "Gutiérrez",
+              profession: "Capitán de la Marina Mercante",
+            },
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Marinería",
             duration: "2 semanas",
@@ -407,7 +419,13 @@ export function Dashboard() {
         },
         {
             courseId: 3,
-            courseName: "Navegación Costera - Avanzado",
+            courseName: "Navegación Costera III",
+            difficulty: "Avanzado",
+            professor: {
+              firstName: "Carlos",
+              lastName: "Gutiérrez",
+              profession: "Capitán de la Marina Mercante",
+            },
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Costera",
             duration: "2 semanas",

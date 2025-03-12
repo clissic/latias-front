@@ -38,3 +38,8 @@
 .Maquinaria-brd {
     border-bottom: darkred solid 2px;
 }
+
+.custom-font {
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-weight: 900;
+}

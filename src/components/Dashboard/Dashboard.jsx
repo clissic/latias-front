@@ -17,6 +17,7 @@ export function Dashboard() {
     firstName: "Joaquín",
     lastName: "Pérez",
     email: "joaquin.perez.coria@gmail.com",
+    ci: "12345678",
     password: "123456",
     phone: "098511770",
     status: "Estudiante",
@@ -381,11 +382,12 @@ export function Dashboard() {
             courseName: "Navegación Costera - Avanzado",
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Astronómica",
+            duration: "2 semanas",
             dateEnrolled: "2023-10-15",
             status: "Completed",
             dateCompleted: "2023-11-01",
             certificate: {
-                credentialNumber: "CERT-54321-09876",
+                credentialNumber: "CERT-54321-09875",
                 certificateLink: "https://ekdmmus6foz.exactdn.com/wp-content/plugins/elementor/assets/images/placeholder.png?fit=265,177"
             }
         },
@@ -394,6 +396,7 @@ export function Dashboard() {
             courseName: "Navegación Costera - Avanzado",
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Marinería",
+            duration: "2 semanas",
             dateEnrolled: "2023-10-15",
             status: "Completed",
             dateCompleted: "2023-11-01",
@@ -407,11 +410,12 @@ export function Dashboard() {
             courseName: "Navegación Costera - Avanzado",
             bannerUrl: "https://wallpapercave.com/wp/wp2485810.jpg",
             category: "Costera",
+            duration: "2 semanas",
             dateEnrolled: "2023-10-15",
             status: "Completed",
             dateCompleted: "2023-11-01",
             certificate: {
-                credentialNumber: "CERT-54321-09876",
+                credentialNumber: "CERT-54321-09877",
                 certificateLink: "https://ekdmmus6foz.exactdn.com/wp-content/plugins/elementor/assets/images/placeholder.png?fit=265,177"
             }
         }

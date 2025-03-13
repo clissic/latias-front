@@ -6,14 +6,13 @@ import { Cursos } from "./Cursos/Cursos";
 import { Eventos } from "./Eventos/Eventos";
 import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
+import { Ajustes } from "./Ajustes/Ajustes";
 import "./Dashboard.css";
-
-// Componentes de cada sección
-const Ajustes = () => <h1 className="text-white">Ajustes</h1>;
 
 export function Dashboard() {
   const user = {
     id: 12345,
+    birth: "1995-09-30",
     firstName: "Joaquín",
     lastName: "Pérez",
     email: "joaquin.perez.coria@gmail.com",
@@ -30,6 +29,8 @@ export function Dashboard() {
       city: "Montevideo",
       state: "Montevideo",
       zipCode: "11800",
+      number: "1285",
+      country: "Uruguay",
     },
     preferences: {
       language: "es",
@@ -506,7 +507,7 @@ export function Dashboard() {
               <Route path="cursos" element={<Cursos user={user} />} />
               <Route path="eventos" element={<Eventos />} />
               <Route path="certificados" element={<Certificados user={user} />} />
-              <Route path="ajustes" element={<Ajustes />} />
+              <Route path="ajustes" element={<Ajustes user={user} />} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />
             </Routes>

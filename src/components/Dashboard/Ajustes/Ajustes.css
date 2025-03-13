@@ -1,0 +1,33 @@
+.danger-zone {
+    border: #dc3545 4px solid;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.custom-modal .modal-content {
+    background-color: #082b55;
+    color: white;
+  }
+  
+  .custom-modal .modal-title {
+    color: orange;
+  }
+  
+  .custom-modal .modal-body {
+    background-color: #082b55;
+    color: white;
+  }
+  
+  .custom-modal .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .custom-modal .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+  
+  .btn-close {
+    filter: invert(1);
+  }

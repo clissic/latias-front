@@ -9,8 +9,22 @@ export const Ajustes = ({ user }) => {
   const [confirmText, setConfirmText] = useState("");
 
   const handleChange = (e) => {
-    setUserData({ ...userData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name.startsWith("address.")) {
+      const field = name.split(".")[1];
+      setUserData({
+        ...userData,
+        address: {
+          ...userData.address,
+          [field]: value,
+        },
+      });
+    } else {
+      setUserData({ ...userData, [name]: value });
+    }
   };
+  
 
   const handlePasswordChange = (e) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
@@ -76,31 +90,31 @@ export const Ajustes = ({ user }) => {
 
         <Form.Group className="col-12 col-lg-4">
             <Form.Label>Calle</Form.Label>
-            <Form.Control type="text" name="city" value={userData.address.street} onChange={handleChange} required />
+            <Form.Control type="text" name="address.street" value={userData.address.street} onChange={handleChange} required />
         </Form.Group>
         <Form.Group className="col-12 col-lg-4">
             <Form.Label>Número</Form.Label>
-            <Form.Control type="text" name="number" value={userData.address.number} onChange={handleChange} required />
+            <Form.Control type="text" name="address.number" value={userData.address.number} onChange={handleChange} required />
         </Form.Group>
         <Form.Group className="col-12 col-lg-3">
             <Form.Label>Ciudad</Form.Label>
-            <Form.Control type="text" name="city" value={userData.address.city} onChange={handleChange} required />
+            <Form.Control type="text" name="address.city" value={userData.address.city} onChange={handleChange} required />
         </Form.Group>
         <Form.Group className="col-12 col-lg-4">
             <Form.Label>Estado</Form.Label>
-            <Form.Control type="text" name="state" value={userData.address.state} onChange={handleChange} required />
+            <Form.Control type="text" name="address.state" value={userData.address.state} onChange={handleChange} required />
         </Form.Group>
         <Form.Group className="col-12 col-lg-4">
             <Form.Label>Código postal</Form.Label>
-            <Form.Control type="text" name="zipCode" value={userData.address.zipCode} onChange={handleChange} required />
+            <Form.Control type="text" name="address.zipCode" value={userData.address.zipCode} onChange={handleChange} required />
         </Form.Group>
         <Form.Group className="col-12 col-lg-3">
             <Form.Label>País</Form.Label>
-            <Form.Control type="text" name="country" value={userData.address.country} onChange={handleChange} required />
+            <Form.Control type="text" name="address.country" value={userData.address.country} onChange={handleChange} required />
         </Form.Group>
 
         <Form.Group className="mt-3 d-flex flex-column col-12 align-items-end">
-          <Button type="submit" className="col-12 col-lg-3">Guardar</Button>
+          <Button variant="warning" type="submit" className="col-12 col-lg-3">Guardar</Button>
         </Form.Group>
       </Form>
 
@@ -118,7 +132,7 @@ export const Ajustes = ({ user }) => {
         </Form.Group>
         <Form.Group className="mt-3 d-flex flex-column col-12 col-lg-3 justify-content-end">
             <Form.Label></Form.Label>
-            <Button className="col-12" type="submit">Actualizar</Button>
+            <Button variant="warning" className="col-12" type="submit">Actualizar</Button>
         </Form.Group>
       </Form>
 
@@ -126,7 +140,7 @@ export const Ajustes = ({ user }) => {
 
       {/* Botón de eliminación de cuenta */}
       <div className="d-flex flex-column col-12 danger-zone justify-content-center align-items-center">
-        <Form.Label><strong>¡ ZONA DE PELIGRO !</strong></Form.Label>
+        <Form.Label><strong>- ZONA DE PELIGRO -</strong></Form.Label>
         <Button variant="danger" className="mt-3 col-12 col-lg-4" onClick={() => setShowModal(true)}>Eliminar Cuenta</Button>
       </div>
 

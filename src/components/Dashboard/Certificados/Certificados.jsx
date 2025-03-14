@@ -58,11 +58,11 @@ export function Certificados({ user }) {
     };
 
     return (
-        <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+        <div className="text-white col-12 col-lg-11 d-flex flex-column gap-4 align-items-between container">
             <div className="col-12">
-                <h2 className="mb-4 text-orange">Tus certificados obtenidos:</h2>
+                <h2 className="text-orange">Tus certificados obtenidos:</h2>
             </div>
-            <div className="d-flex flex-column gap-3">
+            <div className="d-flex flex-column gap-4">
                 {cursosAprobados.map((curso, index) => (
                     <div key={index} className="d-flex flex-column flex-lg-row col-12 p-4 gap-4 rounded certificate-banner" style={{ backgroundImage: `url(${curso.bannerUrl})` }}>
                         <div className="col-12 col-lg-3 my-auto text-center">

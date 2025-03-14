@@ -25,8 +25,8 @@ export function General({ user }) {
   const rankImg = `../src/assets/ranks/${user.rank.title.toLowerCase()}.webp`;
 
   return (
-    <div className="d-flex justify-content-evenly flex-wrap">
-      <div className="text-white col-11 col-lg-5 mb-4">
+    <div className="d-flex justify-content-evenly flex-wrap gap-4">
+      <div className="text-white col-11 col-lg-5">
         <h3 className="mb-3 text-orange">Panel del usuario:</h3>
         <div className="d-flex justify-content-between">
           <p className="mb-1">Nombre:</p>
@@ -78,7 +78,7 @@ export function General({ user }) {
         </div>
       </div>
 
-      <div className="text-white col-11 my-4">
+      <div className="text-white col-11">
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
           <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-around">
@@ -105,7 +105,7 @@ export function General({ user }) {
         <h3 className="mb-3 text-orange">¡Continúa donde quedaste!</h3>
 
         {user.purchasedCourses.length > 0 ? (
-          <div className="d-flex flex-column flex-lg-row gap-4 mt-3 px-2 align-items-center justify-content-between container">
+          <div className="d-flex flex-column flex-lg-row gap-4 px-2 align-items-center justify-content-between container">
             <div className="course-image">
               <img
                 className="img-fluid"

@@ -25,7 +25,7 @@ export function Cursos({ user }) {
 
   return (
     <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
-      <div className="col-12">
+      <div className="col-12 d-flex flex-column gap-4">
         <h2 className="mb-4 text-orange">Cursos en progreso:</h2>
       {cursos.length === 0 ? (
         <div className="text-center my-5 d-flex flex-column align-items-center col-11">

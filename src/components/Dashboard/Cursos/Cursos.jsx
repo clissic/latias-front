@@ -25,8 +25,11 @@ export function Cursos({ user }) {
 
   return (
     <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+      <div className="col-12">
+        <h2 className="mb-3 text-orange">Cursos en progreso:</h2>
+        <div className="div-border-color my-4"></div>
+      </div>
       <div className="col-12 d-flex flex-column gap-4">
-        <h2 className="mb-4 text-orange">Cursos en progreso:</h2>
       {cursos.length === 0 ? (
         <div className="text-center my-5 d-flex flex-column align-items-center col-11">
           <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>

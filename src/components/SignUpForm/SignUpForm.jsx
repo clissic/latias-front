@@ -1,6 +1,7 @@
 import './SignUpForm.css';
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
+import Swal from "sweetalert2";
 
 export function SignUpForm() {
   const [email, setEmail] = useState("");
@@ -15,12 +16,32 @@ export function SignUpForm() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Las contraseñas no coinciden.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
       return;
     }
-
+    
     if (!termsAccepted) {
-      alert("Debes aceptar los términos y condiciones.");
+      Swal.fire({
+        icon: "warning",
+        title: "Atención",
+        text: "Debes aceptar los términos y condiciones.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
       return;
     }
 
@@ -115,7 +136,7 @@ export function SignUpForm() {
             id="terms"
             checked={termsAccepted}
             onChange={(e) => setTermsAccepted(e.target.checked)}
-            required
+            /* required */
           />
           <label htmlFor="terms">
             He leído y estoy de acuerdo con los <Link to="/terminosycondiciones">Términos y Condiciones</Link>.

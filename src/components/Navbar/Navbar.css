@@ -1,6 +1,6 @@
 .navbar {
-    width: 98vw;
-    padding: 1rem 1vw 0 1vw;
+    width: 95vw;
+    padding: 1rem 0 0 0;
 }
 
 .logoHorizontal {
@@ -11,7 +11,6 @@
     font-size: 1.2rem;
     color: white;
     margin: 5px .8rem;
-/*  */
     transition: .5s all;
     text-align: center;
 }

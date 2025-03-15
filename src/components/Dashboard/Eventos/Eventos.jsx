@@ -44,8 +44,11 @@ export function Eventos() {
 
   return (
     <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+      <div className="col-12">
+        <h2 className="mb-3 text-orange">Eventos:</h2>
+        <div className="div-border-color my-4"></div>
+      </div>
       <div className="col-12 d-flex flex-column gap-4">
-        <h2 className="text-orange">Eventos:</h2>
         {eventos.length === 0 ? (
           <div className="text-center my-5 d-flex flex-column align-items-center col-11">
             <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
@@ -73,7 +76,7 @@ export function Eventos() {
                   <p className="m-0">Orador: <strong>{evento.speaker.name}, {evento.speaker.position}</strong></p>
                 </div>
                 <div className="col-5 col-lg-2 d-flex flex-column justify-content-center">
-                  <button className="h-auto btn btn-warning">Agenda</button>
+                  <button className="h-auto btn btn-warning">Agendar</button>
                 </div>
               </div>
             ))}

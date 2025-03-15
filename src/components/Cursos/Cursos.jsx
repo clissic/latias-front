@@ -67,7 +67,7 @@ export function Cursos() {
   return (
     <div className="container mt-4">
       <FadeIn>
-        <h6 className="text-warning">INSCRIBITE AHORA</h6>
+        <h6 className="text-orange">INSCRIBITE AHORA</h6>
         <h1 className="text-white mb-5">Explorá todos nuestros cursos:</h1>
       </FadeIn>
       <div className="row">

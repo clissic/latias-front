@@ -25,8 +25,12 @@ export function General({ user }) {
   const rankImg = `../src/assets/ranks/${user.rank.title.toLowerCase()}.webp`;
 
   return (
-    <div className="d-flex justify-content-evenly flex-wrap gap-4">
-      <div className="text-white col-11 col-lg-5">
+    <div className="container d-flex justify-content-evenly align-items-between flex-wrap gap-4 col-12 col-lg-11">
+      <div className="col-12 col-md-11 col-lg-12">
+        <h2 className="mb-3 text-orange">General:</h2>
+        <div className="div-border-color my-4"></div>
+      </div>
+      <div className="text-white col-12 col-sm-11 col-lg-6">
         <h3 className="mb-3 text-orange">Panel del usuario:</h3>
         <div className="d-flex justify-content-between">
           <p className="mb-1">Nombre:</p>
@@ -54,7 +58,8 @@ export function General({ user }) {
         </div>
       </div>
 
-      <div className="text-white col-11 col-lg-5">
+      <div className="text-white col-12 col-sm-11 col-lg-5">
+        <div className="div-border-color my-4 d-lg-none"></div>
         <h3 className="mb-3 text-orange">Tu rango actual es:</h3>
         <div className="d-flex gap-3">
           <div className=" w-50">
@@ -78,32 +83,31 @@ export function General({ user }) {
         </div>
       </div>
 
-      <div className="text-white col-11">
+
+      <div className="text-white container col-11 col-sm-12">
+        <div className="div-border-color my-4"></div>
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
-          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-around">
-            <i className="bi bi-stopwatch-fill text-orange custom-display-1"></i>
-            <p className="display-4 m-0">{user.statistics.timeConnected}</p>
-            <p className="m-0">Horas conectado/a</p>
+          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-between">
+            <i className="col-3 col-lg-12 bi bi-stopwatch-fill text-orange custom-display-1"></i>
+            <p className="col-3 col-lg-12 display-4 m-0">{user.statistics.timeConnected}</p>
+            <p className="col-3 col-lg-12 m-0">Horas conectado/a</p>
           </div>
-          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-around">
-            <i className="bi bi-calendar-event-fill text-orange custom-display-1"></i>
-            <p className="display-4 m-0">{user.statistics.eventsAttended}</p>
-            <p className="m-0">Eventos atendidos</p>
+          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-between">
+            <i className="col-3 col-lg-12 bi bi-calendar-event-fill text-orange custom-display-1"></i>
+            <p className="col-3 col-lg-12 display-4 m-0">{user.statistics.eventsAttended}</p>
+            <p className="col-3 col-lg-12 m-0">Eventos atendidos</p>
           </div>
-          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-around">
-            <i className="bi bi-award-fill text-orange custom-display-1"></i>
-            <p className="display-4 m-0">
-              {user.statistics.certificatesQuantity}
-            </p>
-            <p className="m-0">Certificados obtenidos</p>
+          <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-between">
+            <i className="col-3 col-lg-12 bi bi-award-fill text-orange custom-display-1"></i>
+            <p className="col-3 col-lg-12 display-4 m-0">{user.statistics.certificatesQuantity}</p>
+            <p className="col-3 col-lg-12 m-0">Certificados obtenidos</p>
           </div>
         </div>
       </div>
 
-      <div className="text-white dashboard-item-build-general col-11">
+      <div className="text-white dashboard-item-build-general col-12">
         <h3 className="mb-3 text-orange">¡Continúa donde quedaste!</h3>
-
         {user.purchasedCourses.length > 0 ? (
           <div className="d-flex flex-column flex-lg-row gap-4 px-2 align-items-center justify-content-between container">
             <div className="course-image">

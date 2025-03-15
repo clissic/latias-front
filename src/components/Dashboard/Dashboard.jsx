@@ -7,6 +7,7 @@ import { Eventos } from "./Eventos/Eventos";
 import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
+import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
 import "./Dashboard.css";
 
 export function Dashboard() {
@@ -446,7 +447,7 @@ export function Dashboard() {
     <div className="container mt-5">
       <FadeIn>
         <div className="d-flex gap-0 flex-wrap">
-          <aside className="text-white dashboard-item-build col-12 col-md-3 h-custom d-flex flex-column justify-content-between">
+          <aside className="text-white dashboard-item-build col-12 col-md-3 h-custom d-flex flex-column justify-content-between mb-5 mb-md-0">
             <div className="mb-5">
               <p className="text-white mb-1">Bienvenido/a,</p>
               <h3 className="text-orange"><strong>{user.firstName} {user.lastName}</strong></h3>
@@ -503,13 +504,13 @@ export function Dashboard() {
 
           <section className="dashboard-content-column col-12 col-md-9">
             <Routes>
-              <Route path="general" element={<General user={user} />} />
-              <Route path="cursos" element={<Cursos user={user} />} />
-              <Route path="eventos" element={<Eventos />} />
-              <Route path="certificados" element={<Certificados user={user} />} />
-              <Route path="ajustes" element={<Ajustes user={user} />} />
-              <Route path="cerrar-sesion" element={<CerrarSesion />} />
-              <Route path="*" element={<General />} />
+              <Route path="general" element={<ProtectedRoute><General user={user} /></ProtectedRoute>} />
+              <Route path="cursos" element={<ProtectedRoute><Cursos user={user} /></ProtectedRoute>} />
+              <Route path="eventos" element={<ProtectedRoute><Eventos /></ProtectedRoute>} />
+              <Route path="certificados" element={<ProtectedRoute><Certificados user={user} /></ProtectedRoute>} />
+              <Route path="ajustes" element={<ProtectedRoute><Ajustes user={user} /></ProtectedRoute>} />
+              <Route path="cerrar-sesion" element={<ProtectedRoute><CerrarSesion /></ProtectedRoute>} />
+              <Route path="*" element={<ProtectedRoute><General /></ProtectedRoute>} />
             </Routes>
           </section>
         </div>

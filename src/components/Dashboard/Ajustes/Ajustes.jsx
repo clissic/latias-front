@@ -78,7 +78,7 @@ export const Ajustes = ({ user }) => {
       navigate("/");
     } else {
       Swal.fire({
-        icon: "warning",
+        icon: "error",
         title: "Error",
         text: "Debes escribir 'eliminar' para confirmar",
         confirmButtonText: "Aceptar",

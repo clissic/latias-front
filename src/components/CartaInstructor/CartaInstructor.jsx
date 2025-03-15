@@ -34,7 +34,7 @@ export function CartaInstructor({
           {firstName} {lastName}
         </h3>
         <div className="card-text mb-2">
-          <span className="badge text-bg-dark">{profession}</span>
+          <span className="badge text-bg-dark text-wrap">{profession}</span>
         </div>
         <hr />
         <p>{experience}</p>

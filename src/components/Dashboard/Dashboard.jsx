@@ -448,7 +448,7 @@ export function Dashboard() {
       <FadeIn>
         <div className="d-flex gap-0 flex-wrap">
           <aside className="text-white dashboard-item-build col-12 col-md-3 h-custom d-flex flex-column justify-content-between mb-5 mb-md-0">
-            <div className="mb-5">
+            <div className="mb-0 mb-md-5">
               <p className="text-white mb-1">Bienvenido/a,</p>
               <h3 className="text-orange"><strong>{user.firstName} {user.lastName}</strong></h3>
               <ul className="dashboard-menu mt-5">
@@ -497,7 +497,7 @@ export function Dashboard() {
                 ))}
               </ul>
             </div>
-            <div className="w-100 text-center">
+            <div className="w-100 text-center d-none d-md-block">
               <a href="#goToTop"><img className="img-fluid w-25 bright-filter" src="../src/assets/latiasImgLogo.png" alt="logo-latias" /></a>
             </div>
           </aside>

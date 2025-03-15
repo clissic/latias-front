@@ -84,7 +84,7 @@ export function General({ user }) {
       </div>
 
 
-      <div className="text-white container col-11 col-sm-12">
+      <div className="text-white col-12">
         <div className="div-border-color my-4"></div>
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">

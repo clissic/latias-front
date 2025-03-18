@@ -2,6 +2,7 @@ import React from "react";
 import "./Eventos.css";
 
 export function Eventos() {
+  // Los eventos vienen directamente de la DB, los carga el admin
   const eventos = [
     {
       id: 1,

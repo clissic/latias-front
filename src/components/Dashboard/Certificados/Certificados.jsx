@@ -12,54 +12,37 @@ export function Certificados({ user }) {
     const certificado = document.createElement("div");
     certificado.style.position = "absolute";
     certificado.style.left = "-9999px";
-    certificado.style.width = "2480px";
-    certificado.style.height = "3508px";
+    certificado.style.width = "3508px"; // Ancho del diseño original
+    certificado.style.height = "2480px"; // Alto del diseño original
     certificado.style.padding = "0px";
     certificado.style.margin = "0px";
     certificado.style.textAlign = "center";
     certificado.style.border = "none";
     certificado.style.backgroundImage = "url(../../src/assets/fondo-cert.webp)";
     certificado.innerHTML = `
-            <img src="../../src/assets/latias-gold.png" alt="certificado" style="margin-top: 200px; width: 50%;"/>
-            <div class="text-white" style="position: absolute; top: 70%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                <h1 class="custom-font" style="font-size: 8rem; width: 2000px;">${
-                  curso.courseName
-                }</h1>
-                <h2 style="font-size: 6rem; width: 2000px;">${
-                  curso.difficulty
-                }</h2>
-                <p style="font-size: 6rem; width: 2000px; margin-top: 100px;"><strong>${user.firstName.toUpperCase()} ${user.lastName.toUpperCase()}</strong></p>
-                <p style="font-size: 4rem;">C.I.: ${user.ci}</p>
-                <p style="font-size: 3.5rem; margin: 40px 0 100px 0;">Se certifca que con fecha ${
-                  curso.dateCompleted
-                } el / la anteriormente mencionado/a ha completado con éxito su curso en Latias Academia, con una duración de ${
-      curso.duration
-    }, cumpliendo con todos los requisitos academicos exigidos durante su cursada.</p>
-                <div>
-                    <p style="font-size: 3rem; margin-top: 100px;">N.º de Credencial:</p>
-                    <p style="font-size: 4rem;"><strong>${
-                      curso.certificate.credentialNumber
-                    }</strong></p>
-                </div>
-                <div class="d-flex flex-row justify-content-evenly" style="margin-top: 360px;">
-                    <div class="text-center text-white" style="border-top: white solid 1px; width: 500px;">
-                        <strong class="w-100" style="font-size: 3rem;">${
-                          curso.professor.firstName
-                        } ${curso.professor.lastName}</strong>
-                        <p class="w-100" style="font-size: 2rem;">${
-                          curso.professor.profession
-                        }</p>
-                    </div>
-                    <div class="text-center text-white" style="width: 500px;">
-
-                    </div>
-                    <div class="text-center text-white" style="border-top: white solid 1px; width: 500px;">
-                        <strong class="w-100" style="font-size: 3rem;">Joaquín Pérez Coria</strong>
-                        <p class="w-100" style="font-size: 2rem;">CEO Latias Academia</p>
-                    </div>
-                </div>
-            </div>
-        `;
+          <div class="text-white" style="position: absolute; top: 48%; left: 66%; transform: translate(-50%, -50%); text-align: center;">
+              <h1 class="custom-font" style="font-size: 8rem; width: 2000px;">${curso.courseName}</h1>
+              <h2 style="font-size: 6rem; width: 2000px;">${curso.difficulty}</h2>
+              <p style="font-size: 6rem; width: 2000px; margin-top: 100px;"><strong>${user.firstName.toUpperCase()} ${user.lastName.toUpperCase()}</strong></p>
+              <p style="font-size: 4rem;">C.I.: ${user.ci}</p>
+              <p style="font-size: 3.5rem; margin: 40px 0 100px 0;">Se certifica que con fecha ${curso.dateCompleted} el / la anteriormente mencionado/a ha completado con éxito su curso en Latias Academia, con una duración de ${curso.duration}, cumpliendo con todos los requisitos académicos exigidos durante su cursada.</p>
+              <div>
+                  <p style="font-size: 3rem; margin-top: 100px;">N.º de Credencial:</p>
+                  <p style="font-size: 4rem;"><strong>${curso.certificate.credentialNumber}</strong></p>
+              </div>
+          </div>
+          <div class="d-flex flex-row justify-content-evenly" style="margin-top: 2200px;">
+              <div class="text-center text-white" style="border-top: white solid 1px; width: 500px;">
+                  <strong class="w-100" style="font-size: 3rem;">${curso.professor.firstName} ${curso.professor.lastName}</strong>
+                  <p class="w-100" style="font-size: 2rem;">${curso.professor.profession}</p>
+              </div>
+              <div class="text-center text-white" style="width: 500px;"></div>
+              <div class="text-center text-white" style="border-top: white solid 1px; width: 500px;">
+                  <strong class="w-100" style="font-size: 3rem;">Joaquín Pérez Coria</strong>
+                  <p class="w-100" style="font-size: 2rem;">CEO Latias Academia</p>
+              </div>
+          </div>
+      `;
     document.body.appendChild(certificado);
 
     await new Promise((resolve) => setTimeout(resolve, 300));
@@ -68,11 +51,11 @@ export function Certificados({ user }) {
       .then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF({
-          orientation: "portrait",
+          orientation: "landscape",
           unit: "px",
-          format: [794, 1123],
+          format: [1123, 794], // Dimensiones ajustadas para horizontal
         });
-        pdf.addImage(imgData, "PNG", 0, 0, 794, 1123, undefined, "FAST");
+        pdf.addImage(imgData, "PNG", 0, 0, 1123, 794, undefined, "FAST");
         pdf.save(`certificado_${curso.certificate.credentialNumber}.pdf`);
         document.body.removeChild(certificado);
       })

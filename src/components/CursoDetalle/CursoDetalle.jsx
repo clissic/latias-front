@@ -32,7 +32,7 @@ export function CursoDetalle() {
       .catch((error) => console.error("Error fetching instructors:", error));
   }, [course, id]);
   
-  if (!course) return <p>Cargando...</p>;
+  if (!course) return <p className="text-white">Cargando...</p>;
 
   return (
         <div className="container">
@@ -79,7 +79,7 @@ export function CursoDetalle() {
                 </div>
             </FadeIn>
             <FadeIn>
-                <div className="row gap-4 mt-5">
+                <div className="row gap-4 mt-5 justify-content-between">
                     {instructor && (
                         <div className="col-12 col-sm-4 col-lg-3">
                             <h5 className="text-orange mb-4">Instructor:</h5>

@@ -18,7 +18,7 @@ export function Certificados({ user }) {
     certificado.style.margin = "0px";
     certificado.style.textAlign = "center";
     certificado.style.border = "none";
-    certificado.style.backgroundImage = "url(../../src/assets/fondo-cert.webp)";
+    certificado.style.backgroundImage = "url(/fondo-cert.webp)";
     certificado.innerHTML = `
           <div class="text-white" style="position: absolute; top: 48%; left: 66%; transform: translate(-50%, -50%); text-align: center;">
               <h1 class="custom-font" style="font-size: 8rem; width: 2000px;">${curso.courseName}</h1>
@@ -78,7 +78,7 @@ export function Certificados({ user }) {
             <div className="col-12 col-lg-3 my-auto text-center">
               <img
                 className="img-fluid col-6 col-lg-12 rounded certificate-frontline"
-                src="../../src/assets/certificate-placeholder.webp"
+                src="/certificate-placeholder.webp"
                 alt="certificado"
               />
             </div>

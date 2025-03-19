@@ -223,7 +223,7 @@ export function Gestoria() {
             <div className="contact-subdiv personal-quote col-12 col-md-6 d-md-block p-0 d-none d-md-flex align-items-center justify-content-center">
               <img
                 className="img-fluid"
-                src="../src/assets/logo-gestoria.png"
+                src="/logo-gestoria.png"
                 alt="Latias logo gestoria"
               />
             </div>

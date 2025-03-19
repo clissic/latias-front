@@ -10,7 +10,7 @@ export function Bienvenida() {
         <div className="topBoat d-lg-none d-block w-50 my-5">
           <img
             className="img-fluid"
-            src="./src/assets/tall-ship.png"
+            src="/tall-ship.png"
             alt="Logo Latias"
           />
         </div>
@@ -18,7 +18,7 @@ export function Bienvenida() {
         <div className="topBoat d-none d-lg-block">
           <img
             className="img-fluid"
-            src="./src/assets/tall-ship.png"
+            src="/tall-ship.png"
             alt="Logo Latias"
           />
         </div>

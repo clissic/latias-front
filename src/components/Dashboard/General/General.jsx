@@ -22,7 +22,7 @@ export function General({ user }) {
     progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   }
 
-  const rankImg = `../src/assets/ranks/${user.rank.title.toLowerCase()}.webp`;
+  const rankImg = `/ranks/${user.rank.title.toLowerCase()}.webp`;
 
   return (
     <div className="container d-flex justify-content-evenly align-items-between flex-wrap gap-4 col-12 col-lg-11">

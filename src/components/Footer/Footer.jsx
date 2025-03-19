@@ -1,5 +1,4 @@
 import "./Footer.css";
-import logoJPC from "../../assets/LogoJPC.svg";
 
 export function Footer() {
     return (
@@ -14,7 +13,7 @@ export function Footer() {
                 <a href="#" target="_blank"><i className="bi bi-linkedin"></i></a>
             </div>
             <div className="col-10 col-md-4 justify-content-center justify-content-md-end logoJPCdiv">
-                <a target="_blank" href="https://jpc-dev.uy"><img className="logoJPC" src={logoJPC} alt="Logo JPC"/></a>
+                <a target="_blank" href="https://jpc-dev.uy"><img className="logoJPC" src="/LogoJPC.svg" alt="Logo JPC"/></a>
                 <p>Desarrollado por <a target="_blank" href="https://jpc-dev.uy"><strong>JPC</strong></a>.</p>
             </div>
         </footer>

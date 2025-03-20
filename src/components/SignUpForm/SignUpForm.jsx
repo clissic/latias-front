@@ -69,7 +69,7 @@ function handleSubmit(e) {
     .then((response) => response.json()) // Parseamos la respuesta JSON
     .then((data) => {
       // Aquí manejas la respuesta del servidor
-      if (data.msg === "User signed up successfully.") {
+      if (data.message === "Registro exitoso") {
         Swal.fire({
           icon: "success",
           title: "Usuario creado",

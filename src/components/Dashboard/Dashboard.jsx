@@ -69,7 +69,7 @@ export function Dashboard() {
               </ul>
             </div>
             <div className="w-100 text-center d-none d-md-block">
-              <a href="#goToTop"><img className="img-fluid w-25 bright-filter" src="../src/assets/latiasImgLogo.png" alt="logo-latias" /></a>
+              <a href="#goToTop"><img className="img-fluid w-25 bright-filter" src="/latiasImgLogo.png" alt="logo-latias" /></a>
             </div>
           </aside>
 

@@ -81,8 +81,8 @@ function handleSubmit(e) {
             confirmButton: "custom-swal-button",
           },
         }).then(() => {
-          // Redirigir a /dashboard/general después de mostrar el mensaje
-          window.location.href = "/dashboard/general";
+          // Redirigir a /login después de mostrar el mensaje
+          window.location.href = "/login";
         });
       } else {
         Swal.fire({

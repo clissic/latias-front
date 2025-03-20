@@ -59,7 +59,7 @@ function handleSubmit(e) {
   };
 
   // Enviar los datos al servidor
-  fetch("/api/users/create", {
+  fetch("/api/sessions/signup", {
     method: "POST", // Método POST
     headers: {
       "Content-Type": "application/json", // Especificamos el tipo de contenido
@@ -69,7 +69,7 @@ function handleSubmit(e) {
     .then((response) => response.json()) // Parseamos la respuesta JSON
     .then((data) => {
       // Aquí manejas la respuesta del servidor
-      if (data.status === "success") {
+      if (data.msg === "User signed up successfully.") {
         Swal.fire({
           icon: "success",
           title: "Usuario creado",

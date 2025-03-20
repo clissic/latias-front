@@ -7,19 +7,103 @@ export function SignUpForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [birth, setBirth] = useState("");
+  const [ci, setCi] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  function handleSubmit(e) {
-    e.preventDefault();
+function handleSubmit(e) {
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
+  // Validación de contraseñas
+  if (password !== confirmPassword) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Las contraseñas no coinciden.",
+      confirmButtonText: "Aceptar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+      },
+    });
+    return;
+  }
+
+  // Validación de términos y condiciones
+  if (!termsAccepted) {
+    Swal.fire({
+      icon: "warning",
+      title: "Atención",
+      text: "Debes aceptar los términos y condiciones.",
+      confirmButtonText: "Aceptar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+      },
+    });
+    return;
+  }
+
+  // Datos del usuario que se enviarán
+  const userData = {
+    firstName,
+    lastName,
+    birth,
+    ci,
+    email,
+    password
+  };
+
+  // Enviar los datos al servidor
+  fetch("/api/users/create", {
+    method: "POST", // Método POST
+    headers: {
+      "Content-Type": "application/json", // Especificamos el tipo de contenido
+    },
+    body: JSON.stringify(userData), // Convertimos el objeto de datos a una cadena JSON
+  })
+    .then((response) => response.json()) // Parseamos la respuesta JSON
+    .then((data) => {
+      // Aquí manejas la respuesta del servidor
+      if (data.status === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "Usuario creado",
+          text: "El usuario se creó con éxito.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        }).then(() => {
+          // Redirigir a /dashboard/general después de mostrar el mensaje
+          window.location.href = "/dashboard/general";
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data.message || "Hubo un problema al crear el usuario.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+      }
+    })
+    .catch((error) => {
+      // Manejo de errores
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Las contraseñas no coinciden.",
+        text: "Hubo un error al enviar la solicitud.",
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
@@ -27,46 +111,23 @@ export function SignUpForm() {
           confirmButton: "custom-swal-button",
         },
       });
-      return;
-    }
-    
-    if (!termsAccepted) {
-      Swal.fire({
-        icon: "warning",
-        title: "Atención",
-        text: "Debes aceptar los términos y condiciones.",
-        confirmButtonText: "Aceptar",
-        background: "#082b55",
-        color: "#ffffff",
-        customClass: {
-          confirmButton: "custom-swal-button",
-        },
-      });
-      return;
-    }
-
-    console.log("Usuario creado:", {
-      name,
-      lastName,
-      birthDate,
-      email,
-      password,
-      termsAccepted
+      console.error("Error en la solicitud:", error);
     });
-  }
+}
+
 
   return (
     <div className="signup-form-container">
         <i className="bi bi-person-fill-add display-1 text-orange text-center"></i>
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label htmlFor="name">Nombre</label>
+          <label htmlFor="firstName">Nombre</label>
           <input
             type="text"
-            id="name"
+            id="firstName"
             className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             placeholder="Ingresa tu nombre"
             required
           />
@@ -84,13 +145,25 @@ export function SignUpForm() {
           />
         </div>
         <div className="input-group">
-          <label htmlFor="birthDate">Fecha de Nacimiento</label>
+          <label htmlFor="ci">C.I.</label>
+          <input
+            type="text"
+            id="ci"
+            className="form-control"
+            value={ci}
+            onChange={(e) => setCi(e.target.value)}
+            placeholder="Ingresa tu documento de identidad"
+            required
+          />
+        </div>
+        <div className="input-group">
+          <label htmlFor="birth">Fecha de Nacimiento</label>
           <input
             type="date"
-            id="birthDate"
+            id="birth"
             className="form-control"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
+            value={birth}
+            onChange={(e) => setBirth(e.target.value)}
             required
           />
         </div>

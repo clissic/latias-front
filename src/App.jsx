@@ -18,6 +18,7 @@ import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProtectedLogin } from './components/ProtectedLogIn/ProtectedLogIn.jsx'
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute.jsx'
+import { ResetPassword  } from './components/ResetPass/ResetPass.jsx'
 
 export function App () {
     return (
@@ -38,6 +39,7 @@ export function App () {
                             <Route path='/course/:id' element={<CursoDetalle />} />
                             <Route path='/course/buy/:id' element={<ProtectedRoute><CursoDetalle /></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<Dashboard />} />
+                            <Route path="/reset-password" element={<ResetPassword />} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

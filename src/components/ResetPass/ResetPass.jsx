@@ -29,6 +29,9 @@ export function ResetPassword() {
             title: "Error",
             text: data.message,
             confirmButtonText: "Cerrar",
+            customClass: {
+              popup: "custom-alert"
+            }
           }).then(() => navigate("/"));
         }
       } catch (error) {
@@ -94,7 +97,7 @@ export function ResetPassword() {
   }
 
   if (isTokenValid === null) {
-    return <p>Verificando token...</p>;
+    return <p className="text-white">Verificando token...</p>;
   }
 
   if (!isTokenValid) {

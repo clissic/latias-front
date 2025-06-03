@@ -2,7 +2,7 @@
     margin-top: 3rem;
     height: 30vh;
     width: 100%;
-    background-image: url("../../assets/topBoat.webp");
+    background-image: url("/topBoat.webp");
     background-size: cover;
     background-position: center;
 }

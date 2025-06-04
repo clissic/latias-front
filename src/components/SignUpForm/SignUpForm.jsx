@@ -69,7 +69,7 @@ function handleSubmit(e) {
     .then((response) => response.json()) // Parseamos la respuesta JSON
     .then((data) => {
       // Aquí manejas la respuesta del servidor
-      if (data.message === "Registro exitoso") {
+      if (data.msg === "Registro exitoso") {
         Swal.fire({
           icon: "success",
           title: "Usuario creado",
@@ -85,10 +85,11 @@ function handleSubmit(e) {
           window.location.href = "/login";
         });
       } else {
+        console.log(data.msg)
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: data.message || "Hubo un problema al crear el usuario.",
+          text: data.msg || "Hubo un problema al crear el usuario.",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",

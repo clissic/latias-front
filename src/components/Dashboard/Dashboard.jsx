@@ -12,7 +12,7 @@ import "./Dashboard.css";
 
 export function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user"))
-  console.log(user)
+  console.log("En Dashboard.jsx" + user)
 
   return (
     <div className="container mt-5">
@@ -75,11 +75,11 @@ export function Dashboard() {
 
           <section className="dashboard-content-column col-12 col-md-9">
             <Routes>
-              <Route path="general" element={<ProtectedRoute><General user={user} /></ProtectedRoute>} />
-              <Route path="cursos" element={<ProtectedRoute><Cursos user={user} /></ProtectedRoute>} />
+              <Route path="general" element={<ProtectedRoute><General user={user.user} /></ProtectedRoute>} />
+              <Route path="cursos" element={<ProtectedRoute><Cursos user={user.user} /></ProtectedRoute>} />
               <Route path="eventos" element={<ProtectedRoute><Eventos /></ProtectedRoute>} />
-              <Route path="certificados" element={<ProtectedRoute><Certificados user={user} /></ProtectedRoute>} />
-              <Route path="ajustes" element={<ProtectedRoute><Ajustes user={user} /></ProtectedRoute>} />
+              <Route path="certificados" element={<ProtectedRoute><Certificados user={user.user} /></ProtectedRoute>} />
+              <Route path="ajustes" element={<ProtectedRoute><Ajustes user={user.user} /></ProtectedRoute>} />
               <Route path="cerrar-sesion" element={<ProtectedRoute><CerrarSesion /></ProtectedRoute>} />
               <Route path="*" element={<ProtectedRoute><General /></ProtectedRoute>} />
             </Routes>

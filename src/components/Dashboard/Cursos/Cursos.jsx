@@ -31,9 +31,9 @@ export function Cursos({ user }) {
       <div className="col-12 d-flex flex-column gap-4">
         {cursos.length === 0 ? (
           <div className="text-center my-5 d-flex flex-column align-items-center col-11">
-            <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
+            <i className="bi bi-book-half mb-4 custom-display-1 text-orange"></i>
             <h3>
-              Tu travesía aún no comienza... No vemos cursos en tu bitácora.
+              Tu travesía aún no comienza.
             </h3>
             <p className="fst-italic">
               ¡Estamos a la espera de que te embarques en una nueva aventura!

@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
     const login = (userData) => {
         setIsAuthenticated(true);
         setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("user", JSON.stringify(userData.user));
     };
 
     const logout = () => {

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import "./General.css";
 
 export function General({ user }) {
-console.log("En General.jsx" + user)
   if (!user || !Array.isArray(user.purchasedCourses)) return null;
 
   const firstCourse = user.purchasedCourses[0] || null;

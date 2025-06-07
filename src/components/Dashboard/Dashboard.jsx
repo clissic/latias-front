@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route, NavLink } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { General } from "./General/General";
 import { Cursos } from "./Cursos/Cursos";
@@ -11,7 +11,16 @@ import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.j
 import "./Dashboard.css";
 
 export function Dashboard() {
-  const user = JSON.parse(localStorage.getItem("user"))
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  if (!user) return null;
 
   return (
     <div className="container mt-5">

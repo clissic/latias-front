@@ -9,9 +9,18 @@ export function CerrarSesion() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/sessions/logout", {
+        method: "POST",
+        credentials: "include", // importante para enviar cookies
+      });
+
+      logout(); // limpiás el contexto del frontend
+      navigate("/");
+    } catch (error) {
+      console.error("Error al cerrar sesión:", error);
+    }
   };
 
   return (

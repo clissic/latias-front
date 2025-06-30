@@ -68,7 +68,7 @@ export function General({ user }) {
         <div className="div-border-color my-4"></div>
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
-          <Stat icon="bi-stopwatch-fill" value={user.statistics.timeConnected} label="Horas conectado/a" />
+          <Stat icon="bi-stopwatch-fill" value={(user.statistics.timeConnected / 60).toFixed(1)} label="Horas conectado/a" />
           <Stat icon="bi-calendar-event-fill" value={user.statistics.eventsAttended} label="Eventos atendidos" />
           <Stat icon="bi-award-fill" value={user.statistics.certificatesQuantity} label="Certificados obtenidos" />
         </div>

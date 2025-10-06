@@ -103,7 +103,7 @@ export function CursoDetalle() {
                         </div>
                         <div className="d-flex justify-content-center align-items-center">
                             <Link to={`/course/buy/${id}`} className="btn btn-success w-50 mt-3">
-                                <strong>Enrolarte ahora</strong>
+                                Enrolarte ahora
                             </Link>
                         </div>
                     </div>

@@ -14,6 +14,8 @@ import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 import { Instructores } from './components/Instructores/Instructores.jsx'
 import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
+import { StripePayment } from './components/StripePayment/StripePayment.jsx'
+import { PaymentSuccess } from './components/PaymentSuccess/PaymentSuccess.jsx'
 import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProtectedLogin } from './components/ProtectedLogIn/ProtectedLogIn.jsx'
@@ -37,7 +39,8 @@ export function App () {
                             <Route path='/recuperarPass' element={<RecuperarPass />} />
                             <Route path='/terminosycondiciones' element={<TerYCon />} />
                             <Route path='/course/:id' element={<CursoDetalle />} />
-                            <Route path='/course/buy/:id' element={<ProtectedRoute><CursoDetalle /></ProtectedRoute>} />
+                            <Route path='/course/buy/:id' element={<ProtectedRoute><StripePayment /></ProtectedRoute>} />
+                            <Route path='/payment/success' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<Dashboard />} />
                             <Route path="/reset-password" element={<ResetPassword />} />
                         </Routes>

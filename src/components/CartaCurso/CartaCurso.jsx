@@ -45,7 +45,7 @@ export function CartaCurso({
               Ver detalles
             </Link>
             <Link to={`/course/buy/${id}`} className="btn btn-success w-50">
-              <strong>Enrolarte ahora</strong>
+              Enrolarte ahora
             </Link>
           </div>
         </div>

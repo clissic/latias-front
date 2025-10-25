@@ -4,13 +4,14 @@ import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./Ajustes.css";
+import { apiService } from "../../../services/apiService";
 
-export const Ajustes = ({ user }) => {
+export const Ajustes = () => {
+  const { logout, user } = useAuth();
   const [userData, setUserData] = useState({ ...user });
   const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
   const [showModal, setShowModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
-  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -70,12 +71,52 @@ export const Ajustes = ({ user }) => {
     }
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (confirmText === "eliminar") {
-      console.log("Cuenta eliminada");
-      setShowModal(false);
-      logout();
-      navigate("/");
+      try {
+        const res = await apiService.deleteUser(user._id || user.id);
+        if(res.status === "success") {
+          Swal.fire({
+            icon: "success",
+            title: "Cuenta eliminada",
+            text: "Tu cuenta ha sido eliminada correctamente.",
+            confirmButtonText: "Aceptar",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: {
+              confirmButton: "custom-swal-button",
+            },
+          }).then(() => {
+            setShowModal(false);
+            logout();
+            navigate("/");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: res.msg || "No se pudo eliminar la cuenta.",
+            confirmButtonText: "Aceptar",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: {
+              confirmButton: "custom-swal-button",
+            },
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Hubo un problema al eliminar la cuenta.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+      }
     } else {
       Swal.fire({
         icon: "error",

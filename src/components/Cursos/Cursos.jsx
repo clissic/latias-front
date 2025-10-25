@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import { CartaCurso } from "../CartaCurso/CartaCurso";
 import { FiltrosCursos } from "../FiltrosCursos/FiltrosCursos";
 import { FadeIn } from "../FadeIn/FadeIn";
+import { useCourses } from "../../hooks/useApi";
 
 export function Cursos() {
-  const [allCourses, setAllCourses] = useState([]);
+  const { courses: allCourses, loading, error } = useCourses();
   const [courses, setCourses] = useState([]);
   const [filtros, setFiltros] = useState({
     keywords: "",
@@ -15,17 +16,12 @@ export function Cursos() {
     precioMax: 1000,
   });
 
+  // Actualizar cursos cuando se cargan desde la API
   useEffect(() => {
-    fetch(
-      "https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/cursos.json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setAllCourses(data);
-        setCourses(data);
-      })
-      .catch((error) => console.error("Error fetching courses:", error));
-  }, []);
+    if (allCourses.length > 0) {
+      setCourses(allCourses);
+    }
+  }, [allCourses]);
 
   const aplicarFiltros = () => {
     const { keywords, categoria, dificultad, duracion, precioMin, precioMax } = filtros;
@@ -63,6 +59,28 @@ export function Cursos() {
     });
     setCourses(allCourses);
   };
+
+  if (loading) {
+    return (
+      <div className="container mt-4 text-center">
+        <div className="spinner-border text-orange" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <p className="text-white mt-3">Cargando cursos...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-4 text-center">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error al cargar cursos</h4>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
@@ -105,4 +123,3 @@ export function Cursos() {
     </div>
   );
 }
-

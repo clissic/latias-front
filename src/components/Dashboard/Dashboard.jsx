@@ -8,19 +8,34 @@ import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
 import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
+import { useAuth } from '../../context/AuthContext';
 import "./Dashboard.css";
 
 export function Dashboard() {
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
 
+  // Redirige a login si no está autenticado
   useEffect(() => {
-    if (!user) {
-      navigate("/");
+    if (isAuthenticated === false) {
+      navigate('/login', { replace: true });
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
-  if (!user) return null;
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  if (!user) {
+    return (
+      <div className="container mt-5 text-center">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error al cargar dashboard</h4>
+          <p>No se encontró información del usuario. Intenta volver a iniciar sesión.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-5">
@@ -83,13 +98,13 @@ export function Dashboard() {
 
           <section className="dashboard-content-column col-12 col-md-9">
             <Routes>
-              <Route path="general" element={<ProtectedRoute><General user={user} /></ProtectedRoute>} />
-              <Route path="cursos" element={<ProtectedRoute><Cursos user={user} /></ProtectedRoute>} />
-              <Route path="eventos" element={<ProtectedRoute><Eventos /></ProtectedRoute>} />
-              <Route path="certificados" element={<ProtectedRoute><Certificados user={user} /></ProtectedRoute>} />
-              <Route path="ajustes" element={<ProtectedRoute><Ajustes user={user} /></ProtectedRoute>} />
-              <Route path="cerrar-sesion" element={<ProtectedRoute><CerrarSesion /></ProtectedRoute>} />
-              <Route path="*" element={<ProtectedRoute><General /></ProtectedRoute>} />
+              <Route path="general" element={<General user={user} />} />
+              <Route path="cursos" element={<Cursos user={user} />} />
+              <Route path="eventos" element={<Eventos />} />
+              <Route path="certificados" element={<Certificados user={user} />} />
+              <Route path="ajustes" element={<Ajustes user={user} />} />
+              <Route path="cerrar-sesion" element={<CerrarSesion />} />
+              <Route path="*" element={<General />} />
             </Routes>
           </section>
         </div>

@@ -14,7 +14,7 @@ import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 import { Instructores } from './components/Instructores/Instructores.jsx'
 import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
-import { StripePayment } from './components/StripePayment/StripePayment.jsx'
+import { MercadoPagoPayment } from './components/MercadoPagoPayment/MercadoPagoPayment.jsx'
 import { PaymentSuccess } from './components/PaymentSuccess/PaymentSuccess.jsx'
 import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -39,9 +39,9 @@ export function App () {
                             <Route path='/recuperarPass' element={<RecuperarPass />} />
                             <Route path='/terminosycondiciones' element={<TerYCon />} />
                             <Route path='/course/:id' element={<CursoDetalle />} />
-                            <Route path='/course/buy/:id' element={<ProtectedRoute><StripePayment /></ProtectedRoute>} />
+                            <Route path='/course/buy/:id' element={<ProtectedRoute><MercadoPagoPayment /></ProtectedRoute>} />
                             <Route path='/payment/success' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
-                            <Route path='/dashboard/*' element={<Dashboard />} />
+                            <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                             <Route path="/reset-password" element={<ResetPassword />} />
                         </Routes>
                     <Footer />

@@ -7,7 +7,7 @@ export function Footer() {
                 <p className="derechosRes text-center text-md-start m-0">© 2025 Latias Academia. Todos los derechos reservados.</p>
             </div>
             <div className="d-flex col-10 col-md-4 justify-content-center socialMediaIcons">
-                <a href="#" target="_blank"><i className="bi bi-instagram"></i></a>
+                <a href="https://www.instagram.com/latias.app/" target="_blank"><i className="bi bi-instagram"></i></a>
                 <a href="#" target="_blank"><i className="bi bi-facebook"></i></a>
                 <a href="#" target="_blank"><i className="bi bi-tiktok"></i></a>
                 <a href="#" target="_blank"><i className="bi bi-linkedin"></i></a>

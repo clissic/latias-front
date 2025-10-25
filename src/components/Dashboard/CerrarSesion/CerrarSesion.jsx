@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { apiService } from "../../../services/apiService";
 import './CerrarSesion.css';
 
 export function CerrarSesion() {
@@ -11,15 +12,15 @@ export function CerrarSesion() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/sessions/logout", {
-        method: "POST",
-        credentials: "include", // importante para enviar cookies
-      });
-
-      logout(); // limpiás el contexto del frontend
-      navigate("/");
+      // En JWT, el logout es principalmente del lado del cliente
+      // pero podemos llamar al endpoint para logging
+      await apiService.logout();
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
+    } finally {
+      // Siempre limpiar el estado local, independientemente del resultado del servidor
+      logout();
+      navigate("/");
     }
   };
 

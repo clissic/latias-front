@@ -1,6 +1,7 @@
 import './SignUpForm.css';
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
+import { apiService } from '../../services/apiService';
 import Swal from "sweetalert2";
 
 export function SignUpForm() {
@@ -13,7 +14,7 @@ export function SignUpForm() {
   const [ci, setCi] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-function handleSubmit(e) {
+async function handleSubmit(e) {
   e.preventDefault();
 
   // Validación de contraseñas
@@ -58,53 +59,30 @@ function handleSubmit(e) {
     password
   };
 
-  // Enviar los datos al servidor
-  fetch("/api/sessions/signup", {
-    method: "POST", // Método POST
-    headers: {
-      "Content-Type": "application/json", // Especificamos el tipo de contenido
-    },
-    body: JSON.stringify(userData), // Convertimos el objeto de datos a una cadena JSON
-  })
-    .then((response) => response.json()) // Parseamos la respuesta JSON
-    .then((data) => {
-      // Aquí manejas la respuesta del servidor
-      if (data.msg === "Registro exitoso") {
-        Swal.fire({
-          icon: "success",
-          title: "Usuario creado",
-          text: "El usuario se creó con éxito.",
-          confirmButtonText: "Aceptar",
-          background: "#082b55",
-          color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
-        }).then(() => {
-          // Redirigir a /login después de mostrar el mensaje
-          window.location.href = "/login";
-        });
-      } else {
-        console.log(data.msg)
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: data.msg || "Hubo un problema al crear el usuario.",
-          confirmButtonText: "Aceptar",
-          background: "#082b55",
-          color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
-        });
-      }
-    })
-    .catch((error) => {
-      // Manejo de errores
+  try {
+    const data = await apiService.register(userData);
+    
+    if (data.status === "success") {
+      Swal.fire({
+        icon: "success",
+        title: "Usuario creado",
+        text: "El usuario se creó con éxito.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      }).then(() => {
+        // Redirigir a /login después de mostrar el mensaje
+        window.location.href = "/login";
+      });
+    } else {
+      console.log(data.msg)
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Hubo un error al enviar la solicitud.",
+        text: data.msg || "Hubo un problema al crear el usuario.",
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
@@ -112,8 +90,21 @@ function handleSubmit(e) {
           confirmButton: "custom-swal-button",
         },
       });
-      console.error("Error en la solicitud:", error);
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Hubo un error al enviar la solicitud.",
+      confirmButtonText: "Aceptar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+      },
     });
+    console.error("Error en la solicitud:", error);
+  }
 }
 
 

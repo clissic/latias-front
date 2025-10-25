@@ -24,7 +24,7 @@ export function PaymentSuccess() {
     const verifyPayment = async () => {
       try {
         // Aquí puedes hacer una llamada al backend para verificar el pago
-        // const response = await fetch(`/api/stripe/session/${sessionId}`);
+        // const response = await fetch(`/api/mercadopago/payment/${paymentId}`);
         // const data = await response.json();
         
         // Por ahora, simulamos que el pago fue exitoso

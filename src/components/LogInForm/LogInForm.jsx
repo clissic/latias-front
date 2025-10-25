@@ -2,6 +2,7 @@ import "./LogInForm.css";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { apiService } from "../../services/apiService";
 import Swal from "sweetalert2";
 
 export function LogInForm() {
@@ -13,52 +14,32 @@ export function LogInForm() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    fetch("/api/sessions/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.msg === "Login exitoso") {
-          // Suponiendo que `login(data)` guarda el usuario en contexto o localStorage
-          login(data);
+    try {
+      const data = await apiService.login(email, password);
+      
+      if (data.status === "success") {
+        // Usar el nuevo método login del contexto
+        login(data);
 
-          Swal.fire({
-            icon: "success",
-            title: "Sesión iniciada",
-            text: "¡Bienvenido a bordo de nuevo!",
-            timer: 2000,
-            showConfirmButton: false,
-            background: "#082b55",
-            color: "#ffffff",
-            customClass: {
-              confirmButton: "custom-swal-button",
-            },
-          }).then(() => {
-            navigate("/dashboard/general");
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.msg || "Credenciales incorrectas.",
-            confirmButtonText: "Aceptar",
-            background: "#082b55",
-            color: "#ffffff",
-            customClass: {
-              confirmButton: "custom-swal-button",
-            },
-          });
-        }
-      })
-      .catch((error) => {
+        Swal.fire({
+          icon: "success",
+          title: "Sesión iniciada",
+          text: "¡Bienvenido a bordo de nuevo!",
+          timer: 2000,
+          showConfirmButton: false,
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        }).then(() => {
+          navigate("/dashboard/general");
+        });
+      } else {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Hubo un error al iniciar sesión.",
+          text: data.msg || "Credenciales incorrectas.",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -66,8 +47,21 @@ export function LogInForm() {
             confirmButton: "custom-swal-button",
           },
         });
-        console.error("Error en la solicitud:", error);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Hubo un error al iniciar sesión.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
       });
+      console.error("Error en la solicitud:", error);
+    }
   }
 
   return (

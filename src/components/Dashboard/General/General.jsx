@@ -3,9 +3,16 @@ import { Link } from "react-router-dom";
 import "./General.css";
 
 export function General({ user }) {
-  if (!user || !Array.isArray(user.purchasedCourses)) return null;
+  if (!user) return null;
 
-  const firstCourse = user.purchasedCourses[0] || null;
+  // Debug: ver qué datos está recibiendo
+  console.log("General component - user data:", user);
+
+  // Asegurar que purchasedCourses sea un array
+  const purchasedCourses = Array.isArray(user.purchasedCourses) ? user.purchasedCourses : [];
+  const approvedCourses = Array.isArray(user.approvedCourses) ? user.approvedCourses : [];
+  
+  const firstCourse = purchasedCourses[0] || null;
 
   const progress = firstCourse && Array.isArray(firstCourse.modulesCompleted)
     ? (() => {
@@ -25,8 +32,8 @@ export function General({ user }) {
     : 0;
 
   const rankImg = `/ranks/${user.rank?.title?.toLowerCase() || "default"}.webp`;
-  const purchasedCount = Array.isArray(user.purchasedCourses) ? user.purchasedCourses.length : 0;
-  const approvedCount = Array.isArray(user.approvedCourses) ? user.approvedCourses.length : 0;
+  const purchasedCount = purchasedCourses.length;
+  const approvedCount = approvedCourses.length;
 
   return (
     <div className="container d-flex justify-content-evenly align-items-between flex-wrap gap-4 col-12 col-lg-11">
@@ -40,9 +47,9 @@ export function General({ user }) {
         <h3 className="mb-3 text-orange">Panel del usuario:</h3>
         <div className="d-flex justify-content-between"><p>Nombre:</p><strong>{user.firstName} {user.lastName}</strong></div>
         <div className="d-flex justify-content-between"><p>Email:</p><strong>{user.email}</strong></div>
-        <div className="d-flex justify-content-between"><p>N° teléfono:</p><strong>{user.phone}</strong></div>
-        <div className="d-flex justify-content-between"><p>Dirección:</p><strong>{user.address.street}, {user.address.city}</strong></div>
-        <div className="d-flex justify-content-between"><p>Estado:</p><strong>{user.status}</strong></div>
+        <div className="d-flex justify-content-between"><p>N° teléfono:</p><strong>{user.phone || "No definido"}</strong></div>
+        <div className="d-flex justify-content-between"><p>Dirección:</p><strong>{user.address?.street || "No definido"}, {user.address?.city || "No definido"}</strong></div>
+        <div className="d-flex justify-content-between"><p>Estado:</p><strong>{user.status || "Estudiante"}</strong></div>
       </div>
 
       {/* Rango */}
@@ -51,11 +58,11 @@ export function General({ user }) {
         <h3 className="mb-3 text-orange">Tu rango actual es:</h3>
         <div className="d-flex gap-3">
           <div className="w-50">
-            <img className="img-fluid rounded-circle" src={rankImg} alt={user.rank.title} />
+            <img className="img-fluid rounded-circle" src={rankImg} alt={user.rank?.title || "Rango"} />
           </div>
           <div>
-            <h4><i className="bi bi-trophy-fill"></i> {user.rank.title}</h4>
-            <h6 className="fst-italic text-justify">{user.rank.description}</h6>
+            <h4><i className="bi bi-trophy-fill"></i> {user.rank?.title || "Grumete"}</h4>
+            <h6 className="fst-italic text-justify">{user.rank?.description || "Recién embarcado en la travesía del aprendizaje, aprendiendo lo básico."}</h6>
             <p>
               Tienes <strong>{purchasedCount}</strong> curso/s activo/s y <strong>{approvedCount}</strong> curso/s aprobado/s.
             </p>
@@ -68,9 +75,9 @@ export function General({ user }) {
         <div className="div-border-color my-4"></div>
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
-          <Stat icon="bi-stopwatch-fill" value={(user.statistics.timeConnected / 60).toFixed(1)} label="Horas conectado/a" />
-          <Stat icon="bi-calendar-event-fill" value={user.statistics.eventsAttended} label="Eventos atendidos" />
-          <Stat icon="bi-award-fill" value={user.statistics.certificatesQuantity} label="Certificados obtenidos" />
+          <Stat icon="bi-stopwatch-fill" value={((user.statistics?.timeConnected || 0) / 60).toFixed(1)} label="Horas conectado/a" />
+          <Stat icon="bi-calendar-event-fill" value={user.statistics?.eventsAttended || 0} label="Eventos atendidos" />
+          <Stat icon="bi-award-fill" value={user.statistics?.certificatesQuantity || 0} label="Certificados obtenidos" />
         </div>
       </div>
 

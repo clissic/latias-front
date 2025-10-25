@@ -146,7 +146,7 @@ La siguiente lista detalla los **100 pasos** planeados para el desarrollo comple
 
 ## Contacto del desarrollador
 
-**Nombre:** Joaquín Pérez Coria 
+**Nombre:** Joaquín Pérez Coria  
 **LinkedIn:** [https://www.linkedin.com/in/joaquin-perez-coria](https://www.linkedin.com/in/joaquin-perez-coria)  
 **Sitio web / Portafolio:** [https://jpc-dev.uy](https://jpc-dev.uy)  
 
@@ -154,7 +154,7 @@ La siguiente lista detalla los **100 pasos** planeados para el desarrollo comple
 
 ## Licencia
 
-Copyright (c) 2025 Joaquín Pérez
+Copyright (c) 2025 JPC Dev
 
 Este proyecto está bajo la Licencia MIT.
 Se permite usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del software. 

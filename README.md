@@ -39,8 +39,8 @@ La siguiente lista detalla los **100 pasos** planeados para el desarrollo comple
 ### Autenticación y roles (11-20)
 ✔️ 11. Crear modelo de usuario en MongoDB.  
 ✔️ 12. Implementar registro de cadetes.  
-❌ 13. Implementar login con JWT.  
-❌ 14. Crear middleware de autenticación.  
+✔️ 13. Implementar login con JWT.  
+✔️ 14. Crear middleware de autenticación.  
 ❌ 15. Crear roles: cadete, instructor, administrador.  
 ❌ 16. Crear middleware de autorización según rol.  
 ❌ 17. Probar endpoints de autenticación con Postman.  

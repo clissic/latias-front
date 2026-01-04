@@ -7,6 +7,7 @@ import { Eventos } from "./Eventos/Eventos";
 import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
+import { Gestion } from "./Gestion/Gestion";
 import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
 import { useAuth } from '../../context/AuthContext';
 import "./Dashboard.css";
@@ -72,6 +73,12 @@ export function Dashboard() {
                     icon: "bi-gear-fill",
                     label: "Ajustes",
                   },
+                  // Mostrar "Gestión" solo para administradores
+                  ...(user?.category === "Administrador" ? [{
+                    to: "/dashboard/gestion",
+                    icon: "bi-shield-check",
+                    label: "Gestión",
+                  }] : []),
                   {
                     to: "/dashboard/cerrar-sesion",
                     icon: "bi-door-open-fill",
@@ -103,6 +110,7 @@ export function Dashboard() {
               <Route path="eventos" element={<Eventos />} />
               <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes user={user} />} />
+              <Route path="gestion" element={<Gestion user={user} />} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />
             </Routes>

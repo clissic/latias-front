@@ -1,0 +1,35 @@
+/* Estilos para el componente Gestión */
+.dashboard-item-build-gestion {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  padding: 2rem;
+}
+
+/* Estilos para el acordeón de gestión */
+.gestion-accordion .accordion-item {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+}
+
+.gestion-accordion .accordion-header button {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+}
+
+.gestion-accordion .accordion-header button:not(.collapsed) {
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+}
+
+.gestion-accordion .accordion-header button:focus {
+  box-shadow: none;
+  border-color: rgba(255, 165, 0, 0.3);
+}
+
+.gestion-accordion .accordion-body {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+}

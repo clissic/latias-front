@@ -1,0 +1,73 @@
+.crear-curso-form {
+  color: white;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.module-card {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.lesson-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+.question-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+.option-card {
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+  padding: 0.75rem;
+}
+
+.crear-curso-form .form-label {
+  color: white;
+  font-weight: 500;
+}
+
+.crear-curso-form .form-control,
+.crear-curso-form .form-select {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.crear-curso-form .form-control:focus,
+.crear-curso-form .form-select:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: white;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.crear-curso-form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.lessons-section,
+.questions-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.options-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}

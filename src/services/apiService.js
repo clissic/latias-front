@@ -173,6 +173,14 @@ class ApiService {
     });
     return response.json();
   }
+
+  async createCourse(courseData) {
+    const response = await this.request('/courses/create', {
+      method: 'POST',
+      body: JSON.stringify(courseData),
+    });
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();

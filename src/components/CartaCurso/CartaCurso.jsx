@@ -29,7 +29,7 @@ export function CartaCurso({
           <p>{shortDescription}</p>
           <div className="d-flex justify-content-between">
             <p className="card-text text-center">
-              Duración: <strong>{duration}</strong>
+              Duración: <strong>{duration} horas</strong>
             </p>
             <p className="card-text text-center">
               Dificultad: <strong>{difficulty}</strong>

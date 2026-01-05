@@ -181,6 +181,18 @@ class ApiService {
     });
     return response.json();
   }
+
+  async uploadCourseImages(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/course-images`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();

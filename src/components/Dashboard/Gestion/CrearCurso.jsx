@@ -7,15 +7,17 @@ import "./CrearCurso.css";
 export function CrearCurso() {
   // Estado inicial del curso
   const [courseData, setCourseData] = useState({
-    sku: "",
+    skuPart1: "",
+    skuPart2: "",
+    skuPart3: "",
     courseName: "",
     bannerUrl: "",
     image: "",
     shortImage: "",
-    currency: "UYU",
+    currency: "USD",
     shortDescription: "",
     longDescription: "",
-    duration: "",
+    duration: 0,
     price: 0,
     difficulty: "",
     category: "",
@@ -49,12 +51,48 @@ export function CrearCurso() {
     ]
   });
 
+  // Estado para los archivos de imagen
+  const [imageFiles, setImageFiles] = useState({
+    bannerUrl: null,
+    image: null,
+    shortImage: null
+  });
+
+  // Estado para las previews de imágenes
+  const [imagePreviews, setImagePreviews] = useState({
+    bannerUrl: "",
+    image: "",
+    shortImage: ""
+  });
+
   // Manejar cambios en datos básicos del curso
   const handleBasicChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    // Convertir a número si es un campo numérico
+    const processedValue = type === "number" ? (value === "" ? 0 : parseFloat(value) || 0) : value;
     setCourseData(prev => ({
       ...prev,
-      [name]: value
+      [name]: processedValue
+    }));
+  };
+
+  // Manejar cambios en las partes del SKU
+  const handleSkuChange = (part, e) => {
+    let value = e.target.value.toUpperCase(); // Convertir a mayúsculas
+    
+    if (part === 3) {
+      // Solo números para la tercera parte
+      value = value.replace(/[^0-9]/g, '');
+      if (value.length > 3) value = value.slice(0, 3);
+    } else {
+      // Solo letras para las primeras dos partes
+      value = value.replace(/[^A-Z]/g, '');
+      if (value.length > 3) value = value.slice(0, 3);
+    }
+    
+    setCourseData(prev => ({
+      ...prev,
+      [`skuPart${part}`]: value
     }));
   };
 
@@ -68,6 +106,87 @@ export function CrearCurso() {
         [name]: value
       }
     }));
+  };
+
+  // Manejar cambios en archivos de imagen
+  const handleImageChange = (imageType, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar que sea una imagen
+      if (!file.type.startsWith('image/')) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Por favor selecciona un archivo de imagen válido",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+        return;
+      }
+
+      // Validar tamaño (5MB máximo)
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "La imagen no debe superar los 5MB",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+        return;
+      }
+
+      // Guardar el archivo
+      setImageFiles(prev => ({
+        ...prev,
+        [imageType]: file
+      }));
+
+      // Crear preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews(prev => ({
+          ...prev,
+          [imageType]: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Eliminar imagen (al hacer click en la preview)
+  const removeImage = (imageType) => {
+    // Limpiar el archivo
+    setImageFiles(prev => ({
+      ...prev,
+      [imageType]: null
+    }));
+
+    // Limpiar el preview
+    setImagePreviews(prev => ({
+      ...prev,
+      [imageType]: ""
+    }));
+
+    // Limpiar el campo en courseData
+    setCourseData(prev => ({
+      ...prev,
+      [imageType]: ""
+    }));
+
+    // Limpiar el input file
+    const fileInput = document.querySelector(`input[type="file"][data-image-type="${imageType}"]`);
+    if (fileInput) {
+      fileInput.value = "";
+    }
   };
 
   // Agregar nuevo módulo
@@ -299,14 +418,23 @@ export function CrearCurso() {
                 qIdx === questionIndex
                   ? {
                       ...question,
-                      options: question.options.map((option, optIdx) =>
-                        optIdx === optionIndex
+                      options: question.options.map((option, optIdx) => {
+                        // Si es el checkbox de "isCorrect" y se está marcando como correcto
+                        if (name === "isCorrect" && type === "checkbox" && checked) {
+                          // Solo la opción seleccionada será true, las demás false
+                          return {
+                            ...option,
+                            isCorrect: optIdx === optionIndex
+                          };
+                        }
+                        // Para otros campos o cuando se desmarca
+                        return optIdx === optionIndex
                           ? {
                               ...option,
                               [name]: type === "checkbox" ? checked : value
                             }
-                          : option
-                      )
+                          : option;
+                      })
                     }
                   : question
               )
@@ -321,9 +449,13 @@ export function CrearCurso() {
     // Generar courseId único
     const courseId = `course_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
+    // Unificar las partes del SKU en el formato "PART1-PART2-PART3"
+    const sku = `${data.skuPart1}-${data.skuPart2}-${data.skuPart3}`;
+    
     const processedData = {
       ...data,
       courseId: courseId,
+      sku: sku,
       modules: data.modules.map((module, moduleIndex) => ({
         ...module,
         moduleId: `module_${moduleIndex}`,
@@ -347,8 +479,8 @@ export function CrearCurso() {
 
   // Validar formulario
   const validateForm = () => {
-    if (!courseData.sku || !courseData.courseName || !courseData.price || !courseData.category) {
-      return "Los campos sku, courseName, price y category son requeridos";
+    if (!courseData.skuPart1 || !courseData.skuPart2 || !courseData.skuPart3 || !courseData.courseName || !courseData.price || !courseData.category) {
+      return "Los campos SKU (todas las partes), courseName, price y category son requeridos";
     }
 
     if (courseData.modules.length === 0) {
@@ -376,6 +508,12 @@ export function CrearCurso() {
         }
         if (question.options.length < 2) {
           return `La pregunta ${j + 1} del módulo ${i + 1} debe tener al menos 2 opciones`;
+        }
+        for (let k = 0; k < question.options.length; k++) {
+          const option = question.options[k];
+          if (!option.optionText) {
+            return `La opción ${k + 1} de la pregunta ${j + 1} del módulo ${i + 1} debe tener un texto`;
+          }
         }
         const hasCorrectAnswer = question.options.some(opt => opt.isCorrect);
         if (!hasCorrectAnswer) {
@@ -407,10 +545,39 @@ export function CrearCurso() {
       return;
     }
 
-    // Generar IDs automáticos basados en índices
-    const processedData = generateAutoIds(courseData);
-
     try {
+      // Subir imágenes si hay archivos
+      let uploadedImages = {
+        bannerUrl: courseData.bannerUrl,
+        image: courseData.image,
+        shortImage: courseData.shortImage
+      };
+
+      // Si hay archivos para subir, subirlos primero
+      const hasFilesToUpload = imageFiles.bannerUrl || imageFiles.image || imageFiles.shortImage;
+      if (hasFilesToUpload) {
+        const formData = new FormData();
+        if (imageFiles.bannerUrl) formData.append('bannerUrl', imageFiles.bannerUrl);
+        if (imageFiles.image) formData.append('image', imageFiles.image);
+        if (imageFiles.shortImage) formData.append('shortImage', imageFiles.shortImage);
+
+        const uploadResponse = await apiService.uploadCourseImages(formData);
+        
+        if (uploadResponse.status === "success") {
+          uploadedImages = { ...uploadedImages, ...uploadResponse.payload };
+        } else {
+          throw new Error(uploadResponse.msg || "Error al subir las imágenes");
+        }
+      }
+
+      // Generar IDs automáticos basados en índices y agregar las rutas de imágenes
+      const processedData = generateAutoIds({
+        ...courseData,
+        bannerUrl: uploadedImages.bannerUrl,
+        image: uploadedImages.image,
+        shortImage: uploadedImages.shortImage
+      });
+
       const response = await apiService.createCourse(processedData);
       
       if (response.status === "success") {
@@ -431,15 +598,17 @@ export function CrearCurso() {
 
       // Resetear formulario
       setCourseData({
-        sku: "",
+        skuPart1: "",
+        skuPart2: "",
+        skuPart3: "",
         courseName: "",
         bannerUrl: "",
         image: "",
         shortImage: "",
-        currency: "UYU",
+        currency: "USD",
         shortDescription: "",
         longDescription: "",
-        duration: "",
+        duration: 0,
         price: 0,
         difficulty: "",
         category: "",
@@ -472,6 +641,18 @@ export function CrearCurso() {
           }
         ]
       });
+
+      // Resetear archivos e imágenes
+      setImageFiles({
+        bannerUrl: null,
+        image: null,
+        shortImage: null
+      });
+      setImagePreviews({
+        bannerUrl: "",
+        image: "",
+        shortImage: ""
+      });
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -495,15 +676,45 @@ export function CrearCurso() {
         <div className="div-border-color my-3"></div>
         
         <div className="row g-3">
-          <Form.Group className="col-12 col-md-6">
+          <Form.Group className="col-12">
             <Form.Label>SKU *</Form.Label>
-            <Form.Control
-              type="text"
-              name="sku"
-              value={courseData.sku}
-              onChange={handleBasicChange}
-              required
-            />
+            <div className="d-flex align-items-center gap-2">
+              <Form.Control
+                type="text"
+                name="skuPart1"
+                value={courseData.skuPart1}
+                onChange={(e) => handleSkuChange(1, e)}
+                placeholder="NAV"
+                maxLength={3}
+                style={{ textTransform: 'uppercase' }}
+                required
+              />
+              <span className="text-white">-</span>
+              <Form.Control
+                type="text"
+                name="skuPart2"
+                value={courseData.skuPart2}
+                onChange={(e) => handleSkuChange(2, e)}
+                placeholder="COS"
+                maxLength={3}
+                style={{ textTransform: 'uppercase' }}
+                required
+              />
+              <span className="text-white">-</span>
+              <Form.Control
+                type="text"
+                name="skuPart3"
+                value={courseData.skuPart3}
+                onChange={(e) => handleSkuChange(3, e)}
+                placeholder="001"
+                maxLength={3}
+                pattern="[0-9]*"
+                required
+              />
+            </div>
+            <Form.Text className="text-muted">
+              Formato: XXX-XXX-XXX (primeras dos partes: letras, tercera: números)
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="col-12">
@@ -537,9 +748,9 @@ export function CrearCurso() {
               value={courseData.currency}
               onChange={handleBasicChange}
             >
-              <option value="UYU">UYU</option>
+              <option value="UYU" disabled>UYU</option>
               <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
+              <option value="EUR" disabled>EUR</option>
             </Form.Select>
           </Form.Group>
 
@@ -574,13 +785,18 @@ export function CrearCurso() {
 
           <Form.Group className="col-12 col-md-6">
             <Form.Label>Duración</Form.Label>
-            <Form.Control
-              type="text"
-              name="duration"
-              value={courseData.duration}
-              onChange={handleBasicChange}
-              placeholder="Ej: 40 horas"
-            />
+            <div className="d-flex align-items-center gap-2">
+              <Form.Control
+                type="number"
+                name="duration"
+                value={courseData.duration}
+                onChange={handleBasicChange}
+                min="0"
+                step="0.5"
+                placeholder="0"
+              />
+              <span className="text-white">horas</span>
+            </div>
           </Form.Group>
 
           <Form.Group className="col-12">
@@ -606,34 +822,151 @@ export function CrearCurso() {
           </Form.Group>
 
           <Form.Group className="col-12 col-md-4">
-            <Form.Label>URL Banner</Form.Label>
+            <Form.Label>Banner del Curso</Form.Label>
             <Form.Control
-              type="url"
-              name="bannerUrl"
-              value={courseData.bannerUrl}
-              onChange={handleBasicChange}
+              type="file"
+              accept="image/*"
+              data-image-type="bannerUrl"
+              onChange={(e) => handleImageChange('bannerUrl', e)}
             />
+            <Form.Text className="text-muted d-block mb-2">
+              Resolución óptima: 1920x1080px
+            </Form.Text>
+            {imagePreviews.bannerUrl && (
+              <div className="mt-2">
+                <img 
+                  src={imagePreviews.bannerUrl} 
+                  alt="Preview banner" 
+                  onClick={() => removeImage('bannerUrl')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
+            {courseData.bannerUrl && !imageFiles.bannerUrl && (
+              <div className="mt-2">
+                <img 
+                  src={courseData.bannerUrl} 
+                  alt="Banner actual" 
+                  onClick={() => removeImage('bannerUrl')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
           </Form.Group>
 
           <Form.Group className="col-12 col-md-4">
-            <Form.Label>URL Imagen</Form.Label>
+            <Form.Label>Imagen del Curso</Form.Label>
             <Form.Control
-              type="url"
-              name="image"
-              value={courseData.image}
-              onChange={handleBasicChange}
+              type="file"
+              accept="image/*"
+              data-image-type="image"
+              onChange={(e) => handleImageChange('image', e)}
             />
+            <Form.Text className="text-muted d-block mb-2">
+              Resolución óptima: 800x600px
+            </Form.Text>
+            {imagePreviews.image && (
+              <div className="mt-2">
+                <img 
+                  src={imagePreviews.image} 
+                  alt="Preview imagen" 
+                  onClick={() => removeImage('image')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
+            {courseData.image && !imageFiles.image && (
+              <div className="mt-2">
+                <img 
+                  src={courseData.image} 
+                  alt="Imagen actual" 
+                  onClick={() => removeImage('image')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
           </Form.Group>
 
           <Form.Group className="col-12 col-md-4">
-            <Form.Label>URL Imagen Corta</Form.Label>
+            <Form.Label>Imagen Corta del Curso</Form.Label>
             <Form.Control
-              type="url"
-              name="shortImage"
-              value={courseData.shortImage}
-              onChange={handleBasicChange}
+              type="file"
+              accept="image/*"
+              data-image-type="shortImage"
+              onChange={(e) => handleImageChange('shortImage', e)}
             />
+            <Form.Text className="text-muted d-block mb-2">
+              Resolución óptima: 400x300px
+            </Form.Text>
+            {imagePreviews.shortImage && (
+              <div className="mt-2">
+                <img 
+                  src={imagePreviews.shortImage} 
+                  alt="Preview imagen corta" 
+                  onClick={() => removeImage('shortImage')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
+            {courseData.shortImage && !imageFiles.shortImage && (
+              <div className="mt-2">
+                <img 
+                  src={courseData.shortImage} 
+                  alt="Imagen corta actual" 
+                  onClick={() => removeImage('shortImage')}
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '150px', 
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    border: '2px solid rgba(255, 165, 0, 0.5)'
+                  }}
+                  title="Click para eliminar"
+                />
+              </div>
+            )}
           </Form.Group>
+
+          <div className="col-12 mt-2 mb-3">
+            <Form.Text className="text-muted">
+              <strong>Formatos aceptados:</strong> JPEG, JPG, PNG, GIF, WEBP (máximo 5MB por imagen)
+            </Form.Text>
+          </div>
         </div>
       </div>
 
@@ -677,7 +1010,7 @@ export function CrearCurso() {
 
       {/* Módulos */}
       <div className="form-section">
-        <div className="d-flex justify-content-between align-items-center mb-3 mt-4">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Módulos:</h5>
           <Button variant="success" size="sm" onClick={addModule}>
             <i className="bi bi-plus-circle me-1"></i> Agregar Módulo
@@ -726,8 +1059,8 @@ export function CrearCurso() {
 
             {/* Lecciones del módulo */}
             <div className="lessons-section mb-4">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="text-white">Lecciones:</h6>
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-2 gap-md-0">
+                <h6 className="text-white mb-0">Lecciones:</h6>
                 <Button
                   variant="success"
                   size="sm"
@@ -787,8 +1120,8 @@ export function CrearCurso() {
 
             {/* Banco de preguntas del módulo */}
             <div className="questions-section">
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="text-white">Banco de Preguntas:</h6>
+              <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-2 gap-md-0">
+                <h6 className="text-white mb-0">Banco de Preguntas:</h6>
                 <Button
                   variant="success"
                   size="sm"
@@ -800,15 +1133,17 @@ export function CrearCurso() {
 
               {module.questionBank.map((question, questionIndex) => (
                 <div key={questionIndex} className="question-card mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-white">Pregunta {questionIndex + 1}</span>
-                    <Button
-                      variant="outline-danger"
-                      size="sm"
-                      onClick={() => removeQuestion(moduleIndex, questionIndex)}
-                    >
-                      <i className="bi bi-trash"></i> Eliminar
-                    </Button>
+                  <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-2 gap-md-0">
+                    <span className="text-white mb-0">Pregunta {questionIndex + 1}</span>
+                    {module.questionBank.length > 1 && (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => removeQuestion(moduleIndex, questionIndex)}
+                      >
+                        <i className="bi bi-trash"></i> Eliminar
+                      </Button>
+                    )}
                   </div>
                   
                   <Form.Group className="mb-3">
@@ -824,8 +1159,8 @@ export function CrearCurso() {
                   </Form.Group>
 
                   <div className="options-section">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <Form.Label className="text-white">Opciones:</Form.Label>
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2 gap-2 gap-md-0">
+                      <Form.Label className="text-white mb-0">Opciones:</Form.Label>
                       <Button
                         variant="success"
                         size="sm"
@@ -848,13 +1183,14 @@ export function CrearCurso() {
                               required
                             />
                           </Form.Group>
-                          <Form.Group className="col-12 col-md-1">
-                            <Form.Label>Correcta</Form.Label>
+                          <Form.Group className="col-12 col-md-auto d-flex align-items-end">
                             <Form.Check
                               type="checkbox"
                               name="isCorrect"
+                              label="Correcta"
                               checked={option.isCorrect}
                               onChange={(e) => handleOptionChange(moduleIndex, questionIndex, optionIndex, e)}
+                              className="mb-0"
                             />
                           </Form.Group>
                           {question.options.length > 2 && (

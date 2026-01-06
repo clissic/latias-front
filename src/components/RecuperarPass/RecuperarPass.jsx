@@ -23,8 +23,11 @@ export function RecuperarPass() {
           title: "Error",
           text: "No hay ningún usuario registrado con ese email.",
           confirmButtonText: "Cerrar",
+          background: "#082b55",
+          color: "#ffffff",
           customClass: {
-            popup: "custom-alert"
+            popup: "custom-alert",
+            confirmButton: "custom-swal-button",
           }
         });
       }
@@ -47,8 +50,11 @@ export function RecuperarPass() {
         confirmButtonText: "Cerrar",
         showConfirmButton: !data.success,
         timer: data.success ? 5000 : null,
+        background: "#082b55",
+        color: "#ffffff",
         customClass: {
-          popup: "custom-alert"
+          popup: "custom-alert",
+          confirmButton: "custom-swal-button",
         }
       });
 
@@ -61,8 +67,11 @@ export function RecuperarPass() {
         title: "Error",
         text: "Ocurrió un error inesperado. Inténtalo nuevamente.",
         confirmButtonText: "Cerrar",
+        background: "#082b55",
+        color: "#ffffff",
         customClass: {
-          popup: "custom-alert"
+          popup: "custom-alert",
+          confirmButton: "custom-swal-button",
         }
       });
     }

@@ -190,6 +190,21 @@ class ApiService {
     return response.json();
   }
 
+  async updateCourse(courseId, courseData) {
+    const response = await this.request(`/courses/update/${courseId}`, {
+      method: 'PUT',
+      body: JSON.stringify(courseData),
+    });
+    return response.json();
+  }
+
+  async deleteCourse(courseId) {
+    const response = await this.request(`/courses/delete/${courseId}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+
   async uploadCourseImages(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/course-images`, {

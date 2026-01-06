@@ -1,10 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Accordion } from "react-bootstrap";
 import { CrearCurso } from "./CrearCurso";
+import { BuscarCurso } from "./BuscarCurso";
+import { ActualizarCurso } from "./ActualizarCurso";
 import "./Gestion.css";
 
 export function Gestion({ user }) {
+  const [activeAccordionKey, setActiveAccordionKey] = useState(null);
+  const [courseToUpdate, setCourseToUpdate] = useState(null);
+
   if (!user) return null;
+
+  const handleUpdateCourse = (course) => {
+    setCourseToUpdate(course);
+    setActiveAccordionKey("2"); // Abrir el acordeón de "Actualizar curso:"
+  };
 
   return (
     <div className="container d-flex flex-column align-items-center text-white col-12 col-lg-11">
@@ -15,7 +25,7 @@ export function Gestion({ user }) {
 
       <div className="col-12">
         <h4 className="col-12 text-orange mb-3">Gestión de cursos:</h4>
-        <Accordion defaultActiveKey="0" className="gestion-accordion">
+        <Accordion activeKey={activeAccordionKey} onSelect={(e) => setActiveAccordionKey(e)} className="gestion-accordion">
           <Accordion.Item eventKey="0">
             <Accordion.Header>Crear curso:</Accordion.Header>
             <Accordion.Body>
@@ -25,19 +35,17 @@ export function Gestion({ user }) {
           <Accordion.Item eventKey="1">
             <Accordion.Header>Buscar curso:</Accordion.Header>
             <Accordion.Body>
-              {/* Contenido del buscar curso - se implementará después */}
+              <BuscarCurso onUpdateCourse={handleUpdateCourse} />
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2">
             <Accordion.Header>Actualizar curso:</Accordion.Header>
             <Accordion.Body>
-              {/* Contenido del actualizar curso - se implementará después */}
-            </Accordion.Body>
-          </Accordion.Item>
-          <Accordion.Item eventKey="3">
-            <Accordion.Header>Borrar curso:</Accordion.Header>
-            <Accordion.Body>
-              {/* Contenido del borrar curso - se implementará después */}
+              {courseToUpdate ? (
+                <ActualizarCurso course={courseToUpdate} />
+              ) : (
+                <p className="text-white">Busca un curso y haz click en "Actualizar" para cargar sus datos aquí.</p>
+              )}
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>

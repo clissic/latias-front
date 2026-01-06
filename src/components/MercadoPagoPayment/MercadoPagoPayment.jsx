@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FadeIn } from '../FadeIn/FadeIn';
+import { apiService } from '../../services/apiService';
 import './MercadoPagoPayment.css';
 
 export function MercadoPagoPayment() {
-  const { id } = useParams();
+  const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -12,25 +13,28 @@ export function MercadoPagoPayment() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    // Obtener datos del curso
-    fetch(`https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/cursos.json`)
-      .then((res) => res.json())
-      .then((data) => {
-        const foundCourse = data.find(course => course.id === Number(id));
-        if (foundCourse) {
-          setCourse(foundCourse);
+    const fetchCourse = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiService.getCourseByCourseId(courseId);
+        if (response.status === "success") {
+          setCourse(response.payload);
         } else {
-          setError('Curso no encontrado');
+          setError(response.msg || 'Curso no encontrado');
         }
-      })
-      .catch((error) => {
-        console.error('Error fetching course:', error);
-        setError('Error al cargar el curso');
-      })
-      .finally(() => {
+      } catch (err) {
+        console.error('Error fetching course:', err);
+        setError(err.message || 'Error al cargar el curso');
+      } finally {
         setLoading(false);
-      });
-  }, [id]);
+      }
+    };
+
+    if (courseId) {
+      fetchCourse();
+    }
+  }, [courseId]);
 
   const handlePayment = async () => {
     if (!course) return;
@@ -46,10 +50,10 @@ export function MercadoPagoPayment() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          courseId: course.id,
-          courseName: course.name,
+          courseId: course.courseId || course._id,
+          courseName: course.courseName || course.name,
           price: course.price,
-          currency: 'ARS'
+          currency: course.currency || 'USD'
         }),
       });
 
@@ -117,7 +121,7 @@ export function MercadoPagoPayment() {
                   Finalizar Compra
                 </h2>
                 <p className="text-white">
-                  Completa tu inscripción al curso <strong>{course.name}</strong>
+                  Completa tu inscripción al curso <strong>{course.courseName || course.name}</strong>
                 </p>
               </div>
 
@@ -126,11 +130,11 @@ export function MercadoPagoPayment() {
                 <div className="payment-details">
                   <div className="d-flex justify-content-between mb-2">
                     <span className="text-white">Curso:</span>
-                    <span className="text-white">{course.name}</span>
+                    <span className="text-white">{course.courseName || course.name}</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2">
                     <span className="text-white">Duración:</span>
-                    <span className="text-white">{course.duration}</span>
+                    <span className="text-white">{course.duration} horas</span>
                   </div>
                   <div className="d-flex justify-content-between mb-2">
                     <span className="text-white">Dificultad:</span>
@@ -201,7 +205,7 @@ export function MercadoPagoPayment() {
             <div className="text-center mt-4">
               <button 
                 className="btn btn-outline-secondary" 
-                onClick={() => navigate(`/course/${id}`)}
+                onClick={() => navigate(`/course/${courseId}`)}
               >
                 <i className="bi bi-arrow-left me-2"></i>
                 Volver al Curso

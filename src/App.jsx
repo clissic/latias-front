@@ -38,8 +38,8 @@ export function App () {
                             <Route path='/signup' element={<SignUp />} />
                             <Route path='/recuperarPass' element={<RecuperarPass />} />
                             <Route path='/terminosycondiciones' element={<TerYCon />} />
-                            <Route path='/course/:id' element={<CursoDetalle />} />
-                            <Route path='/course/buy/:id' element={<ProtectedRoute><MercadoPagoPayment /></ProtectedRoute>} />
+                            <Route path='/course/:courseId' element={<CursoDetalle />} />
+                            <Route path='/course/buy/:courseId' element={<ProtectedRoute><MercadoPagoPayment /></ProtectedRoute>} />
                             <Route path='/payment/success' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                             <Route path="/reset-password" element={<ResetPassword />} />

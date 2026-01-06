@@ -556,16 +556,37 @@ export function CrearCurso() {
       // Si hay archivos para subir, subirlos primero
       const hasFilesToUpload = imageFiles.bannerUrl || imageFiles.image || imageFiles.shortImage;
       if (hasFilesToUpload) {
+        console.log('Preparando subida de imágenes:', {
+          bannerUrl: !!imageFiles.bannerUrl,
+          image: !!imageFiles.image,
+          shortImage: !!imageFiles.shortImage
+        });
+
         const formData = new FormData();
-        if (imageFiles.bannerUrl) formData.append('bannerUrl', imageFiles.bannerUrl);
-        if (imageFiles.image) formData.append('image', imageFiles.image);
-        if (imageFiles.shortImage) formData.append('shortImage', imageFiles.shortImage);
+        if (imageFiles.bannerUrl) {
+          formData.append('bannerUrl', imageFiles.bannerUrl);
+          console.log('Agregado bannerUrl:', imageFiles.bannerUrl.name);
+        }
+        if (imageFiles.image) {
+          formData.append('image', imageFiles.image);
+          console.log('Agregado image:', imageFiles.image.name);
+        }
+        if (imageFiles.shortImage) {
+          formData.append('shortImage', imageFiles.shortImage);
+          console.log('Agregado shortImage:', imageFiles.shortImage.name);
+        }
+
+        console.log('Enviando FormData con', formData.getAll('bannerUrl').length + formData.getAll('image').length + formData.getAll('shortImage').length, 'archivos');
 
         const uploadResponse = await apiService.uploadCourseImages(formData);
         
+        console.log('Respuesta de upload:', uploadResponse);
+        
         if (uploadResponse.status === "success") {
           uploadedImages = { ...uploadedImages, ...uploadResponse.payload };
+          console.log('Imágenes subidas exitosamente:', uploadedImages);
         } else {
+          console.error('Error al subir imágenes:', uploadResponse);
           throw new Error(uploadResponse.msg || "Error al subir las imágenes");
         }
       }

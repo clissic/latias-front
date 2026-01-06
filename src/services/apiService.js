@@ -129,6 +129,14 @@ class ApiService {
     return response.json();
   }
 
+  async getCourseByCourseId(courseId) {
+    const response = await this.request(`/courses/courseId/${courseId}`, {
+      method: 'GET',
+      includeAuth: false, // Los detalles del curso son públicos
+    });
+    return response.json();
+  }
+
   async getUserPurchasedCourses(userId) {
     const response = await this.request(`/courses/user/${userId}/purchased`, {
       method: 'GET',

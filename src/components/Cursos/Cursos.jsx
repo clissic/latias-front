@@ -101,12 +101,12 @@ export function Cursos() {
           <div className="containerCursos row g-4">
             {courses.map((course) => (
               <div
-                key={course.id}
+                key={course._id || course.id}
                 className="col-12 col-sm-6 col-md-6 col-lg-6"
               >
                 <CartaCurso
-                  id={course.id}
-                  name={course.name}
+                  courseId={course.courseId || course._id || course.id}
+                  name={course.courseName || course.name}
                   currency={course.currency}
                   price={course.price}
                   category={course.category}

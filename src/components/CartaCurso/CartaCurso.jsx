@@ -4,7 +4,7 @@ import "./CartaCurso.css";
 import { FadeIn } from "../FadeIn/FadeIn";
 
 export function CartaCurso({
-  id,
+  courseId,
   name,
   currency,
   price,
@@ -41,10 +41,10 @@ export function CartaCurso({
           </div>
           <hr />
           <div className="d-flex f-row gap-3">
-            <Link to={`/course/${id}`} className="btn btn-warning w-50">
+            <Link to={`/course/${courseId}`} className="btn btn-warning w-50">
               Ver detalles
             </Link>
-            <Link to={`/course/buy/${id}`} className="btn btn-success w-50">
+            <Link to={`/course/buy/${courseId}`} className="btn btn-success w-50">
               Enrolarte ahora
             </Link>
           </div>

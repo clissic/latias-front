@@ -3,42 +3,89 @@ import { useEffect, useState } from "react";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { CartaInstructor } from "../CartaInstructor/CartaInstructor";
 import { ProgramaCurso } from "../ProgramaCurso/ProgramaCurso";
+import { apiService } from "../../services/apiService";
 import "./CursoDetalle.css";
 
 export function CursoDetalle() {
-  const { id } = useParams();
+  const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [instructor, setInstructor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/cursos.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const foundCourse = data.find(course => course.id === Number(id));
-        setCourse(foundCourse || null);
-      })
-      .catch((error) => console.error("Error fetching courses:", error));
-  }, [id]);
+    const fetchCourse = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiService.getCourseByCourseId(courseId);
+        if (response.status === "success") {
+          setCourse(response.payload);
+        } else {
+          setError(response.msg || "Error al cargar el curso");
+        }
+      } catch (err) {
+        console.error("Error fetching course:", err);
+        setError(err.message || "Error al cargar el curso");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (courseId) {
+      fetchCourse();
+    }
+  }, [courseId]);
 
   useEffect(() => {
-    if (!course) return;
+    if (!course || !course.professor || course.professor.length === 0) return;
     
-    fetch("https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/profesores.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const foundInstructor = data.find(instructor => instructor.courses?.includes(Number(id)));
-        setInstructor(foundInstructor || null);
-      })
-      .catch((error) => console.error("Error fetching instructors:", error));
-  }, [course, id]);
+    // El instructor viene en el campo professor del curso
+    const courseInstructor = course.professor[0];
+    if (courseInstructor) {
+      setInstructor({
+        firstName: courseInstructor.firstName,
+        lastName: courseInstructor.lastName,
+        profession: courseInstructor.profession
+      });
+    }
+  }, [course]);
   
-  if (!course) return <p className="text-white">Cargando...</p>;
+  if (loading) {
+    return (
+      <div className="container mt-4 text-center">
+        <div className="spinner-border text-orange" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+        <p className="text-white mt-3">Cargando curso...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-4 text-center">
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error al cargar el curso</h4>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="container mt-4 text-center">
+        <p className="text-white">Curso no encontrado</p>
+      </div>
+    );
+  }
 
   return (
         <div className="container">
             <FadeIn>
                 <div className="img-course-top mb-5" style={{ backgroundImage: `url(${course.image})` }}></div>
-                <h2 className="text-orange">{course.name.toUpperCase()}</h2>
+                <h2 className="text-orange">{(course.courseName || course.name || "").toUpperCase()}</h2>
                 <p className="text-white mb-5">{course.shortDescription}</p>
             </FadeIn>
             <FadeIn>
@@ -50,7 +97,7 @@ export function CursoDetalle() {
                                 <i className="display-6 text-orange bi bi-calendar-week-fill"></i>
                                 <div>
                                     <p className="text-white mb-0">Duración:</p>
-                                    <strong className="text-white m-0 custom-display-5">{course.duration}</strong>
+                                    <strong className="text-white m-0 custom-display-5">{course.duration} horas</strong>
                                 </div>
                             </div>
                             <div className="d-flex gap-3 align-items-center mb-3">
@@ -84,25 +131,25 @@ export function CursoDetalle() {
                         <div className="col-12 col-sm-4 col-lg-3">
                             <h5 className="text-orange mb-4">Instructor:</h5>
                             <CartaInstructor 
-                                id={instructor.id}
-                                profileImage={instructor.profileImage}
                                 firstName={instructor.firstName}
                                 lastName={instructor.lastName}
                                 profession={instructor.profession}
-                                experience={instructor.experience}
-                                socialMedia={instructor.socialMedia}
                             />
                         </div>
                     )}
                     <div className="col-12 col-sm-7 col-lg-4">
                         <h5 className="text-orange mb-4">Programa:</h5>
                         <div className="text-white">
-                            <ProgramaCurso
-                                courseModules={course.modules}
-                            />
+                            {course.modules && course.modules.length > 0 ? (
+                                <ProgramaCurso
+                                    courseModules={course.modules}
+                                />
+                            ) : (
+                                <p className="text-white">No hay módulos disponibles</p>
+                            )}
                         </div>
                         <div className="d-flex justify-content-center align-items-center">
-                            <Link to={`/course/buy/${id}`} className="btn btn-success w-50 mt-3">
+                            <Link to={`/course/buy/${courseId}`} className="btn btn-success w-50 mt-3">
                                 Enrolarte ahora
                             </Link>
                         </div>

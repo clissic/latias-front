@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 export function LogInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -81,14 +82,20 @@ export function LogInForm() {
         </div>
         <div className="input-group">
           <label htmlFor="password">Contraseña</label>
-          <input
-            type="password"
-            id="password"
-            className="form-control"
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Ingresa tu contraseña"
-            required
-          />
+          <div className="password-input-container position-relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              className="form-control"
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Ingresa tu contraseña"
+              required
+            />
+            <i
+              className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} password-toggle-icon`}
+              onClick={() => setShowPassword(!showPassword)}
+            ></i>
+          </div>
         </div>
         <button
           onClick={handleSubmit}

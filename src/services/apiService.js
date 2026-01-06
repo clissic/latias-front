@@ -182,6 +182,22 @@ class ApiService {
     return response.json();
   }
 
+  async updateUser(userData) {
+    const response = await this.request('/users/update', {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+    return response.json();
+  }
+
+  async updatePassword(newPassword) {
+    const response = await this.request('/users/update-password', {
+      method: 'PUT',
+      body: JSON.stringify({ newPassword }),
+    });
+    return response.json();
+  }
+
   async createCourse(courseData) {
     const response = await this.request('/courses/create', {
       method: 'POST',

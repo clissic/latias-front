@@ -5,9 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build &&  xcopy /E /I /Y dist ..\\latias-back\\public",
+    "build": "vite build",
+    "build:copy": "vite build && node scripts/copy-dist.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "start": "vite preview",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@react-spring/web": "^9.7.5",

@@ -32,3 +32,60 @@
 .btn-close {
   filter: invert(1);
 }
+
+/* Estilos para el desplegable de países */
+.country-dropdown-container {
+  position: relative;
+}
+
+.country-dropdown {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.country-option {
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+  transition: background-color 0.2s;
+}
+
+.country-option:hover {
+  background-color: rgba(255, 107, 53, 0.2) !important;
+}
+
+.country-option:last-child {
+  border-bottom: none;
+}
+
+.country-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.country-dropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.country-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 107, 53, 0.5);
+  border-radius: 4px;
+}
+
+.country-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 107, 53, 0.7);
+}
+
+/* Estilos para el icono de mostrar/ocultar contraseña */
+.password-toggle-icon {
+  transition: color 0.2s;
+}
+
+.password-toggle-icon:hover {
+  color: #ff6b35 !important;
+}
+
+/* Estilos para inputs de dirección en mobile */
+@media (max-width: 991.98px) {
+  .address-form-group {
+    width: 100% !important;
+  }
+}

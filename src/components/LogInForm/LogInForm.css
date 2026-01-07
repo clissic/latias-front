@@ -1,13 +1,31 @@
+/* Asegurar que el contenedor padre (animated.div de FadeIn) no limite el ancho */
 .login-form-container {
-  width: 100%;
-  max-width: 400px;
-  margin: 50px auto;
+  width: 100% !important;
+  max-width: 400px !important;
+  margin: 50px auto !important;
   padding: 20px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
   row-gap: 2rem;
   height: auto;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Asegurar que el animated.div de FadeIn no limite el ancho */
+div[style*="opacity"]:has(.login-form-container),
+div:has(.login-form-container) {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .login-form-container {
+    width: 90% !important;
+    max-width: 90% !important;
+    margin: 50px auto !important;
+  }
 }
 
 .login-form-container h2 {
@@ -23,13 +41,17 @@
 
 .login-form-container form .input-group {
   margin-bottom: 15px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .login-form-container form .input-group label {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   display: block;
   font-weight: bold;
   color: white;
+  width: 100%;
 }
 
 .login-form-container form .input-group input {
@@ -37,6 +59,11 @@
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.login-form-container form .input-group .password-input-container {
+  width: 100%;
 }
 
 .login-form-container form button {

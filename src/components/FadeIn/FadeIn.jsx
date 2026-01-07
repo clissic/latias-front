@@ -35,7 +35,17 @@ export function FadeIn({ children }) {
   });
 
   return (
-    <animated.div ref={elementRef} style={fadeInUp}>
+    <animated.div 
+      ref={elementRef} 
+      style={{
+        ...fadeInUp,
+        width: '100%',
+        maxWidth: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
       {children}
     </animated.div>
   );

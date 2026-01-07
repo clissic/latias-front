@@ -28,7 +28,7 @@ export function Gestoria() {
       </FadeIn>
       <div className="container services-div mb-5">
         <FadeIn>
-          <div className="d-flex flex-column justify-content-center align-items-start mt-5 gestoria-banner text-white p-5">
+          <div className="d-flex flex-column justify-content-center align-items-start mt-5 gestoria-banner text-white w-100">
             <h2 className="index-sub-title">SIEMPRE PENSANDO EN VOS</h2>
             <h4>
               <strong>Nuestros servicios:</strong>

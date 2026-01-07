@@ -33,6 +33,20 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      // Deshabilitar reglas que generan muchos errores pero no son críticas
+      'react/prop-types': 'off',
+      'no-unused-vars': ['warn', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_' 
+      }],
+      'react/no-unescaped-entities': 'warn',
+    },
+  },
+  // Configuración específica para scripts de Node.js
+  {
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ]

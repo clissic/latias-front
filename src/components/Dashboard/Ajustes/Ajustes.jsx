@@ -371,7 +371,7 @@ export const Ajustes = () => {
           <Form.Label>Fecha de nacimiento</Form.Label>
           <Form.Control type="date" name="birth" value={userData.birth} onChange={handleChange} required />
         </Form.Group>
-        <small class="text-muted form-text">Es importante que los datos sean correctos ya que se utilizarán para la generación de los certificados obtenidos.</small>
+        <small className="text-muted form-text">Es importante que los datos sean correctos ya que se utilizarán para la generación de los certificados obtenidos.</small>
 
         <Form.Group className="col-12">
           <div className="div-border-color my-4"></div>

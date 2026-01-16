@@ -26,6 +26,7 @@ export function ActualizarCurso({ course }) {
       lastName: "",
       profession: ""
     },
+    selectedProfessorId: "",
     modules: [
       {
         moduleName: "",
@@ -64,6 +65,40 @@ export function ActualizarCurso({ course }) {
     image: "",
     shortImage: ""
   });
+
+  // Estado para la lista de profesores
+  const [professors, setProfessors] = useState([]);
+  const [loadingProfessors, setLoadingProfessors] = useState(false);
+
+  // Cargar profesores al montar el componente
+  useEffect(() => {
+    const loadProfessors = async () => {
+      setLoadingProfessors(true);
+      try {
+        const response = await apiService.getProfessors();
+        if (response.status === "success" && response.payload) {
+          setProfessors(response.payload);
+        }
+      } catch (error) {
+        console.error("Error al cargar profesores:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudieron cargar los profesores",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+      } finally {
+        setLoadingProfessors(false);
+      }
+    };
+
+    loadProfessors();
+  }, []);
 
   // Función para dividir SKU en partes
   const splitSku = (sku) => {
@@ -123,6 +158,7 @@ export function ActualizarCurso({ course }) {
         difficulty: course.difficulty || "",
         category: course.category || "",
         professor: professorData,
+        selectedProfessorId: "",
         modules: course.modules && course.modules.length > 0 ? course.modules : [
           {
             moduleName: "",
@@ -157,6 +193,22 @@ export function ActualizarCurso({ course }) {
     }
   }, [course]);
 
+  // Buscar el profesor seleccionado cuando se carguen los profesores y los datos del curso
+  useEffect(() => {
+    if (professors.length > 0 && courseData.professor.firstName && courseData.professor.lastName) {
+      const foundProfessor = professors.find(p => 
+        p.firstName === courseData.professor.firstName && 
+        p.lastName === courseData.professor.lastName
+      );
+      if (foundProfessor) {
+        setCourseData(prev => ({
+          ...prev,
+          selectedProfessorId: foundProfessor._id
+        }));
+      }
+    }
+  }, [professors, courseData.professor.firstName, courseData.professor.lastName]);
+
   // Manejar cambios en datos básicos del curso
   const handleBasicChange = (e) => {
     const { name, value, type } = e.target;
@@ -188,16 +240,32 @@ export function ActualizarCurso({ course }) {
     }));
   };
 
-  // Manejar cambios en datos del profesor
+  // Manejar cambios en la selección del profesor
   const handleProfessorChange = (e) => {
-    const { name, value } = e.target;
-    setCourseData(prev => ({
-      ...prev,
-      professor: {
-        ...prev.professor,
-        [name]: value
-      }
-    }));
+    const selectedId = e.target.value;
+    const selectedProfessor = professors.find(p => p._id === selectedId);
+    
+    if (selectedProfessor) {
+      setCourseData(prev => ({
+        ...prev,
+        selectedProfessorId: selectedId,
+        professor: {
+          firstName: selectedProfessor.firstName || "",
+          lastName: selectedProfessor.lastName || "",
+          profession: selectedProfessor.profession || ""
+        }
+      }));
+    } else {
+      setCourseData(prev => ({
+        ...prev,
+        selectedProfessorId: "",
+        professor: {
+          firstName: "",
+          lastName: "",
+          profession: ""
+        }
+      }));
+    }
   };
 
   // Manejar cambios en archivos de imagen
@@ -989,34 +1057,30 @@ export function ActualizarCurso({ course }) {
         <div className="div-border-color my-3"></div>
         
         <div className="row g-3">
-          <Form.Group className="col-12 col-md-4">
-            <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              name="firstName"
-              value={courseData.professor.firstName}
+          <Form.Group className="col-12">
+            <Form.Label>Seleccionar profesor:</Form.Label>
+            <Form.Select
+              value={courseData.selectedProfessorId}
               onChange={handleProfessorChange}
-            />
-          </Form.Group>
-
-          <Form.Group className="col-12 col-md-4">
-            <Form.Label>Apellido</Form.Label>
-            <Form.Control
-              type="text"
-              name="lastName"
-              value={courseData.professor.lastName}
-              onChange={handleProfessorChange}
-            />
-          </Form.Group>
-
-          <Form.Group className="col-12 col-md-4">
-            <Form.Label>Profesión</Form.Label>
-            <Form.Control
-              type="text"
-              name="profession"
-              value={courseData.professor.profession}
-              onChange={handleProfessorChange}
-            />
+              disabled={loadingProfessors}
+            >
+              <option value="">Seleccione un profesor</option>
+              {professors.map((professor) => (
+                <option key={professor._id} value={professor._id}>
+                  {professor.firstName} {professor.lastName} - CI: {professor.ci}
+                </option>
+              ))}
+            </Form.Select>
+            {loadingProfessors && (
+              <Form.Text className="text-muted">
+                Cargando profesores...
+              </Form.Text>
+            )}
+            {!loadingProfessors && professors.length === 0 && (
+              <Form.Text className="text-muted">
+                No hay profesores disponibles. Crea un profesor primero.
+              </Form.Text>
+            )}
           </Form.Group>
         </div>
       </div>

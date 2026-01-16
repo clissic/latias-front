@@ -232,6 +232,66 @@ class ApiService {
     });
     return response.json();
   }
+
+  // Métodos para profesores
+  async getProfessors() {
+    const response = await this.request('/professors', {
+      method: 'GET',
+      includeAuth: false, // Los profesores son públicos
+    });
+    return response.json();
+  }
+
+  async getProfessorById(id) {
+    const response = await this.request(`/professors/id/${id}`, {
+      method: 'GET',
+      includeAuth: false,
+    });
+    return response.json();
+  }
+
+  async getProfessorByCi(ci) {
+    const response = await this.request(`/professors/ci/${ci}`, {
+      method: 'GET',
+      includeAuth: false,
+    });
+    return response.json();
+  }
+
+  async createProfessor(professorData) {
+    const response = await this.request('/professors/create', {
+      method: 'POST',
+      body: JSON.stringify(professorData),
+    });
+    return response.json();
+  }
+
+  async updateProfessor(id, professorData) {
+    const response = await this.request(`/professors/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(professorData),
+    });
+    return response.json();
+  }
+
+  async deleteProfessor(id) {
+    const response = await this.request(`/professors/delete/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  async uploadProfessorImage(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/professor-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();

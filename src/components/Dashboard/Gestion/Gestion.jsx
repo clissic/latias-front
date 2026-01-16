@@ -3,17 +3,26 @@ import { Accordion } from "react-bootstrap";
 import { CrearCurso } from "./CrearCurso";
 import { BuscarCurso } from "./BuscarCurso";
 import { ActualizarCurso } from "./ActualizarCurso";
+import { CrearProfesor } from "./CrearProfesor";
+import { BuscarProfesor } from "./BuscarProfesor";
+import { ActualizarProfesor } from "./ActualizarProfesor";
 import "./Gestion.css";
 
 export function Gestion({ user }) {
   const [activeAccordionKey, setActiveAccordionKey] = useState(null);
   const [courseToUpdate, setCourseToUpdate] = useState(null);
+  const [professorToUpdate, setProfessorToUpdate] = useState(null);
 
   if (!user) return null;
 
   const handleUpdateCourse = (course) => {
     setCourseToUpdate(course);
     setActiveAccordionKey("2"); // Abrir el acordeón de "Actualizar curso:"
+  };
+
+  const handleUpdateProfessor = (professor) => {
+    setProfessorToUpdate(professor);
+    setActiveAccordionKey("5"); // Abrir el acordeón de "Actualizar profesor:"
   };
 
   return (
@@ -45,6 +54,34 @@ export function Gestion({ user }) {
                 <ActualizarCurso course={courseToUpdate} />
               ) : (
                 <p className="text-white">Busca un curso y haz click en "Actualizar" para cargar sus datos aquí.</p>
+              )}
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+
+      <div className="col-12 mt-5">
+        <h4 className="col-12 text-orange mb-3">Gestión de profesores:</h4>
+        <Accordion activeKey={activeAccordionKey} onSelect={(e) => setActiveAccordionKey(e)} className="gestion-accordion">
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>Crear profesor:</Accordion.Header>
+            <Accordion.Body>
+              <CrearProfesor />
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="4">
+            <Accordion.Header>Buscar profesor:</Accordion.Header>
+            <Accordion.Body>
+              <BuscarProfesor onUpdateProfessor={handleUpdateProfessor} />
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="5">
+            <Accordion.Header>Actualizar profesor:</Accordion.Header>
+            <Accordion.Body>
+              {professorToUpdate ? (
+                <ActualizarProfesor professor={professorToUpdate} />
+              ) : (
+                <p className="text-white">Busca un profesor y haz click en "Actualizar" para cargar sus datos aquí.</p>
               )}
             </Accordion.Body>
           </Accordion.Item>

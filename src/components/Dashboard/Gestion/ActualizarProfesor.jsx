@@ -471,7 +471,12 @@ export function ActualizarProfesor({ professor }) {
       </div>
 
       <div className="form-section">
-        <h5 className="text-orange mb-3 mt-4">Certificaciones:</h5>
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
+          <h5 className="text-orange mb-0">Certificaciones:</h5>
+          <Button variant="success" size="sm" onClick={addCertification}>
+            <i className="bi bi-plus-circle me-1"></i> Agregar Certificación
+          </Button>
+        </div>
         <div className="div-border-color my-3"></div>
         
         {professorData.certifications.map((cert, index) => (
@@ -496,13 +501,15 @@ export function ActualizarProfesor({ professor }) {
             </div>
           </div>
         ))}
-        <Button variant="success" size="sm" onClick={addCertification} className="mt-2">
-          <i className="bi bi-plus-circle me-1"></i> Agregar Certificación
-        </Button>
       </div>
 
       <div className="form-section">
-        <h5 className="text-orange mb-3 mt-4">Logros:</h5>
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
+          <h5 className="text-orange mb-0">Logros:</h5>
+          <Button variant="success" size="sm" onClick={addAchievement}>
+            <i className="bi bi-plus-circle me-1"></i> Agregar Logro
+          </Button>
+        </div>
         <div className="div-border-color my-3"></div>
         
         {professorData.achievements.map((ach, index) => (
@@ -527,13 +534,15 @@ export function ActualizarProfesor({ professor }) {
             </div>
           </div>
         ))}
-        <Button variant="success" size="sm" onClick={addAchievement} className="mt-2">
-          <i className="bi bi-plus-circle me-1"></i> Agregar Logro
-        </Button>
       </div>
 
       <div className="form-section">
-        <h5 className="text-orange mb-3 mt-4">Cursos asignados:</h5>
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
+          <h5 className="text-orange mb-0">Cursos asignados:</h5>
+          <Button variant="success" size="sm" onClick={addCourse}>
+            <i className="bi bi-plus-circle me-1"></i> Agregar Curso
+          </Button>
+        </div>
         <div className="div-border-color my-3"></div>
         
         <div className="mb-3">
@@ -555,9 +564,6 @@ export function ActualizarProfesor({ professor }) {
             <p className="text-white">No hay cursos asignados</p>
           )}
         </div>
-        <Button variant="success" size="sm" onClick={addCourse}>
-          <i className="bi bi-plus-circle me-1"></i> Agregar Curso
-        </Button>
       </div>
 
       <div className="form-section">

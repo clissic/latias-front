@@ -292,6 +292,45 @@ class ApiService {
     });
     return response.json();
   }
+
+  // Métodos para usuarios (administradores)
+  async getAllUsers() {
+    const response = await this.request('/users', {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  async getUserById(id) {
+    const response = await this.request(`/users/${id}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  async createUser(userData) {
+    const response = await this.request('/users/create', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+      includeAuth: false, // La creación de usuarios puede ser pública
+    });
+    return response.json();
+  }
+
+  async updateUserById(id, userData) {
+    const response = await this.request('/users/update', {
+      method: 'PUT',
+      body: JSON.stringify({ ...userData, _id: id }),
+    });
+    return response.json();
+  }
+
+  async deleteUserById(id) {
+    const response = await this.request(`/users/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
 }
 
 export const apiService = new ApiService();

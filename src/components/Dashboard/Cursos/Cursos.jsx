@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FadeIn } from "../../FadeIn/FadeIn";
 import "./Cursos.css";
 
 export function Cursos({ user }) {
@@ -22,11 +23,12 @@ export function Cursos({ user }) {
   };
 
   return (
-    <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
-      <div className="col-12">
-        <h2 className="mb-3 text-orange">Cursos en progreso:</h2>
-        <div className="div-border-color my-4"></div>
-      </div>
+    <FadeIn>
+      <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+        <div className="col-12">
+          <h2 className="mb-3 text-orange">Cursos en progreso:</h2>
+          <div className="div-border-color my-4"></div>
+        </div>
 
       <div className="col-12 d-flex flex-column gap-4">
         {cursos.length === 0 ? (
@@ -109,6 +111,7 @@ export function Cursos({ user }) {
           })
         )}
       </div>
-    </div>
+      </div>
+    </FadeIn>
   );
 }

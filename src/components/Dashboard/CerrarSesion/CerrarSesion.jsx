@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
 import './CerrarSesion.css';
 
@@ -25,12 +26,13 @@ export function CerrarSesion() {
   };
 
   return (
-    <div className="text-center mt-5">
-      <i className="text-orange bi bi-door-open-fill display-1"></i>
-      <div className="text-white my-5">
-        <h2>Puedes cerrar sesión aquí.</h2>
-        <p>¿Seguro/a que deseas abandonar el buque?</p>
-      </div>
+    <FadeIn>
+      <div className="text-center mt-5">
+        <i className="text-orange bi bi-door-open-fill display-1"></i>
+        <div className="text-white my-5">
+          <h2>Puedes cerrar sesión aquí.</h2>
+          <p>¿Seguro/a que deseas abandonar el buque?</p>
+        </div>
 
       <Button variant="danger" onClick={() => setShowModal(true)}>
         CERRAR SESIÓN
@@ -51,6 +53,7 @@ export function CerrarSesion() {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+      </div>
+    </FadeIn>
   );
 }

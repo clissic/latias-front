@@ -335,6 +335,7 @@ export function BuscarUsuario({ onUpdateUser }) {
                     <th>CI</th>
                     <th>Categoría</th>
                     <th>Rango</th>
+                    <th>Cursos</th>
                     <th>Acciones</th>
                   </tr>
                 </thead>
@@ -360,6 +361,21 @@ export function BuscarUsuario({ onUpdateUser }) {
                       <td>{user.ci || "N/A"}</td>
                       <td>{user.category || "N/A"}</td>
                       <td>{user.rank?.title || "N/A"}</td>
+                      <td>
+                        {Array.isArray(user.purchasedCourses) && user.purchasedCourses.length > 0 ? (
+                          <div style={{ maxWidth: "200px" }}>
+                            {user.purchasedCourses.map((course, index) => (
+                              <div key={course.courseId || index} className="mb-1">
+                                <span className="badge bg-info text-dark">
+                                  {course.courseName || `Curso ${index + 1}`}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-muted">Sin cursos</span>
+                        )}
+                      </td>
                       <td>
                         <div className="d-flex gap-2">
                           <Button

@@ -1,6 +1,7 @@
 import React from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { FadeIn } from "../../FadeIn/FadeIn";
 import "./Certificados.css";
 
 export function Certificados({ user }) {
@@ -63,11 +64,12 @@ export function Certificados({ user }) {
   };
 
   return (
-    <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
-      <div className="col-12">
-        <h2 className="mb-3 text-orange">Tus certificados obtenidos:</h2>
-        <div className="div-border-color my-4"></div>
-      </div>
+    <FadeIn>
+      <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+        <div className="col-12">
+          <h2 className="mb-3 text-orange">Tus certificados obtenidos:</h2>
+          <div className="div-border-color my-4"></div>
+        </div>
 
       <div className="d-flex flex-column gap-4">
         {cursosAprobados.length === 0 ? (
@@ -127,6 +129,7 @@ export function Certificados({ user }) {
           ))
         )}
       </div>
-    </div>
+      </div>
+    </FadeIn>
   );
 }

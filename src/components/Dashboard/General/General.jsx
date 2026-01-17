@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FadeIn } from "../../FadeIn/FadeIn";
 import "./General.css";
 
 export function General({ user }) {
@@ -36,11 +37,12 @@ export function General({ user }) {
   const approvedCount = approvedCourses.length;
 
   return (
-    <div className="container d-flex justify-content-evenly align-items-between flex-wrap gap-4 col-12 col-lg-11">
-      <div className="col-12 col-md-11 col-lg-12">
-        <h2 className="mb-3 text-orange">General:</h2>
-        <div className="div-border-color my-4"></div>
-      </div>
+    <FadeIn>
+      <div className="container d-flex justify-content-evenly align-items-between flex-wrap gap-4 col-12 col-lg-11">
+        <div className="col-12 col-md-11 col-lg-12">
+          <h2 className="mb-3 text-orange">General:</h2>
+          <div className="div-border-color my-4"></div>
+        </div>
 
       {/* Panel del Usuario */}
       <div className="text-white col-12 col-sm-11 col-lg-6">
@@ -106,7 +108,8 @@ export function General({ user }) {
           <p className="text-center">Aún no te has embarcado en ninguna aventura.</p>
         )}
       </div>
-    </div>
+      </div>
+    </FadeIn>
   );
 }
 

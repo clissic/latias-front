@@ -76,7 +76,7 @@ export function Dashboard() {
                   // Mostrar "Gestión" solo para administradores
                   ...(user?.category === "Administrador" ? [{
                     to: "/dashboard/gestion",
-                    icon: "bi-shield-check",
+                    icon: "bi-shield-fill-check",
                     label: "Gestión",
                   }] : []),
                   {

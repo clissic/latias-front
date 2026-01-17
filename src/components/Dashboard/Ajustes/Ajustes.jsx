@@ -3,6 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { FadeIn } from "../../FadeIn/FadeIn";
 import "./Ajustes.css";
 import { apiService } from "../../../services/apiService";
 
@@ -339,11 +340,12 @@ export const Ajustes = () => {
   };
 
   return (
-    <div className="container d-flex flex-column align-items-center text-white col-12 col-lg-11">
-      <div className="col-12">
-        <h2 className="mb-3 text-orange">Ajustes:</h2>
-        <div className="div-border-color my-4"></div>
-      </div>
+    <FadeIn>
+      <div className="container d-flex flex-column align-items-center text-white col-12 col-lg-11">
+        <div className="col-12">
+          <h2 className="mb-3 text-orange">Ajustes:</h2>
+          <div className="div-border-color my-4"></div>
+        </div>
       {/* Formulario de datos personales */}
       <Form className="d-flex justify-content-between flex-wrap gap-3 col-12" onSubmit={handleSubmit}>
         <h4 className="col-12 text-orange">Datos personales:</h4>
@@ -593,6 +595,7 @@ export const Ajustes = () => {
           <Button variant="danger" onClick={handleDeleteAccount}>Eliminar</Button>
         </Modal.Footer>
       </Modal>
-    </div>
+      </div>
+    </FadeIn>
   );
 };

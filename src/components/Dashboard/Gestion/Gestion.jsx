@@ -106,10 +106,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-book-half text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de cursos</h4>
+            <h4 className="text-white mb-3">Gestión de cursos</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{coursesCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{coursesCount}</span>
             </div>
           </div>
         </div>
@@ -121,10 +121,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-person-badge-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de profesores</h4>
+            <h4 className="text-white mb-3">Gestión de profesores</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{professorsCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{professorsCount}</span>
             </div>
           </div>
         </div>
@@ -136,10 +136,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-people-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de usuarios</h4>
+            <h4 className="text-white mb-3">Gestión de usuarios</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{usersCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{usersCount}</span>
             </div>
           </div>
         </div>
@@ -151,10 +151,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-calendar-event-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de eventos</h4>
+            <h4 className="text-white mb-3">Gestión de eventos</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{eventsCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{eventsCount}</span>
             </div>
           </div>
         </div>
@@ -166,10 +166,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-award-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de certificados</h4>
+            <h4 className="text-white mb-3">Gestión de certificados</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{certificatesCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{certificatesCount}</span>
             </div>
           </div>
         </div>
@@ -181,10 +181,10 @@ export function Gestion({ user }) {
         >
           <div className="gestion-card-content">
             <i className="bi bi-compass-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-orange mb-3">Gestión de buques</h4>
+            <h4 className="text-white mb-3">Gestión de buques</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
-              <span className="text-white" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-white" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{shipsCount}</span>
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{shipsCount}</span>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
 import { Gestion } from "./Gestion/Gestion";
 import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
+import { ProtectedAdminRoute } from '../../components/ProtectedAdminRoute/ProtectedAdminRoute.jsx'
 import { useAuth } from '../../context/AuthContext';
 import "./Dashboard.css";
 
@@ -110,7 +111,7 @@ export function Dashboard() {
               <Route path="eventos" element={<Eventos />} />
               <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes user={user} />} />
-              <Route path="gestion" element={<Gestion user={user} />} />
+              <Route path="gestion" element={<ProtectedAdminRoute><Gestion user={user} /></ProtectedAdminRoute>} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />
             </Routes>

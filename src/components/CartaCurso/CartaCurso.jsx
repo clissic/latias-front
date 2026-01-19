@@ -14,6 +14,26 @@ export function CartaCurso({
   duration,
   difficulty,
 }) {
+  // Función para obtener el símbolo de moneda según el código
+  const getCurrencySymbol = (currencyCode) => {
+    const currencySymbols = {
+      'USD': '$',
+      'UYU': '$U',
+      'EUR': '€',
+      'ARS': '$',
+      'BRL': 'R$',
+      'MXN': '$',
+      'CLP': '$',
+      'COP': '$',
+      'PEN': 'S/',
+      'PYG': '₲'
+    };
+    return currencySymbols[currencyCode?.toUpperCase()] || '$';
+  };
+
+  // Obtener la moneda del curso o usar USD por defecto
+  const courseCurrency = currency || 'USD';
+  const currencySymbol = getCurrencySymbol(courseCurrency);
   return (
     <FadeIn>
       <div className="card h-100 cartaCurso">
@@ -37,7 +57,11 @@ export function CartaCurso({
           </div>
           <hr />
           <div className="card-text">
-            <h2 className="d-flex justify-content-center align-items-center gap-2"><span className="text-money">{currency}</span> <strong>{price}<span className="money-decimal">.00</span></strong></h2>
+            <h2 className="d-flex justify-content-center align-items-center gap-2 price-unified">
+              <span className="text-money">{currencySymbol}</span> 
+              <span className="price-number">{price}<span className="money-decimal">.00</span></span>
+              <span className="text-money">{courseCurrency}</span>
+            </h2>
           </div>
           <hr />
           <div className="d-flex f-row gap-3">

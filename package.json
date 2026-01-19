@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/clean-dist.js",
     "build": "vite build",
-    "build:copy": "vite build && node scripts/copy-dist.js",
+    "build:dev": "vite build --mode development",
+    "build:copy": "npm run build && node scripts/copy-dist.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
@@ -14,13 +16,14 @@
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
+    "@mercadopago/sdk-react": "^1.0.7",
     "@react-spring/web": "^9.7.5",
     "@stripe/react-stripe-js": "^4.0.0",
     "@stripe/stripe-js": "^7.9.0",
     "bootstrap": "^5.3.3",
     "clsx": "^2.1.1",
     "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.0",
+    "jspdf": "^4.0.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.7",
     "react-dom": "^18.3.1",

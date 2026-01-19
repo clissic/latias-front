@@ -1,3 +1,17 @@
+.payment-wrapper {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.payment-wrapper .row {
+  width: 100%;
+  margin: 0;
+}
+
 .payment-container {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
   border-radius: 15px;
@@ -5,6 +19,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .payment-summary {
@@ -30,11 +47,96 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
 .payment-icons i {
   font-size: 1.2rem;
   width: 24px;
+}
+
+.payment-selectable {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.payment-selectable:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.payment-selected {
+  background: rgba(255, 165, 0, 0.15);
+  border-color: #ffa500;
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+}
+
+.payment-selected:hover {
+  background: rgba(255, 165, 0, 0.2);
+  border-color: #ffa500;
+}
+
+.payment-selected .bi-check-circle-fill {
+  font-size: 1.3rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.payment-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.payment-disabled:hover {
+  opacity: 0.7;
+}
+
+.payment-tooltip {
+  position: absolute;
+  left: 100%;
+  margin-left: 10px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.payment-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-right-color: rgba(0, 0, 0, 0.9);
+}
+
+.payment-disabled:hover .payment-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .security-info {
@@ -146,9 +248,14 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .payment-wrapper {
+    min-height: calc(100vh - 150px);
+    padding: 1rem 0.5rem;
+  }
+  
   .payment-container {
     padding: 1rem;
-    margin: 1rem;
+    margin: 0;
   }
   
   .payment-summary,
@@ -165,14 +272,41 @@
   .btn:last-child {
     margin-bottom: 0;
   }
+  
+  .payment-tooltip {
+    left: auto;
+    right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .payment-tooltip::before {
+    right: auto;
+    left: 100%;
+    border-right-color: transparent;
+    border-left-color: rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 992px) {
+  .payment-container {
+    padding: 2.5rem;
+    min-width: 600px;
+  }
+  
+  .payment-summary,
+  .payment-details,
+  .payment-methods {
+    padding: 1.5rem;
+  }
 }
 
 /* Efectos hover para elementos interactivos */
-.payment-icons:hover {
-  background: rgba(255, 255, 255, 0.1);
+.payment-disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 4px;
   padding: 0.25rem;
-  transition: all 0.3s ease;
 }
 
 .payment-details:hover {
@@ -183,4 +317,26 @@
 .payment-summary:hover {
   background: rgba(255, 165, 0, 0.15);
   transition: all 0.3s ease;
+}
+
+/* Estilos unificados para precios */
+.price-unified-text {
+  font-size: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.price-unified-text .price-symbol,
+.price-unified-text .price-value,
+.price-unified-text .price-decimal,
+.price-unified-text .price-currency {
+  font-size: inherit !important;
+  font-weight: 600 !important;
+  display: inline;
+  line-height: 1.2;
+}
+
+.price-unified-text strong {
+  font-weight: 600 !important;
+  font-size: inherit !important;
 }

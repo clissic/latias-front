@@ -11,12 +11,21 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         // Siempre que haya un usuario en localStorage, aseguramos autenticación
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
+        const storedAccessToken = localStorage.getItem("accessToken");
+        const storedRefreshToken = localStorage.getItem("refreshToken");
+        
+        if (storedUser && storedAccessToken) {
             setIsAuthenticated(true);
             setUser(JSON.parse(storedUser));
+            setAccessToken(storedAccessToken);
+            if (storedRefreshToken) {
+                setRefreshToken(storedRefreshToken);
+            }
         } else {
             setIsAuthenticated(false);
             setUser(null);
+            setAccessToken(null);
+            setRefreshToken(null);
         }
     }, []);
     
@@ -88,9 +97,17 @@ export function AuthProvider({ children }) {
     };
 
     const getAuthHeaders = () => {
+        // Leer siempre de localStorage para asegurar que tenemos el token más actualizado
+        const token = localStorage.getItem("accessToken") || accessToken;
+        if (!token) {
+            console.warn("No hay token de acceso disponible");
+            return {
+                "Content-Type": "application/json",
+            };
+        }
         return {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`,
+            "Authorization": `Bearer ${token}`,
         };
     };
 
@@ -109,7 +126,7 @@ export function AuthProvider({ children }) {
             login, 
             logout, 
             refreshAccessToken,
-            getAuthHeaders,
+            getAuthHeaders: getAuthHeaders,
             forceLogin
         }}>
             {children}

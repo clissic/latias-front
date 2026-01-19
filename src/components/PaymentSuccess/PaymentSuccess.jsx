@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FadeIn } from '../FadeIn/FadeIn';
+import { apiService } from '../../services/apiService';
 import './PaymentSuccess.css';
 
 export function PaymentSuccess() {
@@ -8,39 +9,105 @@ export function PaymentSuccess() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [course, setCourse] = useState(null);
+  const [paymentInfo, setPaymentInfo] = useState(null);
 
-  const sessionId = searchParams.get('session_id');
-  const courseId = searchParams.get('course_id');
+  // Mercado Pago envía estos parámetros cuando redirige después del pago
+  const paymentId = searchParams.get('payment_id');
+  const status = searchParams.get('status');
+  const preferenceId = searchParams.get('preference_id');
+  const collectionId = searchParams.get('collection_id');
+  const collectionStatus = searchParams.get('collection_status');
 
   useEffect(() => {
-    if (!sessionId || !courseId) {
-      setError('Parámetros de pago no válidos');
+    // Obtener el ID del pago (puede venir como payment_id o collection_id)
+    const finalPaymentId = paymentId || collectionId;
+
+    if (!finalPaymentId) {
+      setError('No se recibió el ID del pago desde Mercado Pago');
       setLoading(false);
       return;
     }
 
-    // Verificar el estado del pago con el backend
-    const verifyPayment = async () => {
+    // Verificar y procesar el pago con el backend
+    const verifyAndProcessPayment = async () => {
       try {
-        // Aquí puedes hacer una llamada al backend para verificar el pago
-        // const response = await fetch(`/api/mercadopago/payment/${paymentId}`);
-        // const data = await response.json();
+        // Primero verificar el estado del pago usando apiService
+        const checkResponse = await apiService.request(`/mercadopago/payment-status/${finalPaymentId}`, {
+          method: 'GET',
+        });
+
+        if (!checkResponse.ok) {
+          throw new Error('Error al verificar el estado del pago');
+        }
+
+        const checkData = await checkResponse.json();
         
-        // Por ahora, simulamos que el pago fue exitoso
-        setTimeout(() => {
-          setLoading(false);
-          // Aquí podrías obtener los datos del curso si es necesario
-        }, 2000);
+        if (checkData.status !== 'success') {
+          throw new Error(checkData.msg || 'Error al verificar el estado del pago');
+        }
+        
+        // Si el pago está aprobado, procesarlo
+        if (checkData.payload.status === 'approved') {
+          const processResponse = await apiService.request('/mercadopago/process-successful-payment', {
+            method: 'POST',
+            body: JSON.stringify({
+              paymentId: finalPaymentId
+            }),
+          });
+
+          if (!processResponse.ok) {
+            const errorData = await processResponse.json();
+            throw new Error(errorData.msg || 'Error al procesar el pago');
+          }
+
+          const processData = await processResponse.json();
+          
+          if (processData.status !== 'success') {
+            throw new Error(processData.msg || 'Error al procesar el pago');
+          }
+
+          setPaymentInfo({
+            paymentId: finalPaymentId,
+            status: checkData.payload.status,
+            externalReference: checkData.payload.externalReference,
+            ...processData.payload
+          });
+        } else if (checkData.payload.status === 'pending') {
+          // Si el pago está pendiente, mostrar mensaje informativo
+          setPaymentInfo({
+            paymentId: finalPaymentId,
+            status: checkData.payload.status,
+            statusDetail: checkData.payload.statusDetail,
+          });
+          // No es un error, solo informativo - el webhook procesará cuando se apruebe
+        } else if (checkData.payload.status === 'rejected' || checkData.payload.status === 'cancelled') {
+          // Si el pago fue rechazado o cancelado
+          setPaymentInfo({
+            paymentId: finalPaymentId,
+            status: checkData.payload.status,
+            statusDetail: checkData.payload.statusDetail,
+          });
+          setError(`El pago fue ${checkData.payload.status}. ${checkData.payload.statusDetail || 'Por favor, intenta nuevamente.'}`);
+        } else {
+          // Otros estados
+          setPaymentInfo({
+            paymentId: finalPaymentId,
+            status: checkData.payload.status,
+            statusDetail: checkData.payload.statusDetail,
+          });
+          setError(`El pago tiene estado: ${checkData.payload.status}. ${checkData.payload.statusDetail || ''}`);
+        }
+
+        setLoading(false);
       } catch (error) {
         console.error('Error al verificar el pago:', error);
-        setError('Error al verificar el pago');
+        setError(error.message || 'Error al verificar el pago');
         setLoading(false);
       }
     };
 
-    verifyPayment();
-  }, [sessionId, courseId]);
+    verifyAndProcessPayment();
+  }, [paymentId, collectionId]);
 
   const handleGoToDashboard = () => {
     navigate('/dashboard/cursos');
@@ -106,35 +173,67 @@ export function PaymentSuccess() {
           <div className="col-12 col-md-8 col-lg-6">
             <div className="payment-result-container success">
               <div className="text-center">
-                <i className="bi bi-check-circle text-success display-1"></i>
-                <h2 className="text-success mt-3">¡Pago Exitoso!</h2>
-                <p className="text-white mb-4">
-                  Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.
-                </p>
+                {paymentInfo?.status === 'pending' ? (
+                  <>
+                    <i className="bi bi-clock-history text-warning display-1"></i>
+                    <h2 className="text-warning mt-3">Pago Pendiente</h2>
+                    <p className="text-white mb-4">
+                      Tu pago está siendo procesado. Recibirás acceso al curso una vez que el pago sea confirmado.
+                      {paymentInfo?.statusDetail && (
+                        <><br /><small className="text-muted">{paymentInfo.statusDetail}</small></>
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-check-circle text-success display-1"></i>
+                    <h2 className="text-success mt-3">¡Pago Exitoso!</h2>
+                    <p className="text-white mb-4">
+                      Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.
+                    </p>
+                  </>
+                )}
                 
                 <div className="success-details">
-                  <div className="d-flex justify-content-between mb-2">
-                    <span className="text-white">ID de Sesión:</span>
-                    <span className="text-orange">{sessionId}</span>
-                  </div>
-                  <div className="d-flex justify-content-between mb-2">
-                    <span className="text-white">ID del Curso:</span>
-                    <span className="text-orange">{courseId}</span>
-                  </div>
+                  {paymentInfo?.paymentId && (
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="text-white">ID de Pago:</span>
+                      <span className="text-orange">{paymentInfo.paymentId}</span>
+                    </div>
+                  )}
+                  {paymentInfo?.status && (
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="text-white">Estado:</span>
+                      <span className="text-success">{paymentInfo.status}</span>
+                    </div>
+                  )}
                   <div className="d-flex justify-content-between mb-2">
                     <span className="text-white">Fecha:</span>
                     <span className="text-orange">{new Date().toLocaleDateString()}</span>
                   </div>
                 </div>
 
-                <div className="next-steps mt-4">
-                  <h5 className="text-orange mb-3">Próximos Pasos:</h5>
-                  <ul className="text-white text-start">
-                    <li>Revisa tu email para confirmación del pago</li>
-                    <li>Accede a tu dashboard para ver el curso</li>
-                    <li>Comienza tu aprendizaje inmediatamente</li>
-                  </ul>
-                </div>
+                {paymentInfo?.status !== 'pending' && (
+                  <div className="next-steps mt-4">
+                    <h5 className="text-orange mb-3">Próximos Pasos:</h5>
+                    <ul className="text-white text-start">
+                      <li>Revisa tu email para confirmación del pago</li>
+                      <li>Accede a tu dashboard para ver el curso</li>
+                      <li>Comienza tu aprendizaje inmediatamente</li>
+                    </ul>
+                  </div>
+                )}
+                {paymentInfo?.status === 'pending' && (
+                  <div className="next-steps mt-4">
+                    <h5 className="text-warning mb-3">Información Importante:</h5>
+                    <ul className="text-white text-start">
+                      <li>Tu pago está siendo procesado</li>
+                      <li>Recibirás un email cuando el pago sea confirmado</li>
+                      <li>El acceso al curso se activará automáticamente</li>
+                      <li>Si el pago no se confirma en 24 horas, contacta con soporte</li>
+                    </ul>
+                  </div>
+                )}
 
                 <div className="mt-4">
                   <button 

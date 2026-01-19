@@ -58,6 +58,8 @@ body {
 .text-money {
   color: rgb(82, 185, 82);
   font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
 }
 
 .text-justify {
@@ -66,7 +68,31 @@ body {
 
 .money-decimal {
   font-size: 1.5rem;
-  font-weight: 100;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.price-unified {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.price-unified * {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+}
+
+.price-unified .price-number {
+  color: white;
+  display: inline-block;
+  font-weight: bold;
+}
+
+.price-unified .text-money,
+.price-unified .money-decimal {
+  display: inline-block;
 }
 
 .custom-display-1 {

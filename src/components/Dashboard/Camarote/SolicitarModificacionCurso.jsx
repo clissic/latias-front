@@ -615,20 +615,6 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
     }
 
     setIsLoading(true);
-    
-    // Mostrar loading en SweetAlert
-    Swal.fire({
-      title: "Procesando...",
-      html: '<div class="d-flex flex-column align-items-center"><div class="spinner-border text-orange mb-3" role="status" style="width: 3rem; height: 3rem; border-width: 0.3em;"><span class="visually-hidden">Cargando...</span></div><p style="color: #ffffff;">Enviando solicitud de modificación, por favor espere...</p></div>',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      background: "#082b55",
-      color: "#ffffff",
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
 
     try {
       // Preparar datos del instructor
@@ -672,7 +658,6 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
         courseDataToSend
       );
       
-      Swal.close();
       
       if (response.status === "success") {
         Swal.fire({
@@ -694,7 +679,6 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
         throw new Error(response.msg || "Error al enviar la solicitud");
       }
     } catch (error) {
-      Swal.close();
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -1201,7 +1185,7 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
             <Button variant="warning" type="submit" size="lg" className="px-5" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ borderColor: "#082b55", borderRightColor: "transparent" }}></span>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "#082b55", borderRightColor: "transparent" }}></span>
                   PROCESANDO...
                 </>
               ) : (

@@ -211,7 +211,7 @@ export function GestionarMisCursos({ user, onBack }) {
                     {course.courseId ? (
                       <div className="d-flex align-items-center gap-2">
                         <i
-                          className="bi bi-clipboard cursor-pointer text-orange"
+                          className="bi bi-clipboard-fill cursor-pointer text-orange"
                           title={course.courseId}
                           onClick={() => handleCopyCourseId(course.courseId)}
                           style={{ cursor: "pointer", fontSize: "1.2rem" }}

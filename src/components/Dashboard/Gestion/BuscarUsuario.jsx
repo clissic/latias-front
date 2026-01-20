@@ -344,7 +344,7 @@ export function BuscarUsuario({ onUpdateUser }) {
                     <tr key={user._id}>
                       <td>
                         <i
-                          className="bi bi-clipboard cursor-pointer text-orange"
+                          className="bi bi-clipboard-fill cursor-pointer text-orange"
                           title={user._id}
                           onClick={() => handleCopyId(user._id)}
                           style={{ cursor: "pointer", fontSize: "1.2rem" }}

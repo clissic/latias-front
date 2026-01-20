@@ -80,12 +80,14 @@ export function Dashboard() {
                     to: "/dashboard/gestion",
                     icon: "bi-shield-fill-check",
                     label: "Gestión",
+                    customClass: "mt-3"
                   }] : []),
                   // Mostrar "Camarote" solo para instructores
                   ...(user?.category === "Instructor" ? [{
                     to: "/dashboard/camarote",
                     icon: "bi-door-open-fill",
                     label: "Camarote",
+                    customClass: "mt-3"
                   }] : []),
                   {
                     to: "/dashboard/cerrar-sesion",

@@ -320,7 +320,7 @@ export function BuscarInstructor({ onUpdateInstructor }) {
                     <tr key={instructor._id}>
                       <td>
                         <i
-                          className="bi bi-clipboard cursor-pointer text-orange"
+                          className="bi bi-clipboard-fill cursor-pointer text-orange"
                           title={instructor._id}
                           onClick={() => handleCopyId(instructor._id)}
                           style={{ cursor: "pointer", fontSize: "1.2rem" }}

@@ -9,6 +9,9 @@ import { ActualizarInstructor } from "./ActualizarInstructor";
 import { CrearUsuario } from "./CrearUsuario";
 import { BuscarUsuario } from "./BuscarUsuario";
 import { ActualizarUsuario } from "./ActualizarUsuario";
+import { CrearEvento } from "./CrearEvento";
+import { BuscarEvento } from "./BuscarEvento";
+import { ActualizarEvento } from "./ActualizarEvento";
 import { apiService } from "../../../services/apiService";
 import "./Gestion.css";
 
@@ -17,7 +20,8 @@ export function Gestion({ user }) {
   const [courseToUpdate, setCourseToUpdate] = useState(null);
   const [instructorToUpdate, setInstructorToUpdate] = useState(null);
   const [userToUpdate, setUserToUpdate] = useState(null);
-  const [activeSection, setActiveSection] = useState(null); // null = tarjetas, 'courses'/'instructors'/'users' = sección activa
+  const [eventToUpdate, setEventToUpdate] = useState(null);
+  const [activeSection, setActiveSection] = useState(null); // null = tarjetas, 'courses'/'instructors'/'users'/'events' = sección activa
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Contadores
@@ -50,8 +54,11 @@ export function Gestion({ user }) {
           setUsersCount(usersResponse.payload.length);
         }
 
-        // Contador de eventos (placeholder - ajustar cuando haya endpoint)
-        setEventsCount(0);
+        // Contador de eventos
+        const eventsResponse = await apiService.getAllEvents();
+        if (eventsResponse.status === "success" && eventsResponse.payload) {
+          setEventsCount(eventsResponse.payload.length);
+        }
 
         // Contador de certificados (placeholder - ajustar cuando haya endpoint)
         setCertificatesCount(0);
@@ -81,6 +88,11 @@ export function Gestion({ user }) {
   const handleUpdateUser = (user) => {
     setUserToUpdate(user);
     setActiveAccordionKey("8"); // Abrir el acordeón de "Actualizar usuario:"
+  };
+
+  const handleUpdateEvent = (event) => {
+    setEventToUpdate(event);
+    setActiveAccordionKey("11"); // Abrir el acordeón de "Actualizar evento:"
   };
 
   const handleCardClick = (section) => {
@@ -341,9 +353,30 @@ export function Gestion({ user }) {
           <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{eventsCount}</span>
         </div>
       </div>
-      <div className="text-center text-white p-4">
-        <p>La gestión de eventos estará disponible próximamente.</p>
-      </div>
+      <Accordion activeKey={activeAccordionKey} onSelect={(e) => setActiveAccordionKey(e)} className="gestion-accordion">
+        <Accordion.Item eventKey="9">
+          <Accordion.Header>Crear evento:</Accordion.Header>
+          <Accordion.Body>
+            <CrearEvento />
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="10">
+          <Accordion.Header>Buscar evento:</Accordion.Header>
+          <Accordion.Body>
+            <BuscarEvento onUpdateEvent={handleUpdateEvent} />
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="11">
+          <Accordion.Header>Actualizar evento:</Accordion.Header>
+          <Accordion.Body>
+            {eventToUpdate ? (
+              <ActualizarEvento event={eventToUpdate} />
+            ) : (
+              <p className="text-white">Busca un evento y haz click en "Actualizar" para cargar sus datos aquí.</p>
+            )}
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
       <div className="mt-4 d-flex justify-content-center">
         <button 
           className="btn btn-orange-custom"

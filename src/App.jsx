@@ -21,6 +21,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { ProtectedLogin } from './components/ProtectedLogIn/ProtectedLogIn.jsx'
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute.jsx'
 import { ResetPassword  } from './components/ResetPass/ResetPass.jsx'
+import { VerifyTicket } from './components/VerifyTicket/VerifyTicket.jsx'
 
 export function App () {
     return (
@@ -43,6 +44,7 @@ export function App () {
                             <Route path='/payment/success' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                             <Route path="/reset-password" element={<ResetPassword />} />
+                            <Route path="/verify-ticket/:ticketId" element={<VerifyTicket />} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

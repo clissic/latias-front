@@ -1,10 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GestionarMisCursos } from "./GestionarMisCursos";
+import { apiService } from "../../../services/apiService";
 import "./Camarote.css";
 
 export function Camarote({ user }) {
   const [activeSection, setActiveSection] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [coursesCount, setCoursesCount] = useState(0);
+
+  // Cargar contador de cursos asignados
+  useEffect(() => {
+    const loadCoursesCount = async () => {
+      try {
+        // Obtener el instructor por CI
+        const instructorResponse = await apiService.getInstructorByCi(user?.ci);
+        
+        if (instructorResponse.status === "success" && instructorResponse.payload) {
+          const instructorData = instructorResponse.payload;
+          const courseIds = instructorData.courses || [];
+          
+          if (courseIds.length > 0) {
+            // Obtener todos los cursos y filtrar por los IDs asignados
+            const allCoursesResponse = await apiService.getCourses();
+            
+            if (allCoursesResponse.status === "success" && allCoursesResponse.payload) {
+              const allCourses = allCoursesResponse.payload;
+              // Los courseIds del instructor son strings (courseId del curso), buscar por courseId
+              const myCourses = allCourses.filter(course => {
+                const courseIdToCompare = course.courseId ? String(course.courseId) : null;
+                return courseIdToCompare && courseIds.some(id => String(id) === courseIdToCompare);
+              });
+              setCoursesCount(myCourses.length);
+            }
+          } else {
+            setCoursesCount(0);
+          }
+        }
+      } catch (error) {
+        console.error("Error al cargar contador de cursos:", error);
+        setCoursesCount(0);
+      }
+    };
+
+    if (user?.ci) {
+      loadCoursesCount();
+    }
+  }, [user?.ci]);
 
   if (!user) return null;
 
@@ -30,7 +71,11 @@ export function Camarote({ user }) {
         >
           <div className="camarote-card-content">
             <i className="bi bi-book-half text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-white mb-3">Gestionar mis cursos asignados</h4>
+            <h4 className="text-white mb-3">Gestión de cursos impartidos</h4>
+            <div className="d-flex align-items-center justify-content-center gap-2">
+              <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{coursesCount}</span>
+            </div>
           </div>
         </div>
       </div>

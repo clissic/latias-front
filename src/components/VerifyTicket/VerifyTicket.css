@@ -1,0 +1,82 @@
+.verify-ticket-container {
+  width: 100%;
+  max-width: 800px;
+  background-color: rgba(8, 43, 85, 0.9);
+  border-radius: 15px;
+  padding: 40px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  border: 2px solid #ffa500;
+}
+
+.ticket-header-success {
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(40, 167, 69, 0.1);
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 2px solid #28a745;
+}
+
+.ticket-header-error {
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 10px;
+  margin-bottom: 30px;
+  border: 2px solid #dc3545;
+}
+
+.ticket-body {
+  margin-top: 20px;
+}
+
+.ticket-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border-left: 4px solid #ffa500;
+}
+
+.ticket-info p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.ticket-info strong {
+  color: #ffa500;
+  margin-right: 10px;
+}
+
+.ticket-id-display {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  border: 2px solid #ffa500;
+}
+
+.ticket-id-display code {
+  font-size: 1.5rem;
+  color: #ffa500;
+  font-weight: bold;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+}
+
+.ticket-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .verify-ticket-container {
+    padding: 20px;
+  }
+
+  .ticket-id-display code {
+    font-size: 1.2rem;
+  }
+}

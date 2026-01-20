@@ -229,6 +229,86 @@ class ApiService {
     return response.json();
   }
 
+  // ========== EVENTOS ==========
+
+  // Obtener eventos activos (público)
+  async getActiveEvents() {
+    const response = await this.request('/events/active', {
+      method: 'GET',
+      includeAuth: false, // Público
+    });
+    return response.json();
+  }
+
+  // Obtener todos los eventos (para administradores)
+  async getAllEvents() {
+    const response = await this.request('/events', {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Obtener evento por ID
+  async getEventById(id) {
+    const response = await this.request(`/events/id/${id}`, {
+      method: 'GET',
+      includeAuth: false, // Público
+    });
+    return response.json();
+  }
+
+  // Obtener evento por eventId
+  async getEventByEventId(eventId) {
+    const response = await this.request(`/events/eventId/${eventId}`, {
+      method: 'GET',
+      includeAuth: false, // Público
+    });
+    return response.json();
+  }
+
+  // Crear evento (para administradores)
+  async createEvent(eventData) {
+    const response = await this.request('/events/create', {
+      method: 'POST',
+      body: JSON.stringify(eventData),
+    });
+    return response.json();
+  }
+
+  // Actualizar evento (para administradores)
+  async updateEvent(eventId, eventData) {
+    const response = await this.request(`/events/update/${eventId}`, {
+      method: 'PUT',
+      body: JSON.stringify(eventData),
+    });
+    return response.json();
+  }
+
+  // Eliminar evento (para administradores)
+  async deleteEvent(eventId) {
+    const response = await this.request(`/events/delete/${eventId}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  // Comprar ticket de evento (requiere autenticación)
+  async purchaseEventTicket(eventId, quantity = 1) {
+    const response = await this.request(`/events/purchase/${eventId}`, {
+      method: 'POST',
+      body: JSON.stringify({ quantity }),
+    });
+    return response.json();
+  }
+
+  // Verificar autenticidad de un ticket
+  async verifyTicket(ticketId) {
+    const response = await fetch(`${this.baseURL}/events/verify/${ticketId}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
   async uploadCourseImages(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/course-images`, {
@@ -292,6 +372,18 @@ class ApiService {
   async uploadInstructorImage(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/professor-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
+
+  async uploadEventImage(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/event-image`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

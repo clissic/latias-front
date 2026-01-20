@@ -343,17 +343,12 @@ export function BuscarUsuario({ onUpdateUser }) {
                   {results.map((user) => (
                     <tr key={user._id}>
                       <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <i
-                            className="bi bi-clipboard cursor-pointer text-orange"
-                            title={user._id}
-                            onClick={() => handleCopyId(user._id)}
-                            style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                          ></i>
-                          <span className="text-truncate" style={{ maxWidth: "100px" }}>
-                            {user._id.substring(0, 15)}...
-                          </span>
-                        </div>
+                        <i
+                          className="bi bi-clipboard cursor-pointer text-orange"
+                          title={user._id}
+                          onClick={() => handleCopyId(user._id)}
+                          style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                        ></i>
                       </td>
                       <td>{user.firstName || "N/A"}</td>
                       <td>{user.lastName || "N/A"}</td>
@@ -377,24 +372,21 @@ export function BuscarUsuario({ onUpdateUser }) {
                         )}
                       </td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <Button
-                            variant="warning"
-                            size="sm"
+                        <div className="d-flex flex-column gap-1">
+                          <span
+                            className="action-link"
                             onClick={() => handleUpdateClick(user)}
-                            className="text-dark"
                           >
                             <i className="bi bi-pencil-square me-1"></i>
                             Actualizar
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
+                          </span>
+                          <span
+                            className="action-link"
                             onClick={() => handleDeleteClick(user)}
                           >
                             <i className="bi bi-trash me-1"></i>
                             Eliminar
-                          </Button>
+                          </span>
                         </div>
                       </td>
                     </tr>

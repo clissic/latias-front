@@ -8,6 +8,7 @@ import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
 import { Gestion } from "./Gestion/Gestion";
+import { Camarote } from "./Camarote/Camarote";
 import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
 import { ProtectedAdminRoute } from '../../components/ProtectedAdminRoute/ProtectedAdminRoute.jsx'
 import { useAuth } from '../../context/AuthContext';
@@ -80,9 +81,15 @@ export function Dashboard() {
                     icon: "bi-shield-fill-check",
                     label: "Gestión",
                   }] : []),
+                  // Mostrar "Camarote" solo para instructores
+                  ...(user?.category === "Instructor" ? [{
+                    to: "/dashboard/camarote",
+                    icon: "bi-door-open-fill",
+                    label: "Camarote",
+                  }] : []),
                   {
                     to: "/dashboard/cerrar-sesion",
-                    icon: "bi-door-open-fill",
+                    icon: "bi-box-arrow-right",
                     label: "Cerrar sesión",
                     customClass: "mt-5"
                   },
@@ -112,6 +119,7 @@ export function Dashboard() {
               <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes user={user} />} />
               <Route path="gestion" element={<ProtectedAdminRoute><Gestion user={user} /></ProtectedAdminRoute>} />
+              <Route path="camarote" element={<Camarote user={user} />} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />
             </Routes>

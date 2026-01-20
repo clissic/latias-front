@@ -6,7 +6,7 @@
   background-color: rgba(0, 0, 0, 0.3);
   padding: 1.5rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 107, 53, 0.3);
+  border: 1px solid rgba(255, 165, 0, 0.3);
 }
 
 .results-section {
@@ -32,31 +32,39 @@
 }
 
 .table-responsive::-webkit-scrollbar-thumb {
-  background: rgba(255, 107, 53, 0.5);
+  background: rgba(255, 165, 0, 0.5);
   border-radius: 4px;
 }
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 107, 53, 0.7);
+  background: rgba(255, 165, 0, 0.7);
 }
 
-.table-dark {
-  background-color: rgba(0, 0, 0, 0.5);
+.table-dark,
+.buscar-curso-container .table {
+  background-color: #082b55;
 }
 
-.table-dark thead th {
-  background-color: rgba(255, 107, 53, 0.2);
-  border-color: rgba(255, 107, 53, 0.3);
-  color: #ff6b35;
-  font-weight: 600;
+.table-dark thead th,
+.buscar-curso-container .table thead th {
+  background-color: rgba(255, 165, 0, 0.2);
+  border-color: rgba(255, 165, 0, 0.3);
+  color: #ffa500;
+  font-weight: bold;
 }
 
 .table-dark tbody td {
-  border-color: rgba(255, 107, 53, 0.2);
+  border-color: rgba(255, 165, 0, 0.2);
 }
 
-.table-dark tbody tr:hover {
-  background-color: rgba(255, 107, 53, 0.1);
+.table-dark tbody tr,
+.buscar-curso-container .table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-dark tbody tr:hover,
+.buscar-curso-container .table tbody tr:hover {
+  background-color: rgba(255, 165, 0, 0.1);
 }
 
 .cursor-pointer {
@@ -66,15 +74,15 @@
 
 .cursor-pointer:hover {
   transform: scale(1.2);
-  color: #ff6b35 !important;
+  color: #ffa500 !important;
 }
 
 .form-control:focus,
 .form-select:focus {
   background-color: #212529;
-  border-color: #ff6b35;
+  border-color: #ffa500;
   color: #fff;
-  box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
 }
 
 .form-control::placeholder {
@@ -91,6 +99,27 @@
   white-space: nowrap;
 }
 
+.action-link {
+  color: #ffa500;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.action-link:hover {
+  color: #ff8c00;
+  text-decoration: none;
+  transform: translateX(3px);
+}
+
+.action-link:active {
+  color: #ff7f00;
+}
+
 /* Estilos para el modal */
 .custom-modal .modal-content {
   background-color: #082b55;
@@ -98,15 +127,15 @@
 }
 
 .custom-modal .modal-header {
-  border-bottom: 1px solid rgba(255, 107, 53, 0.3);
+  border-bottom: 1px solid rgba(255, 165, 0, 0.3);
 }
 
 .custom-modal .modal-footer {
-  border-top: 1px solid rgba(255, 107, 53, 0.3);
+  border-top: 1px solid rgba(255, 165, 0, 0.3);
 }
 
 .custom-modal .modal-title {
-  color: #ff6b35;
+  color: #ffa500;
 }
 
 .custom-modal .btn-close {

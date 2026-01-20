@@ -21,12 +21,12 @@ export function ActualizarCurso({ course }) {
     price: 0,
     difficulty: "",
     category: "",
-    professor: {
+    instructor: {
       firstName: "",
       lastName: "",
       profession: ""
     },
-    selectedProfessorId: "",
+    selectedInstructorId: "",
     modules: [
       {
         moduleName: "",
@@ -66,25 +66,28 @@ export function ActualizarCurso({ course }) {
     shortImage: ""
   });
 
-  // Estado para la lista de profesores
+  // Estado para la lista de instructores
   const [professors, setProfessors] = useState([]);
   const [loadingProfessors, setLoadingProfessors] = useState(false);
+  
+  // Estado para el loading del formulario
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Cargar profesores al montar el componente
+  // Cargar instructores al montar el componente
   useEffect(() => {
     const loadProfessors = async () => {
       setLoadingProfessors(true);
       try {
-        const response = await apiService.getProfessors();
+        const response = await apiService.getInstructors();
         if (response.status === "success" && response.payload) {
           setProfessors(response.payload);
         }
       } catch (error) {
-        console.error("Error al cargar profesores:", error);
+        console.error("Error al cargar instructores:", error);
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudieron cargar los profesores",
+          text: "No se pudieron cargar los instructores",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -116,27 +119,30 @@ export function ActualizarCurso({ course }) {
     if (course) {
       const skuParts = splitSku(course.sku);
       
-      // Manejar professor: puede ser un array o un objeto
-      let professorData = {
+      // Manejar instructor: puede ser un array o un objeto
+      // También verificar si viene como 'professor' (legacy) o 'instructor' (nuevo)
+      let instructorData = {
         firstName: "",
         lastName: "",
         profession: ""
       };
       
-      if (course.professor) {
-        if (Array.isArray(course.professor) && course.professor.length > 0) {
+      const instructorSource = course.instructor || course.professor;
+      
+      if (instructorSource) {
+        if (Array.isArray(instructorSource) && instructorSource.length > 0) {
           // Si es un array, tomar el primer elemento
-          professorData = {
-            firstName: course.professor[0].firstName || "",
-            lastName: course.professor[0].lastName || "",
-            profession: course.professor[0].profession || ""
+          instructorData = {
+            firstName: instructorSource[0].firstName || "",
+            lastName: instructorSource[0].lastName || "",
+            profession: instructorSource[0].profession || ""
           };
-        } else if (typeof course.professor === 'object') {
+        } else if (typeof instructorSource === 'object') {
           // Si es un objeto, usarlo directamente
-          professorData = {
-            firstName: course.professor.firstName || "",
-            lastName: course.professor.lastName || "",
-            profession: course.professor.profession || ""
+          instructorData = {
+            firstName: instructorSource.firstName || "",
+            lastName: instructorSource.lastName || "",
+            profession: instructorSource.profession || ""
           };
         }
       }
@@ -157,8 +163,8 @@ export function ActualizarCurso({ course }) {
         price: course.price || 0,
         difficulty: course.difficulty || "",
         category: course.category || "",
-        professor: professorData,
-        selectedProfessorId: "",
+        instructor: instructorData,
+        selectedInstructorId: "",
         modules: course.modules && course.modules.length > 0 ? course.modules : [
           {
             moduleName: "",
@@ -193,21 +199,21 @@ export function ActualizarCurso({ course }) {
     }
   }, [course]);
 
-  // Buscar el profesor seleccionado cuando se carguen los profesores y los datos del curso
+  // Buscar el instructor seleccionado cuando se carguen los instructores y los datos del curso
   useEffect(() => {
-    if (professors.length > 0 && courseData.professor.firstName && courseData.professor.lastName) {
-      const foundProfessor = professors.find(p => 
-        p.firstName === courseData.professor.firstName && 
-        p.lastName === courseData.professor.lastName
+    if (professors.length > 0 && courseData.instructor.firstName && courseData.instructor.lastName) {
+      const foundInstructor = professors.find(p => 
+        p.firstName === courseData.instructor.firstName && 
+        p.lastName === courseData.instructor.lastName
       );
-      if (foundProfessor) {
+      if (foundInstructor) {
         setCourseData(prev => ({
           ...prev,
-          selectedProfessorId: foundProfessor._id
+          selectedInstructorId: foundInstructor._id
         }));
       }
     }
-  }, [professors, courseData.professor.firstName, courseData.professor.lastName]);
+  }, [professors, courseData.instructor.firstName, courseData.instructor.lastName]);
 
   // Manejar cambios en datos básicos del curso
   const handleBasicChange = (e) => {
@@ -240,15 +246,15 @@ export function ActualizarCurso({ course }) {
     }));
   };
 
-  // Manejar cambios en la selección del profesor
-  const handleProfessorChange = (e) => {
+  // Manejar cambios en la selección del instructor
+  const handleInstructorChange = (e) => {
     const selectedId = e.target.value;
-    const selectedProfessor = professors.find(p => p._id === selectedId);
+    const selectedInstructor = professors.find(p => p._id === selectedId);
     
-    if (selectedProfessor) {
+    if (selectedInstructor) {
       setCourseData(prev => ({
         ...prev,
-        selectedProfessorId: selectedId,
+        selectedInstructorId: selectedId,
         professor: {
           firstName: selectedProfessor.firstName || "",
           lastName: selectedProfessor.lastName || "",
@@ -258,7 +264,7 @@ export function ActualizarCurso({ course }) {
     } else {
       setCourseData(prev => ({
         ...prev,
-        selectedProfessorId: "",
+        selectedInstructorId: "",
         professor: {
           firstName: "",
           lastName: "",
@@ -721,6 +727,22 @@ export function ActualizarCurso({ course }) {
       return;
     }
 
+    setIsLoading(true);
+    
+    // Mostrar loading en SweetAlert
+    Swal.fire({
+      title: "Procesando...",
+      html: '<div class="d-flex flex-column align-items-center"><div class="spinner-border text-orange mb-3" role="status" style="width: 3rem; height: 3rem; border-width: 0.3em;"><span class="visually-hidden">Cargando...</span></div><p style="color: #ffffff;">Actualizando el curso, por favor espere...</p></div>',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      background: "#082b55",
+      color: "#ffffff",
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     try {
       // Subir imágenes si hay archivos nuevos
       let uploadedImages = {
@@ -762,6 +784,8 @@ export function ActualizarCurso({ course }) {
 
       const response = await apiService.updateCourse(course.courseId, processedData);
       
+      Swal.close();
+      
       if (response.status === "success") {
         Swal.fire({
           icon: "success",
@@ -778,6 +802,7 @@ export function ActualizarCurso({ course }) {
         throw new Error(response.msg || "Error al actualizar el curso");
       }
     } catch (error) {
+      Swal.close();
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -789,6 +814,8 @@ export function ActualizarCurso({ course }) {
           confirmButton: "custom-swal-button",
         },
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -1051,34 +1078,34 @@ export function ActualizarCurso({ course }) {
         </div>
       </div>
 
-      {/* Datos del profesor */}
+      {/* Datos del instructor */}
       <div className="form-section">
-        <h5 className="text-orange mb-3 mt-4">Datos del profesor:</h5>
+        <h5 className="text-orange mb-3 mt-4">Datos del instructor:</h5>
         <div className="div-border-color my-3"></div>
         
         <div className="row g-3">
           <Form.Group className="col-12">
-            <Form.Label>Seleccionar profesor:</Form.Label>
+            <Form.Label>Seleccionar instructor:</Form.Label>
             <Form.Select
-              value={courseData.selectedProfessorId}
-              onChange={handleProfessorChange}
+              value={courseData.selectedInstructorId}
+              onChange={handleInstructorChange}
               disabled={loadingProfessors}
             >
-              <option value="">Seleccione un profesor</option>
-              {professors.map((professor) => (
-                <option key={professor._id} value={professor._id}>
-                  {professor.firstName} {professor.lastName} - CI: {professor.ci}
+              <option value="">Seleccione un instructor</option>
+              {professors.map((instructor) => (
+                <option key={instructor._id} value={instructor._id}>
+                  {instructor.firstName} {instructor.lastName} - CI: {instructor.ci}
                 </option>
               ))}
             </Form.Select>
             {loadingProfessors && (
               <Form.Text className="text-muted">
-                Cargando profesores...
+                Cargando instructores...
               </Form.Text>
             )}
             {!loadingProfessors && professors.length === 0 && (
               <Form.Text className="text-muted">
-                No hay profesores disponibles. Crea un profesor primero.
+                No hay instructores disponibles. Crea un instructor primero.
               </Form.Text>
             )}
           </Form.Group>
@@ -1296,8 +1323,17 @@ export function ActualizarCurso({ course }) {
       <div className="form-section mt-4">
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
-          <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle me-2"></i> ACTUALIZAR
+          <Button variant="warning" type="submit" size="lg" className="px-5" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ borderColor: "#082b55", borderRightColor: "transparent" }}></span>
+                PROCESANDO...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-circle me-2"></i> ACTUALIZAR
+              </>
+            )}
           </Button>
         </div>
       </div>

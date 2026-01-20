@@ -4,7 +4,7 @@ import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
 import "./BuscarCurso.css";
 
-export function BuscarProfesor({ onUpdateProfessor }) {
+export function BuscarInstructor({ onUpdateInstructor }) {
   const [filters, setFilters] = useState({
     firstName: "",
     lastName: "",
@@ -16,7 +16,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [professorToDelete, setProfessorToDelete] = useState(null);
+  const [instructorToDelete, setInstructorToDelete] = useState(null);
   const [confirmText, setConfirmText] = useState("");
 
   const handleFilterChange = (e) => {
@@ -31,43 +31,43 @@ export function BuscarProfesor({ onUpdateProfessor }) {
     setLoading(true);
     setSearched(false);
     try {
-      const response = await apiService.getProfessors();
+      const response = await apiService.getInstructors();
       
       if (response.status === "success" && response.payload) {
-        let filteredProfessors = [...response.payload];
+        let filteredInstructors = [...response.payload];
 
         if (filters.firstName.trim()) {
-          filteredProfessors = filteredProfessors.filter((professor) =>
-            professor.firstName?.toLowerCase().includes(filters.firstName.toLowerCase())
+          filteredInstructors = filteredInstructors.filter((instructor) =>
+            instructor.firstName?.toLowerCase().includes(filters.firstName.toLowerCase())
           );
         }
 
         if (filters.lastName.trim()) {
-          filteredProfessors = filteredProfessors.filter((professor) =>
-            professor.lastName?.toLowerCase().includes(filters.lastName.toLowerCase())
+          filteredInstructors = filteredInstructors.filter((instructor) =>
+            instructor.lastName?.toLowerCase().includes(filters.lastName.toLowerCase())
           );
         }
 
         if (filters.ci.trim()) {
-          filteredProfessors = filteredProfessors.filter((professor) =>
-            professor.ci?.toString().includes(filters.ci)
+          filteredInstructors = filteredInstructors.filter((instructor) =>
+            instructor.ci?.toString().includes(filters.ci)
           );
         }
 
         if (filters.profession.trim()) {
-          filteredProfessors = filteredProfessors.filter((professor) =>
-            professor.profession?.toLowerCase().includes(filters.profession.toLowerCase())
+          filteredInstructors = filteredInstructors.filter((instructor) =>
+            instructor.profession?.toLowerCase().includes(filters.profession.toLowerCase())
           );
         }
 
-        setResults(filteredProfessors);
+        setResults(filteredInstructors);
         setSearched(true);
 
-        if (filteredProfessors.length === 0) {
+        if (filteredInstructors.length === 0) {
           Swal.fire({
             icon: "info",
             title: "Sin resultados",
-            text: "No se encontraron profesores con los filtros seleccionados",
+            text: "No se encontraron instructores con los filtros seleccionados",
             confirmButtonText: "Aceptar",
             background: "#082b55",
             color: "#ffffff",
@@ -80,7 +80,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudieron obtener los profesores",
+          text: "No se pudieron obtener los instructores",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -90,11 +90,11 @@ export function BuscarProfesor({ onUpdateProfessor }) {
         });
       }
     } catch (error) {
-      console.error("Error al buscar profesores:", error);
+      console.error("Error al buscar instructores:", error);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Ocurrió un error al buscar los profesores",
+        text: "Ocurrió un error al buscar los instructores",
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
@@ -135,27 +135,27 @@ export function BuscarProfesor({ onUpdateProfessor }) {
     }
   };
 
-  const handleUpdateClick = (professor) => {
-    if (onUpdateProfessor) {
-      onUpdateProfessor(professor);
+  const handleUpdateClick = (instructor) => {
+    if (onUpdateInstructor) {
+      onUpdateInstructor(instructor);
     }
   };
 
-  const handleDeleteClick = (professor) => {
-    setProfessorToDelete(professor);
+  const handleDeleteClick = (instructor) => {
+    setInstructorToDelete(instructor);
     setConfirmText("");
     setShowDeleteModal(true);
   };
 
-  const handleDeleteProfessor = async () => {
+  const handleDeleteInstructor = async () => {
     if (confirmText === "eliminar") {
       try {
-        const response = await apiService.deleteProfessor(professorToDelete._id);
+        const response = await apiService.deleteInstructor(instructorToDelete._id);
         if (response.status === "success") {
           Swal.fire({
             icon: "success",
-            title: "Profesor eliminado",
-            text: response.msg || "El profesor ha sido eliminado correctamente.",
+            title: "Instructor eliminado",
+            text: response.msg || "El instructor ha sido eliminado correctamente.",
             confirmButtonText: "Aceptar",
             background: "#082b55",
             color: "#ffffff",
@@ -164,15 +164,15 @@ export function BuscarProfesor({ onUpdateProfessor }) {
             },
           }).then(() => {
             setShowDeleteModal(false);
-            setProfessorToDelete(null);
+            setInstructorToDelete(null);
             setConfirmText("");
-            setResults(results.filter(prof => prof._id !== professorToDelete._id));
+            setResults(results.filter(inst => inst._id !== instructorToDelete._id));
           });
         } else {
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: response.msg || "No se pudo eliminar el profesor.",
+            text: response.msg || "No se pudo eliminar el instructor.",
             confirmButtonText: "Aceptar",
             background: "#082b55",
             color: "#ffffff",
@@ -185,7 +185,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "Hubo un problema al eliminar el profesor.",
+          text: "Hubo un problema al eliminar el instructor.",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -298,7 +298,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
       {searched && (
         <div className="results-section">
           <h5 className="text-orange mb-3">
-            Resultados: {results.length} profesor(es) encontrado(s)
+            Resultados: {results.length} instructor(es) encontrado(s)
           </h5>
           {results.length > 0 ? (
             <div className="table-responsive">
@@ -316,46 +316,38 @@ export function BuscarProfesor({ onUpdateProfessor }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((professor) => (
-                    <tr key={professor._id}>
+                  {results.map((instructor) => (
+                    <tr key={instructor._id}>
                       <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <i
-                            className="bi bi-clipboard cursor-pointer text-orange"
-                            title={professor._id}
-                            onClick={() => handleCopyId(professor._id)}
-                            style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                          ></i>
-                          <span className="text-truncate" style={{ maxWidth: "100px" }}>
-                            {professor._id.substring(0, 15)}...
-                          </span>
-                        </div>
+                        <i
+                          className="bi bi-clipboard cursor-pointer text-orange"
+                          title={instructor._id}
+                          onClick={() => handleCopyId(instructor._id)}
+                          style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                        ></i>
                       </td>
-                      <td>{professor.firstName || "N/A"}</td>
-                      <td>{professor.lastName || "N/A"}</td>
-                      <td>{professor.ci || "N/A"}</td>
-                      <td>{professor.profession || "N/A"}</td>
-                      <td>{professor.courses?.length || 0}</td>
-                      <td>{professor.contact?.email || "N/A"}</td>
+                      <td>{instructor.firstName || "N/A"}</td>
+                      <td>{instructor.lastName || "N/A"}</td>
+                      <td>{instructor.ci || "N/A"}</td>
+                      <td>{instructor.profession || "N/A"}</td>
+                      <td>{instructor.courses?.length || 0}</td>
+                      <td>{instructor.contact?.email || "N/A"}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <Button
-                            variant="warning"
-                            size="sm"
-                            onClick={() => handleUpdateClick(professor)}
-                            className="text-dark"
+                        <div className="d-flex flex-column gap-1">
+                          <span
+                            className="action-link"
+                            onClick={() => handleUpdateClick(instructor)}
                           >
                             <i className="bi bi-pencil-square me-1"></i>
                             Actualizar
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDeleteClick(professor)}
+                          </span>
+                          <span
+                            className="action-link"
+                            onClick={() => handleDeleteClick(instructor)}
                           >
                             <i className="bi bi-trash me-1"></i>
                             Eliminar
-                          </Button>
+                          </span>
                         </div>
                       </td>
                     </tr>
@@ -365,7 +357,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
             </div>
           ) : (
             <div className="text-center text-white py-4">
-              <p>No se encontraron profesores con los filtros seleccionados.</p>
+              <p>No se encontraron instructores con los filtros seleccionados.</p>
             </div>
           )}
         </div>
@@ -373,7 +365,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
 
       <Modal show={showDeleteModal} onHide={() => {
         setShowDeleteModal(false);
-        setProfessorToDelete(null);
+        setInstructorToDelete(null);
         setConfirmText("");
       }} className="custom-modal">
         <Modal.Header closeButton>
@@ -381,7 +373,7 @@ export function BuscarProfesor({ onUpdateProfessor }) {
         </Modal.Header>
         <Modal.Body>
           <p className="text-white">
-            ¿Estás seguro de que deseas eliminar al profesor <strong>{professorToDelete?.firstName} {professorToDelete?.lastName}</strong>?
+            ¿Estás seguro de que deseas eliminar al instructor <strong>{instructorToDelete?.firstName} {instructorToDelete?.lastName}</strong>?
           </p>
           <p className="text-white">Escribe "eliminar" para confirmar:</p>
           <Form.Control 
@@ -394,12 +386,12 @@ export function BuscarProfesor({ onUpdateProfessor }) {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => {
             setShowDeleteModal(false);
-            setProfessorToDelete(null);
+            setInstructorToDelete(null);
             setConfirmText("");
           }}>
             Cancelar
           </Button>
-          <Button variant="danger" onClick={handleDeleteProfessor}>
+          <Button variant="danger" onClick={handleDeleteInstructor}>
             Eliminar
           </Button>
         </Modal.Footer>

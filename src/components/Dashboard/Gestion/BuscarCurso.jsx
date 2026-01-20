@@ -450,17 +450,12 @@ export function BuscarCurso({ onUpdateCourse }) {
                     <tr key={course._id || course.courseId}>
                       <td>
                         {course.courseId ? (
-                          <div className="d-flex align-items-center gap-2">
-                            <i
-                              className="bi bi-clipboard cursor-pointer text-orange"
-                              title={course.courseId}
-                              onClick={() => handleCopyCourseId(course.courseId)}
-                              style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                            ></i>
-                            <span className="text-truncate" style={{ maxWidth: "100px" }}>
-                              {course.courseId.substring(0, 15)}...
-                            </span>
-                          </div>
+                          <i
+                            className="bi bi-clipboard cursor-pointer text-orange"
+                            title={course.courseId}
+                            onClick={() => handleCopyCourseId(course.courseId)}
+                            style={{ cursor: "pointer", fontSize: "1.2rem" }}
+                          ></i>
                         ) : (
                           "N/A"
                         )}
@@ -473,24 +468,21 @@ export function BuscarCurso({ onUpdateCourse }) {
                       <td>${course.price || 0} {course.currency || "USD"}</td>
                       <td>{course.modules?.length || 0}</td>
                       <td>
-                        <div className="d-flex gap-2">
-                          <Button
-                            variant="warning"
-                            size="sm"
+                        <div className="d-flex flex-column gap-1">
+                          <span
+                            className="action-link"
                             onClick={() => handleUpdateClick(course)}
-                            className="text-dark"
                           >
                             <i className="bi bi-pencil-square me-1"></i>
                             Actualizar
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
+                          </span>
+                          <span
+                            className="action-link"
                             onClick={() => handleDeleteClick(course)}
                           >
                             <i className="bi bi-trash me-1"></i>
                             Eliminar
-                          </Button>
+                          </span>
                         </div>
                       </td>
                     </tr>

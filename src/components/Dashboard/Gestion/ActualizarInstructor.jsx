@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { apiService } from "../../../services/apiService";
 import "./CrearCurso.css";
 
-export function CrearProfesor() {
-  const [professorData, setProfessorData] = useState({
+export function ActualizarInstructor({ instructor }) {
+  const [instructorData, setInstructorData] = useState({
     firstName: "",
     lastName: "",
     ci: "",
@@ -34,9 +34,43 @@ export function CrearProfesor() {
   // Estado para la preview de imagen
   const [imagePreview, setImagePreview] = useState("");
 
+  useEffect(() => {
+    if (instructor) {
+      setInstructorData({
+        firstName: instructor.firstName || "",
+        lastName: instructor.lastName || "",
+        ci: instructor.ci?.toString() || "",
+        profileImage: instructor.profileImage || "",
+        profession: instructor.profession || "",
+        experience: instructor.experience || "",
+        bio: instructor.bio || "",
+        certifications: instructor.certifications && instructor.certifications.length > 0 
+          ? instructor.certifications 
+          : [""],
+        achievements: instructor.achievements && instructor.achievements.length > 0
+          ? instructor.achievements
+          : [""],
+        courses: instructor.courses || [],
+        contact: {
+          email: instructor.contact?.email || "",
+          phone: instructor.contact?.phone || ""
+        },
+        socialMedia: {
+          linkedin: instructor.socialMedia?.linkedin || "",
+          twitter: instructor.socialMedia?.twitter || "",
+          instagram: instructor.socialMedia?.instagram || "",
+          youtube: instructor.socialMedia?.youtube || ""
+        }
+      });
+
+      // Cargar preview de imagen existente
+      setImagePreview(instructor.profileImage || "");
+    }
+  }, [instructor]);
+
   const handleBasicChange = (e) => {
     const { name, value } = e.target;
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       [name]: value
     }));
@@ -44,7 +78,7 @@ export function CrearProfesor() {
 
   const handleContactChange = (e) => {
     const { name, value } = e.target;
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       contact: {
         ...prev.contact,
@@ -55,7 +89,7 @@ export function CrearProfesor() {
 
   const handleSocialMediaChange = (e) => {
     const { name, value } = e.target;
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       socialMedia: {
         ...prev.socialMedia,
@@ -65,8 +99,8 @@ export function CrearProfesor() {
   };
 
   const handleCiChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ''); // Solo números
-    setProfessorData(prev => ({
+    let value = e.target.value.replace(/\D/g, '');
+    setInstructorData(prev => ({
       ...prev,
       ci: value
     }));
@@ -128,8 +162,8 @@ export function CrearProfesor() {
     // Limpiar el preview
     setImagePreview("");
 
-    // Limpiar el campo en professorData
-    setProfessorData(prev => ({
+    // Limpiar el campo en instructorData
+    setInstructorData(prev => ({
       ...prev,
       profileImage: ""
     }));
@@ -142,14 +176,14 @@ export function CrearProfesor() {
   };
 
   const addCertification = () => {
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       certifications: [...prev.certifications, ""]
     }));
   };
 
   const removeCertification = (index) => {
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       certifications: prev.certifications.filter((_, i) => i !== index)
     }));
@@ -157,7 +191,7 @@ export function CrearProfesor() {
 
   const handleCertificationChange = (index, e) => {
     const { value } = e.target;
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       certifications: prev.certifications.map((cert, i) => 
         i === index ? value : cert
@@ -166,14 +200,14 @@ export function CrearProfesor() {
   };
 
   const addAchievement = () => {
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       achievements: [...prev.achievements, ""]
     }));
   };
 
   const removeAchievement = (index) => {
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       achievements: prev.achievements.filter((_, i) => i !== index)
     }));
@@ -181,7 +215,7 @@ export function CrearProfesor() {
 
   const handleAchievementChange = (index, e) => {
     const { value } = e.target;
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       achievements: prev.achievements.map((ach, i) => 
         i === index ? value : ach
@@ -193,8 +227,8 @@ export function CrearProfesor() {
     const courseId = prompt("Ingrese el ID del curso (número):");
     if (courseId && !isNaN(courseId)) {
       const courseIdNum = parseInt(courseId);
-      if (!professorData.courses.includes(courseIdNum)) {
-        setProfessorData(prev => ({
+      if (!instructorData.courses.includes(courseIdNum)) {
+        setInstructorData(prev => ({
           ...prev,
           courses: [...prev.courses, courseIdNum]
         }));
@@ -215,14 +249,14 @@ export function CrearProfesor() {
   };
 
   const removeCourse = (courseId) => {
-    setProfessorData(prev => ({
+    setInstructorData(prev => ({
       ...prev,
       courses: prev.courses.filter(id => id !== courseId)
     }));
   };
 
   const validateForm = () => {
-    if (!professorData.firstName || !professorData.lastName || !professorData.ci || !professorData.profession || !professorData.contact.email) {
+    if (!instructorData.firstName || !instructorData.lastName || !instructorData.ci || !instructorData.profession || !instructorData.contact.email) {
       return "Los campos firstName, lastName, ci, profession y contact.email son requeridos";
     }
 
@@ -231,6 +265,21 @@ export function CrearProfesor() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!instructor || !instructor._id) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se encontró el instructor a actualizar",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
+      return;
+    }
 
     const validationError = validateForm();
     if (validationError) {
@@ -249,14 +298,14 @@ export function CrearProfesor() {
     }
 
     try {
-      // Subir imagen si hay archivo
-      let uploadedImagePath = professorData.profileImage;
+      // Subir imagen si hay archivo nuevo
+      let uploadedImagePath = instructorData.profileImage;
 
       if (imageFile) {
         const formData = new FormData();
         formData.append('profileImage', imageFile);
 
-        const uploadResponse = await apiService.uploadProfessorImage(formData);
+        const uploadResponse = await apiService.uploadInstructorImage(formData);
         
         if (uploadResponse.status === "success") {
           uploadedImagePath = uploadResponse.payload.profileImage;
@@ -265,22 +314,21 @@ export function CrearProfesor() {
         }
       }
 
-      // Filtrar certificaciones y logros vacíos
       const processedData = {
-        ...professorData,
-        ci: parseInt(professorData.ci),
+        ...instructorData,
+        ci: parseInt(instructorData.ci),
         profileImage: uploadedImagePath,
-        certifications: professorData.certifications.filter(cert => cert.trim() !== ""),
-        achievements: professorData.achievements.filter(ach => ach.trim() !== "")
+        certifications: instructorData.certifications.filter(cert => cert.trim() !== ""),
+        achievements: instructorData.achievements.filter(ach => ach.trim() !== "")
       };
 
-      const response = await apiService.createProfessor(processedData);
+      const response = await apiService.updateInstructor(instructor._id, processedData);
       
       if (response.status === "success") {
         Swal.fire({
           icon: "success",
-          title: "Profesor creado",
-          text: response.msg || "El profesor se ha creado exitosamente",
+          title: "Instructor actualizado",
+          text: response.msg || "El instructor se ha actualizado exitosamente",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -288,42 +336,14 @@ export function CrearProfesor() {
             confirmButton: "custom-swal-button",
           },
         });
-
-        // Resetear formulario
-        setProfessorData({
-          firstName: "",
-          lastName: "",
-          ci: "",
-          profileImage: "",
-          profession: "",
-          experience: "",
-          bio: "",
-          certifications: [""],
-          achievements: [""],
-          courses: [],
-          contact: {
-            email: "",
-            phone: ""
-          },
-          socialMedia: {
-            linkedin: "",
-            twitter: "",
-            instagram: "",
-            youtube: ""
-          }
-        });
-
-        // Resetear archivo e imagen
-        setImageFile(null);
-        setImagePreview("");
       } else {
-        throw new Error(response.msg || "Error al crear el profesor");
+        throw new Error(response.msg || "Error al actualizar el instructor");
       }
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: error.message || "Hubo un error al crear el profesor",
+        text: error.message || "Hubo un error al actualizar el instructor",
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
@@ -334,10 +354,18 @@ export function CrearProfesor() {
     }
   };
 
+  if (!instructor) {
+    return (
+      <div className="text-white">
+        <p>No se encontró el instructor para actualizar.</p>
+      </div>
+    );
+  }
+
   return (
     <Form onSubmit={handleSubmit} className="crear-curso-form">
       <div className="form-section">
-        <h5 className="text-orange mb-3">Datos básicos del profesor:</h5>
+        <h5 className="text-orange mb-3">Datos básicos del instructor:</h5>
         <div className="div-border-color my-3"></div>
         
         <div className="row g-3">
@@ -346,7 +374,7 @@ export function CrearProfesor() {
             <Form.Control
               type="text"
               name="firstName"
-              value={professorData.firstName}
+              value={instructorData.firstName}
               onChange={handleBasicChange}
               required
             />
@@ -357,7 +385,7 @@ export function CrearProfesor() {
             <Form.Control
               type="text"
               name="lastName"
-              value={professorData.lastName}
+              value={instructorData.lastName}
               onChange={handleBasicChange}
               required
             />
@@ -368,7 +396,7 @@ export function CrearProfesor() {
             <Form.Control
               type="text"
               name="ci"
-              value={professorData.ci}
+              value={instructorData.ci}
               onChange={handleCiChange}
               required
             />
@@ -405,23 +433,6 @@ export function CrearProfesor() {
                 />
               </div>
             )}
-            {professorData.profileImage && !imageFile && (
-              <div className="mt-2">
-                <img 
-                  src={professorData.profileImage} 
-                  alt="Imagen actual" 
-                  onClick={removeImage}
-                  style={{ 
-                    maxWidth: '100%', 
-                    maxHeight: '150px', 
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    border: '2px solid rgba(255, 165, 0, 0.5)'
-                  }}
-                  title="Click para eliminar"
-                />
-              </div>
-            )}
           </Form.Group>
 
           <Form.Group className="col-12">
@@ -429,7 +440,7 @@ export function CrearProfesor() {
             <Form.Control
               type="text"
               name="profession"
-              value={professorData.profession}
+              value={instructorData.profession}
               onChange={handleBasicChange}
               required
             />
@@ -441,7 +452,7 @@ export function CrearProfesor() {
               as="textarea"
               rows={2}
               name="experience"
-              value={professorData.experience}
+              value={instructorData.experience}
               onChange={handleBasicChange}
             />
           </Form.Group>
@@ -452,7 +463,7 @@ export function CrearProfesor() {
               as="textarea"
               rows={4}
               name="bio"
-              value={professorData.bio}
+              value={instructorData.bio}
               onChange={handleBasicChange}
             />
           </Form.Group>
@@ -468,7 +479,7 @@ export function CrearProfesor() {
         </div>
         <div className="div-border-color my-3"></div>
         
-        {professorData.certifications.map((cert, index) => (
+        {instructorData.certifications.map((cert, index) => (
           <div key={index} className="mb-2">
             <div className="d-flex gap-2">
               <Form.Control
@@ -478,7 +489,7 @@ export function CrearProfesor() {
                 placeholder="Certificación"
                 className="flex-grow-1"
               />
-              {professorData.certifications.length > 1 && (
+              {instructorData.certifications.length > 1 && (
                 <Button
                   variant="outline-danger"
                   size="sm"
@@ -501,7 +512,7 @@ export function CrearProfesor() {
         </div>
         <div className="div-border-color my-3"></div>
         
-        {professorData.achievements.map((ach, index) => (
+        {instructorData.achievements.map((ach, index) => (
           <div key={index} className="mb-2">
             <div className="d-flex gap-2">
               <Form.Control
@@ -511,7 +522,7 @@ export function CrearProfesor() {
                 placeholder="Logro"
                 className="flex-grow-1"
               />
-              {professorData.achievements.length > 1 && (
+              {instructorData.achievements.length > 1 && (
                 <Button
                   variant="outline-danger"
                   size="sm"
@@ -535,9 +546,9 @@ export function CrearProfesor() {
         <div className="div-border-color my-3"></div>
         
         <div className="mb-3">
-          {professorData.courses.length > 0 ? (
+          {instructorData.courses.length > 0 ? (
             <div className="d-flex flex-wrap gap-2">
-              {professorData.courses.map((courseId) => (
+              {instructorData.courses.map((courseId) => (
                 <span key={courseId} className="badge bg-primary d-flex align-items-center gap-2">
                   Curso ID: {courseId}
                   <button
@@ -565,7 +576,7 @@ export function CrearProfesor() {
             <Form.Control
               type="email"
               name="email"
-              value={professorData.contact.email}
+              value={instructorData.contact.email}
               onChange={handleContactChange}
               required
             />
@@ -576,7 +587,7 @@ export function CrearProfesor() {
             <Form.Control
               type="text"
               name="phone"
-              value={professorData.contact.phone}
+              value={instructorData.contact.phone}
               onChange={handleContactChange}
             />
           </Form.Group>
@@ -593,7 +604,7 @@ export function CrearProfesor() {
             <Form.Control
               type="url"
               name="linkedin"
-              value={professorData.socialMedia.linkedin}
+              value={instructorData.socialMedia.linkedin}
               onChange={handleSocialMediaChange}
               placeholder="https://linkedin.com/in/usuario"
             />
@@ -604,7 +615,7 @@ export function CrearProfesor() {
             <Form.Control
               type="url"
               name="twitter"
-              value={professorData.socialMedia.twitter}
+              value={instructorData.socialMedia.twitter}
               onChange={handleSocialMediaChange}
               placeholder="https://twitter.com/usuario"
             />
@@ -615,7 +626,7 @@ export function CrearProfesor() {
             <Form.Control
               type="url"
               name="instagram"
-              value={professorData.socialMedia.instagram}
+              value={instructorData.socialMedia.instagram}
               onChange={handleSocialMediaChange}
               placeholder="https://instagram.com/usuario"
             />
@@ -626,7 +637,7 @@ export function CrearProfesor() {
             <Form.Control
               type="url"
               name="youtube"
-              value={professorData.socialMedia.youtube}
+              value={instructorData.socialMedia.youtube}
               onChange={handleSocialMediaChange}
               placeholder="https://youtube.com/@usuario"
             />
@@ -638,7 +649,7 @@ export function CrearProfesor() {
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
           <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle me-2"></i> CREAR PROFESOR
+            <i className="bi bi-check-circle me-2"></i> ACTUALIZAR INSTRUCTOR
           </Button>
         </div>
       </div>

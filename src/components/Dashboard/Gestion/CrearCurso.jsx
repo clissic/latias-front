@@ -21,12 +21,12 @@ export function CrearCurso() {
     price: 0,
     difficulty: "",
     category: "",
-    professor: {
+    instructor: {
       firstName: "",
       lastName: "",
       profession: ""
     },
-    selectedProfessorId: "",
+    selectedInstructorId: "",
     modules: [
       {
         moduleName: "",
@@ -66,25 +66,25 @@ export function CrearCurso() {
     shortImage: ""
   });
 
-  // Estado para la lista de profesores
+  // Estado para la lista de instructores
   const [professors, setProfessors] = useState([]);
   const [loadingProfessors, setLoadingProfessors] = useState(false);
 
-  // Cargar profesores al montar el componente
+  // Cargar instructores al montar el componente
   useEffect(() => {
     const loadProfessors = async () => {
       setLoadingProfessors(true);
       try {
-        const response = await apiService.getProfessors();
+        const response = await apiService.getInstructors();
         if (response.status === "success" && response.payload) {
           setProfessors(response.payload);
         }
       } catch (error) {
-        console.error("Error al cargar profesores:", error);
+        console.error("Error al cargar instructores:", error);
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "No se pudieron cargar los profesores",
+          text: "No se pudieron cargar los instructores",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -131,26 +131,26 @@ export function CrearCurso() {
     }));
   };
 
-  // Manejar cambios en la selección del profesor
-  const handleProfessorChange = (e) => {
+  // Manejar cambios en la selección del instructor
+  const handleInstructorChange = (e) => {
     const selectedId = e.target.value;
-    const selectedProfessor = professors.find(p => p._id === selectedId);
+    const selectedInstructor = professors.find(p => p._id === selectedId);
     
-    if (selectedProfessor) {
+    if (selectedInstructor) {
       setCourseData(prev => ({
         ...prev,
-        selectedProfessorId: selectedId,
-        professor: {
-          firstName: selectedProfessor.firstName || "",
-          lastName: selectedProfessor.lastName || "",
-          profession: selectedProfessor.profession || ""
+        selectedInstructorId: selectedId,
+        instructor: {
+          firstName: selectedInstructor.firstName || "",
+          lastName: selectedInstructor.lastName || "",
+          profession: selectedInstructor.profession || ""
         }
       }));
     } else {
       setCourseData(prev => ({
         ...prev,
-        selectedProfessorId: "",
-        professor: {
+        selectedInstructorId: "",
+        instructor: {
           firstName: "",
           lastName: "",
           profession: ""
@@ -689,7 +689,7 @@ export function CrearCurso() {
           lastName: "",
           profession: ""
         },
-        selectedProfessorId: "",
+        selectedInstructorId: "",
         modules: [
           {
             moduleName: "",
@@ -1043,34 +1043,34 @@ export function CrearCurso() {
         </div>
       </div>
 
-      {/* Datos del profesor */}
+      {/* Datos del instructor */}
       <div className="form-section">
-        <h5 className="text-orange mb-3 mt-4">Datos del profesor:</h5>
+        <h5 className="text-orange mb-3 mt-4">Datos del instructor:</h5>
         <div className="div-border-color my-3"></div>
         
         <div className="row g-3">
           <Form.Group className="col-12">
-            <Form.Label>Seleccionar profesor:</Form.Label>
+            <Form.Label>Seleccionar instructor:</Form.Label>
             <Form.Select
-              value={courseData.selectedProfessorId}
-              onChange={handleProfessorChange}
+              value={courseData.selectedInstructorId}
+              onChange={handleInstructorChange}
               disabled={loadingProfessors}
             >
-              <option value="">Seleccione un profesor</option>
-              {professors.map((professor) => (
-                <option key={professor._id} value={professor._id}>
-                  {professor.firstName} {professor.lastName} - CI: {professor.ci}
+              <option value="">Seleccione un instructor</option>
+              {professors.map((instructor) => (
+                <option key={instructor._id} value={instructor._id}>
+                  {instructor.firstName} {instructor.lastName} - CI: {instructor.ci}
                 </option>
               ))}
             </Form.Select>
             {loadingProfessors && (
               <Form.Text className="text-muted">
-                Cargando profesores...
+                Cargando instructores...
               </Form.Text>
             )}
             {!loadingProfessors && professors.length === 0 && (
               <Form.Text className="text-muted">
-                No hay profesores disponibles. Crea un profesor primero.
+                No hay instructores disponibles. Crea un instructor primero.
               </Form.Text>
             )}
           </Form.Group>

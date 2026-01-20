@@ -10,7 +10,7 @@ export function Instructores() {
 
   useEffect(() => {
     fetch(
-      "https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/profesores.json"
+      "https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/instructores.json"
     )
       .then((response) => response.json())
       .then((data) => {

@@ -221,6 +221,14 @@ class ApiService {
     return response.json();
   }
 
+  async requestCourseModification(courseId, instructorData, courseData) {
+    const response = await this.request(`/courses/request-modification/${courseId}`, {
+      method: 'POST',
+      body: JSON.stringify({ instructorData, courseData }),
+    });
+    return response.json();
+  }
+
   async uploadCourseImages(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/course-images`, {
@@ -233,16 +241,16 @@ class ApiService {
     return response.json();
   }
 
-  // Métodos para profesores
-  async getProfessors() {
+  // Métodos para instructores
+  async getInstructors() {
     const response = await this.request('/professors', {
       method: 'GET',
-      includeAuth: false, // Los profesores son públicos
+      includeAuth: false, // Los instructores son públicos
     });
     return response.json();
   }
 
-  async getProfessorById(id) {
+  async getInstructorById(id) {
     const response = await this.request(`/professors/id/${id}`, {
       method: 'GET',
       includeAuth: false,
@@ -250,7 +258,7 @@ class ApiService {
     return response.json();
   }
 
-  async getProfessorByCi(ci) {
+  async getInstructorByCi(ci) {
     const response = await this.request(`/professors/ci/${ci}`, {
       method: 'GET',
       includeAuth: false,
@@ -258,30 +266,30 @@ class ApiService {
     return response.json();
   }
 
-  async createProfessor(professorData) {
+  async createInstructor(instructorData) {
     const response = await this.request('/professors/create', {
       method: 'POST',
-      body: JSON.stringify(professorData),
+      body: JSON.stringify(instructorData),
     });
     return response.json();
   }
 
-  async updateProfessor(id, professorData) {
+  async updateInstructor(id, instructorData) {
     const response = await this.request(`/professors/update/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(professorData),
+      body: JSON.stringify(instructorData),
     });
     return response.json();
   }
 
-  async deleteProfessor(id) {
+  async deleteInstructor(id) {
     const response = await this.request(`/professors/delete/${id}`, {
       method: 'DELETE',
     });
     return response.json();
   }
 
-  async uploadProfessorImage(formData) {
+  async uploadInstructorImage(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/professor-image`, {
       method: 'POST',

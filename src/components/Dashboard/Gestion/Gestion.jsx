@@ -3,9 +3,9 @@ import { Accordion } from "react-bootstrap";
 import { CrearCurso } from "./CrearCurso";
 import { BuscarCurso } from "./BuscarCurso";
 import { ActualizarCurso } from "./ActualizarCurso";
-import { CrearProfesor } from "./CrearProfesor";
-import { BuscarProfesor } from "./BuscarProfesor";
-import { ActualizarProfesor } from "./ActualizarProfesor";
+import { CrearInstructor } from "./CrearInstructor";
+import { BuscarInstructor } from "./BuscarInstructor";
+import { ActualizarInstructor } from "./ActualizarInstructor";
 import { CrearUsuario } from "./CrearUsuario";
 import { BuscarUsuario } from "./BuscarUsuario";
 import { ActualizarUsuario } from "./ActualizarUsuario";
@@ -15,14 +15,14 @@ import "./Gestion.css";
 export function Gestion({ user }) {
   const [activeAccordionKey, setActiveAccordionKey] = useState(null);
   const [courseToUpdate, setCourseToUpdate] = useState(null);
-  const [professorToUpdate, setProfessorToUpdate] = useState(null);
+  const [instructorToUpdate, setInstructorToUpdate] = useState(null);
   const [userToUpdate, setUserToUpdate] = useState(null);
-  const [activeSection, setActiveSection] = useState(null); // null = tarjetas, 'courses'/'professors'/'users' = sección activa
+  const [activeSection, setActiveSection] = useState(null); // null = tarjetas, 'courses'/'instructors'/'users' = sección activa
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   // Contadores
   const [coursesCount, setCoursesCount] = useState(0);
-  const [professorsCount, setProfessorsCount] = useState(0);
+  const [instructorsCount, setInstructorsCount] = useState(0);
   const [usersCount, setUsersCount] = useState(0);
   const [eventsCount, setEventsCount] = useState(0);
   const [certificatesCount, setCertificatesCount] = useState(0);
@@ -38,10 +38,10 @@ export function Gestion({ user }) {
           setCoursesCount(coursesResponse.payload.length);
         }
 
-        // Contador de profesores
-        const professorsResponse = await apiService.getProfessors();
-        if (professorsResponse.status === "success" && professorsResponse.payload) {
-          setProfessorsCount(professorsResponse.payload.length);
+        // Contador de instructores
+        const instructorsResponse = await apiService.getInstructors();
+        if (instructorsResponse.status === "success" && instructorsResponse.payload) {
+          setInstructorsCount(instructorsResponse.payload.length);
         }
 
         // Contador de usuarios
@@ -73,9 +73,9 @@ export function Gestion({ user }) {
     setActiveAccordionKey("2"); // Abrir el acordeón de "Actualizar curso:"
   };
 
-  const handleUpdateProfessor = (professor) => {
-    setProfessorToUpdate(professor);
-    setActiveAccordionKey("5"); // Abrir el acordeón de "Actualizar profesor:"
+  const handleUpdateInstructor = (instructor) => {
+    setInstructorToUpdate(instructor);
+    setActiveAccordionKey("5"); // Abrir el acordeón de "Actualizar instructor:"
   };
 
   const handleUpdateUser = (user) => {
@@ -117,14 +117,14 @@ export function Gestion({ user }) {
       <div className="col-12 col-md-6 col-lg-4">
         <div 
           className={`gestion-card h-100 ${isTransitioning ? 'gestion-card-fade-out' : ''}`}
-          onClick={() => handleCardClick('professors')}
+          onClick={() => handleCardClick('instructors')}
         >
           <div className="gestion-card-content">
             <i className="bi bi-person-badge-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
-            <h4 className="text-white mb-3">Gestión de profesores</h4>
+            <h4 className="text-white mb-3">Gestión de instructores</h4>
             <div className="d-flex align-items-center justify-content-center gap-2">
               <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
-              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{professorsCount}</span>
+              <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{instructorsCount}</span>
             </div>
           </div>
         </div>
@@ -238,37 +238,37 @@ export function Gestion({ user }) {
     </div>
   );
 
-  // Renderizar sección de profesores
-  const renderProfessorsSection = () => (
-    <div className={`gestion-section ${activeSection === 'professors' ? 'gestion-section-active' : ''}`}>
-      <h4 className="col-12 text-orange mb-3">Gestión de profesores:</h4>
+  // Renderizar sección de instructores
+  const renderInstructorsSection = () => (
+    <div className={`gestion-section ${activeSection === 'instructors' ? 'gestion-section-active' : ''}`}>
+      <h4 className="col-12 text-orange mb-3">Gestión de instructores:</h4>
       <div className="mb-3 d-flex flex-column align-items-center justify-content-center gap-2">
         <i className="bi bi-person-badge-fill text-orange" style={{ fontSize: "3rem" }}></i>
         <div className="d-flex align-items-center gap-3">
-          <span className="text-white" style={{ fontSize: "1.2rem" }}>Total de profesores enrolados:</span>
-          <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{professorsCount}</span>
+          <span className="text-white" style={{ fontSize: "1.2rem" }}>Total de instructores enrolados:</span>
+          <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{instructorsCount}</span>
         </div>
       </div>
       <Accordion activeKey={activeAccordionKey} onSelect={(e) => setActiveAccordionKey(e)} className="gestion-accordion">
         <Accordion.Item eventKey="3">
-          <Accordion.Header>Crear profesor:</Accordion.Header>
+          <Accordion.Header>Crear instructor:</Accordion.Header>
           <Accordion.Body>
-            <CrearProfesor />
+            <CrearInstructor />
           </Accordion.Body>
         </Accordion.Item>
         <Accordion.Item eventKey="4">
-          <Accordion.Header>Buscar profesor:</Accordion.Header>
+          <Accordion.Header>Buscar instructor:</Accordion.Header>
           <Accordion.Body>
-            <BuscarProfesor onUpdateProfessor={handleUpdateProfessor} />
+            <BuscarInstructor onUpdateInstructor={handleUpdateInstructor} />
           </Accordion.Body>
         </Accordion.Item>
         <Accordion.Item eventKey="5">
-          <Accordion.Header>Actualizar profesor:</Accordion.Header>
+          <Accordion.Header>Actualizar instructor:</Accordion.Header>
           <Accordion.Body>
-            {professorToUpdate ? (
-              <ActualizarProfesor professor={professorToUpdate} />
+            {instructorToUpdate ? (
+              <ActualizarInstructor instructor={instructorToUpdate} />
             ) : (
-              <p className="text-white">Busca un profesor y haz click en "Actualizar" para cargar sus datos aquí.</p>
+              <p className="text-white">Busca un instructor y haz click en "Actualizar" para cargar sus datos aquí.</p>
             )}
           </Accordion.Body>
         </Accordion.Item>
@@ -416,7 +416,7 @@ export function Gestion({ user }) {
       <div className="col-12">
         {!activeSection && renderCards()}
         {activeSection === 'courses' && renderCoursesSection()}
-        {activeSection === 'professors' && renderProfessorsSection()}
+        {activeSection === 'instructors' && renderInstructorsSection()}
         {activeSection === 'users' && renderUsersSection()}
         {activeSection === 'events' && renderEventsSection()}
         {activeSection === 'certificates' && renderCertificatesSection()}

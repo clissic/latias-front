@@ -2,8 +2,18 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export function ProtectedRoute({ children }) {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
     const location = useLocation();
 
-    return isAuthenticated ? children : <Navigate to="/login" state={{ from: location }} replace />;
+    // Si no está autenticado, redirigir a login
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    // Si el usuario es checkin, redirigir a /checkin (excepto si ya está en /checkin)
+    if (user?.category === "checkin" && location.pathname !== "/checkin") {
+        return <Navigate to="/checkin" replace />;
+    }
+
+    return children;
 }

@@ -11,8 +11,9 @@ export function CartaInstructor({
 }) {
 
   const socialMediaLinks = socialMedia && typeof socialMedia === 'object' 
-    ? Object.entries(socialMedia).map(
-        ([platform, url]) => (
+    ? Object.entries(socialMedia)
+        .filter(([platform, url]) => url && url.trim() !== '') // Filtrar solo las redes sociales que tienen URL
+        .map(([platform, url]) => (
           <a
             key={platform}
             href={url}
@@ -22,8 +23,7 @@ export function CartaInstructor({
           >
             <i className={`bi bi-${platform} text-orange`}></i>
           </a>
-        )
-      )
+        ))
     : [];
 
   return (

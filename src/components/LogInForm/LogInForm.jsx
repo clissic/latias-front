@@ -22,20 +22,28 @@ export function LogInForm() {
         // Usar el nuevo método login del contexto
         login(data);
 
-        Swal.fire({
-          icon: "success",
-          title: "Sesión iniciada",
-          text: "¡Bienvenido a bordo de nuevo!",
-          timer: 2000,
-          showConfirmButton: false,
-          background: "#082b55",
-          color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
-        }).then(() => {
-          navigate("/dashboard/general");
-        });
+        // Obtener la categoría del usuario
+        const userCategory = data.payload?.user?.category;
+
+        // Redirigir inmediatamente según la categoría del usuario
+        if (userCategory === "checkin") {
+          navigate("/checkin", { replace: true });
+        } else {
+          Swal.fire({
+            icon: "success",
+            title: "Sesión iniciada",
+            text: "¡Bienvenido a bordo de nuevo!",
+            timer: 2000,
+            showConfirmButton: false,
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: {
+              confirmButton: "custom-swal-button",
+            },
+          }).then(() => {
+            navigate("/dashboard/general");
+          });
+        }
       } else {
         Swal.fire({
           icon: "error",

@@ -14,10 +14,29 @@
 }
 
 .gestoria-banner {
-  background-image: url(../../assets/servicios-gestoria.jpg);
-  background-position: center;
+  position: relative;
   height: 14vw;
-  z-index: -1;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.gestoria-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url(/servicios-gestoria.jpg);
+  background-position: center;
+  background-size: cover;
+  opacity: 0.4; /* Ajusta este valor entre 0 y 1 para cambiar la opacidad */
+  z-index: 0;
+}
+
+.gestoria-banner > * {
+  position: relative;
+  z-index: 1;
 }
 
 .index-sub-title {

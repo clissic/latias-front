@@ -1,29 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { CartaInstructor } from "../CartaInstructor/CartaInstructor";
 import { FadeIn } from "../FadeIn/FadeIn";
+import { apiService } from "../../services/apiService";
 import "./Instructores.css";
 
 export function Instructores() {
   const [allInstructors, setAllInstructors] = useState([]);
   const [randomInstructorOne, setRandomInstructorOne] = useState(null);
   const [randomInstructorTwo, setRandomInstructorTwo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(
-      "https://raw.githubusercontent.com/clissic/latias-back/refs/heads/master/instructores.json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setAllInstructors(data);
-        const randomIndexOne = Math.floor(Math.random() * data.length);
-        let randomIndexTwo = Math.floor(Math.random() * data.length);
-        while (randomIndexTwo === randomIndexOne) {
-          randomIndexTwo = Math.floor(Math.random() * data.length);
+    const loadInstructors = async () => {
+      try {
+        setLoading(true);
+        const response = await apiService.getInstructors();
+        
+        if (response.status === "success" && response.payload) {
+          const instructors = response.payload;
+          setAllInstructors(instructors);
+          
+          if (instructors.length > 0) {
+            const randomIndexOne = Math.floor(Math.random() * instructors.length);
+            let randomIndexTwo = Math.floor(Math.random() * instructors.length);
+            while (randomIndexTwo === randomIndexOne && instructors.length > 1) {
+              randomIndexTwo = Math.floor(Math.random() * instructors.length);
+            }
+            setRandomInstructorOne(instructors[randomIndexOne]);
+            setRandomInstructorTwo(instructors[randomIndexTwo]);
+          }
         }
-        setRandomInstructorOne(data[randomIndexOne]);
-        setRandomInstructorTwo(data[randomIndexTwo]);
-      })
-      .catch((error) => console.error("Error fetching instructors:", error));
+      } catch (error) {
+        console.error("Error fetching instructors:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInstructors();
   }, []);
 
   return (
@@ -93,13 +107,13 @@ export function Instructores() {
             <div className="mt-5 d-flex justify-content-center align-items-center flex-wrap mb-5 gap-5 gap-md-3">
                 <div className="col-12 col-md-8 col-lg-3 container services-div">
                 <CartaInstructor
-                    id={randomInstructorOne.id}
-                    profileImage={randomInstructorOne.profileImage}
+                    id={randomInstructorOne._id || randomInstructorOne.id}
+                    profileImage={randomInstructorOne.profileImage || randomInstructorOne.contact?.profileImage}
                     firstName={randomInstructorOne.firstName}
                     lastName={randomInstructorOne.lastName}
                     profession={randomInstructorOne.profession}
                     experience={randomInstructorOne.experience}
-                    socialMedia={randomInstructorOne.socialMedia}
+                    socialMedia={randomInstructorOne.socialMedia || randomInstructorOne.contact?.socialMedia}
                 />
                 </div>
                 <div className="text-justify col-12 col-md-12 col-lg-7">
@@ -130,7 +144,18 @@ export function Instructores() {
                 </div>
             </div>
             ) : (
-                <p className="loading-text">Cargando instructores...</p>
+                <div className="text-center py-5">
+                  {loading ? (
+                    <>
+                      <div className="spinner-border text-orange" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                      </div>
+                      <p className="loading-text mt-3">Cargando instructores...</p>
+                    </>
+                  ) : (
+                    <p className="loading-text">No hay instructores disponibles</p>
+                  )}
+                </div>
             )}
         </div>
       </FadeIn>
@@ -166,18 +191,29 @@ export function Instructores() {
                 </div>
                 <div className="col-12 col-md-8 col-lg-3 container services-div">
                 <CartaInstructor
-                    id={randomInstructorTwo.id}
-                    profileImage={randomInstructorTwo.profileImage}
+                    id={randomInstructorTwo._id || randomInstructorTwo.id}
+                    profileImage={randomInstructorTwo.profileImage || randomInstructorTwo.contact?.profileImage}
                     firstName={randomInstructorTwo.firstName}
                     lastName={randomInstructorTwo.lastName}
                     profession={randomInstructorTwo.profession}
                     experience={randomInstructorTwo.experience}
-                    socialMedia={randomInstructorTwo.socialMedia}
+                    socialMedia={randomInstructorTwo.socialMedia || randomInstructorTwo.contact?.socialMedia}
                 />
                 </div>
             </div>
             ) : (
-            <p className="loading-text">Cargando instructores...</p>
+                <div className="text-center py-5">
+                  {loading ? (
+                    <>
+                      <div className="spinner-border text-orange" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                      </div>
+                      <p className="loading-text mt-3">Cargando instructores...</p>
+                    </>
+                  ) : (
+                    <p className="loading-text">No hay instructores disponibles</p>
+                  )}
+                </div>
             )}
         </div>
       </FadeIn>

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Button, Table, Modal } from "react-bootstrap";
+import React, { useState, useEffect, useRef } from "react";
+import { Form, Button, Table, Modal, Pagination } from "react-bootstrap";
 import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
 import "./BuscarCurso.css";
@@ -20,6 +20,9 @@ export function BuscarEvento({ onUpdateEvent }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
   const [confirmText, setConfirmText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const tableHeaderRef = useRef(null);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -136,6 +139,42 @@ export function BuscarEvento({ onUpdateEvent }) {
     });
     setResults([]);
     setSearched(false);
+    setCurrentPage(1);
+  };
+
+  // Resetear a página 1 cuando cambian los resultados
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [results.length]);
+
+  // Calcular paginación
+  const totalPages = Math.ceil(results.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentResults = results.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Generar números de página
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    if (tableHeaderRef.current) {
+      tableHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleCopyEventId = async (eventId) => {
@@ -380,25 +419,26 @@ export function BuscarEvento({ onUpdateEvent }) {
 
       {searched && results.length > 0 && (
         <div className="results-section">
-          <h5 className="text-orange mb-3">Resultados ({results.length}):</h5>
-          <div className="table-responsive">
-            <Table striped bordered hover variant="dark" className="table-dark">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Título</th>
-                  <th>Fecha</th>
-                  <th>Hora</th>
-                  <th>Ubicación</th>
-                  <th>Orador</th>
-                  <th>Precio</th>
-                  <th>Tickets</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((event) => (
+          <h5 className="text-orange mb-3" ref={tableHeaderRef}>Resultados ({results.length}):</h5>
+          <>
+            <div className="table-responsive">
+              <Table striped bordered hover variant="dark" className="table-dark">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Ubicación</th>
+                    <th>Orador</th>
+                    <th>Precio</th>
+                    <th>Tickets</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentResults.map((event) => (
                   <tr key={event._id || event.eventId}>
                     <td>
                       <i
@@ -448,9 +488,59 @@ export function BuscarEvento({ onUpdateEvent }) {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </Table>
-          </div>
+                </tbody>
+              </Table>
+            </div>
+            
+            {/* Paginación - siempre visible */}
+            <div className="d-flex justify-content-center align-items-center mt-4">
+              <Pagination className="mb-0">
+                <Pagination.First
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1 || totalPages === 0}
+                  className="custom-pagination-item"
+                />
+                <Pagination.Prev
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1 || totalPages === 0}
+                  className="custom-pagination-item"
+                />
+                {totalPages > 0 ? (
+                  getPageNumbers().map((number) => (
+                    <Pagination.Item
+                      key={number}
+                      active={number === currentPage}
+                      onClick={() => handlePageChange(number)}
+                      className="custom-pagination-item"
+                    >
+                      {number}
+                    </Pagination.Item>
+                  ))
+                ) : (
+                  <Pagination.Item active disabled className="custom-pagination-item">
+                    1
+                  </Pagination.Item>
+                )}
+                <Pagination.Next
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="custom-pagination-item"
+                />
+                <Pagination.Last
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  className="custom-pagination-item"
+                />
+              </Pagination>
+              {totalPages > 0 && (
+                <div className="ms-3 text-white">
+                  <small>
+                    Página {currentPage} de {totalPages} ({results.length} registros)
+                  </small>
+                </div>
+              )}
+            </div>
+          </>
         </div>
       )}
 

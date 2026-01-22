@@ -20,8 +20,11 @@ import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProtectedLogin } from './components/ProtectedLogIn/ProtectedLogIn.jsx'
 import { ProtectedRoute } from './components/ProtectedRoute/ProtectedRoute.jsx'
+import { ProtectedCheckinRoute } from './components/ProtectedCheckinRoute/ProtectedCheckinRoute.jsx'
+import { CheckinRedirect } from './components/CheckinRedirect/CheckinRedirect.jsx'
 import { ResetPassword  } from './components/ResetPass/ResetPass.jsx'
 import { VerifyTicket } from './components/VerifyTicket/VerifyTicket.jsx'
+import { Checkin } from './components/Checkin/Checkin.jsx'
 
 export function App () {
     return (
@@ -31,20 +34,21 @@ export function App () {
                     <ScrollToTop />
                     <Navbar />
                         <Routes>
-                            <Route path='/' element={<Bienvenida />} />
-                            <Route path='/instructores' element={<Instructores />} />
-                            <Route path='/gestoria' element={<Gestoria />} />
-                            <Route path='/cursos' element={<Cursos />} />
+                            <Route path="/checkin" element={<ProtectedCheckinRoute><Checkin /></ProtectedCheckinRoute>} />
+                            <Route path='/' element={<CheckinRedirect><Bienvenida /></CheckinRedirect>} />
+                            <Route path='/instructores' element={<CheckinRedirect><Instructores /></CheckinRedirect>} />
+                            <Route path='/gestoria' element={<CheckinRedirect><Gestoria /></CheckinRedirect>} />
+                            <Route path='/cursos' element={<CheckinRedirect><Cursos /></CheckinRedirect>} />
                             <Route path='/login' element={<ProtectedLogin><LogIn /></ProtectedLogin>} />
-                            <Route path='/signup' element={<SignUp />} />
-                            <Route path='/recuperarPass' element={<RecuperarPass />} />
-                            <Route path='/terminosycondiciones' element={<TerYCon />} />
-                            <Route path='/course/:courseId' element={<CursoDetalle />} />
-                            <Route path='/course/buy/:courseId' element={<ProtectedRoute><MercadoPagoPayment /></ProtectedRoute>} />
-                            <Route path='/payment/success' element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+                            <Route path='/signup' element={<CheckinRedirect><SignUp /></CheckinRedirect>} />
+                            <Route path='/recuperarPass' element={<CheckinRedirect><RecuperarPass /></CheckinRedirect>} />
+                            <Route path='/terminosycondiciones' element={<CheckinRedirect><TerYCon /></CheckinRedirect>} />
+                            <Route path='/course/:courseId' element={<CheckinRedirect><CursoDetalle /></CheckinRedirect>} />
+                            <Route path='/course/buy/:courseId' element={<ProtectedRoute><CheckinRedirect><MercadoPagoPayment /></CheckinRedirect></ProtectedRoute>} />
+                            <Route path='/payment/success' element={<ProtectedRoute><CheckinRedirect><PaymentSuccess /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                            <Route path="/reset-password" element={<ResetPassword />} />
-                            <Route path="/verify-ticket/:ticketId" element={<VerifyTicket />} />
+                            <Route path="/reset-password" element={<CheckinRedirect><ResetPassword /></CheckinRedirect>} />
+                            <Route path="/verify-ticket/:ticketId" element={<CheckinRedirect><VerifyTicket /></CheckinRedirect>} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

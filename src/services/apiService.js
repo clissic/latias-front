@@ -309,6 +309,30 @@ class ApiService {
     return response.json();
   }
 
+  // Verificar ticket para usuarios checkin
+  async verifyTicketCheckin(ticketId) {
+    const response = await this.request(`/events/checkin/verify/${ticketId}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Obtener logs de tickets para usuarios checkin
+  async getTicketLogsCheckin(limit = 100) {
+    const response = await this.request(`/events/checkin/logs?limit=${limit}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Obtener logs de tickets (para administradores)
+  async getTicketLogs(limit = 100) {
+    const response = await this.request(`/events/logs?limit=${limit}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
   async uploadCourseImages(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/course-images`, {
@@ -428,6 +452,16 @@ class ApiService {
   async deleteUserById(id) {
     const response = await this.request(`/users/${id}`, {
       method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  // Método para enviar email de contacto
+  async sendContactEmail(contactData) {
+    const response = await this.request('/contact/send', {
+      method: 'POST',
+      body: JSON.stringify(contactData),
+      includeAuth: false, // El formulario de contacto es público
     });
     return response.json();
   }

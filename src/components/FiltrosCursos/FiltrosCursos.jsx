@@ -9,8 +9,9 @@ export const FiltrosCursos = ({
   categories,
   durations,
   difficulties,
+  maxPrice = 1000,
 }) => {
-  const [precios, setPrecios] = useState({ min: 0, max: 1000 });
+  const [precios, setPrecios] = useState({ min: 0, max: maxPrice });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -22,12 +23,30 @@ export const FiltrosCursos = ({
 
   const handlePriceChange = (e) => {
     const { name, value } = e.target;
-    setPrecios((prevPrecios) => ({
-      ...prevPrecios,
-      [name]: Number(value),
+    const numValue = Number(value);
+    const newPrecios = {
+      ...precios,
+      [name]: numValue,
+    };
+    
+    // Asegurar que min no sea mayor que max y viceversa
+    if (name === "min" && numValue > precios.max) {
+      newPrecios.max = numValue;
+    } else if (name === "max" && numValue < precios.min) {
+      newPrecios.min = numValue;
+    }
+    
+    setPrecios(newPrecios);
+    
+    // Actualizar filtros inmediatamente
+    setFiltros((prevFiltros) => ({
+      ...prevFiltros,
+      precioMin: newPrecios.min,
+      precioMax: newPrecios.max,
     }));
   };
 
+  // Sincronizar precios con filtros cuando cambian
   useEffect(() => {
     setFiltros((prevFiltros) => ({
       ...prevFiltros,
@@ -35,6 +54,13 @@ export const FiltrosCursos = ({
       precioMax: precios.max,
     }));
   }, [precios, setFiltros]);
+  
+  // Actualizar precios cuando cambia maxPrice
+  useEffect(() => {
+    if (maxPrice && precios.max > maxPrice) {
+      setPrecios(prev => ({ ...prev, max: maxPrice }));
+    }
+  }, [maxPrice]);
 
   return (
     <div className="filtro-column col-12 col-lg-3">
@@ -108,29 +134,60 @@ export const FiltrosCursos = ({
             </select>
           </div>
           <div className="mb-3">
-            <label className="text-orange" htmlFor="precio">
-              Precio:
-            </label>
-            <input
-              type="range"
-              name="min"
-              id="precio"
-              min="0"
-              max="1000"
-              value={precios.min}
-              className="form-range border-0"
-              onChange={handlePriceChange}
-            />
-            <input
-              type="range"
-              name="max"
-              min="0"
-              max="1000"
-              value={precios.max}
-              className="form-range border-0"
-              onChange={handlePriceChange}
-            />
-            <span>{`U$D ${precios.min} - U$D ${precios.max}`}</span>
+            <label className="text-orange mb-2 d-block">Precio:</label>
+            <div className="d-flex gap-2 align-items-center mb-2">
+              <div className="flex-grow-1">
+                <label htmlFor="precioMin" className="text-white-50 small">Mínimo:</label>
+                <input
+                  type="number"
+                  name="min"
+                  id="precioMin"
+                  min="0"
+                  max={maxPrice}
+                  step="0.01"
+                  value={precios.min}
+                  className="form-control form-control-sm"
+                  onChange={handlePriceChange}
+                />
+              </div>
+              <div className="flex-grow-1">
+                <label htmlFor="precioMax" className="text-white-50 small">Máximo:</label>
+                <input
+                  type="number"
+                  name="max"
+                  id="precioMax"
+                  min="0"
+                  max={maxPrice}
+                  step="0.01"
+                  value={precios.max}
+                  className="form-control form-control-sm"
+                  onChange={handlePriceChange}
+                />
+              </div>
+            </div>
+            <div className="d-flex gap-2 mb-2">
+              <input
+                type="range"
+                name="min"
+                min="0"
+                max={maxPrice}
+                step="1"
+                value={precios.min}
+                className="form-range flex-grow-1"
+                onChange={handlePriceChange}
+              />
+              <input
+                type="range"
+                name="max"
+                min="0"
+                max={maxPrice}
+                step="1"
+                value={precios.max}
+                className="form-range flex-grow-1"
+                onChange={handlePriceChange}
+              />
+            </div>
+            <span className="text-white-50 small">{`Rango: U$D ${precios.min} - U$D ${precios.max}`}</span>
           </div>
           <div className="mb-3 d-grid gap-3">
             <button className="btn btn-warning w-100" onClick={aplicarFiltros}>
@@ -138,7 +195,10 @@ export const FiltrosCursos = ({
             </button>
             <button
               className="btn btn-secondary w-100"
-              onClick={limpiarFiltros}
+              onClick={() => {
+                setPrecios({ min: 0, max: maxPrice });
+                limpiarFiltros();
+              }}
             >
               LIMPIAR FILTROS
             </button>

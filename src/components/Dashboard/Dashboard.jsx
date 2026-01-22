@@ -25,7 +25,19 @@ export function Dashboard() {
     }
   }, [isAuthenticated, navigate]);
 
+  // Redirige usuarios checkin a /checkin
+  useEffect(() => {
+    if (user?.category === "checkin") {
+      navigate('/checkin', { replace: true });
+    }
+  }, [user, navigate]);
+
   if (!isAuthenticated) {
+    return null;
+  }
+
+  // Si el usuario es checkin, no mostrar nada (será redirigido)
+  if (user?.category === "checkin") {
     return null;
   }
 

@@ -2,24 +2,63 @@ import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
+// Función para inicializar el estado desde localStorage de forma síncrona
+function getInitialAuthState() {
+    const storedUser = localStorage.getItem("user");
+    const storedAccessToken = localStorage.getItem("accessToken");
+    const storedRefreshToken = localStorage.getItem("refreshToken");
+    
+    if (storedUser && storedAccessToken) {
+        try {
+            return {
+                isAuthenticated: true,
+                user: JSON.parse(storedUser),
+                accessToken: storedAccessToken,
+                refreshToken: storedRefreshToken || null
+            };
+        } catch (error) {
+            console.error("Error parsing stored user:", error);
+            return {
+                isAuthenticated: false,
+                user: null,
+                accessToken: null,
+                refreshToken: null
+            };
+        }
+    }
+    
+    return {
+        isAuthenticated: false,
+        user: null,
+        accessToken: null,
+        refreshToken: null
+    };
+}
+
 export function AuthProvider({ children }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState(null);
-    const [accessToken, setAccessToken] = useState(null);
-    const [refreshToken, setRefreshToken] = useState(null);
+    const initialState = getInitialAuthState();
+    const [isAuthenticated, setIsAuthenticated] = useState(initialState.isAuthenticated);
+    const [user, setUser] = useState(initialState.user);
+    const [accessToken, setAccessToken] = useState(initialState.accessToken);
+    const [refreshToken, setRefreshToken] = useState(initialState.refreshToken);
 
     useEffect(() => {
-        // Siempre que haya un usuario en localStorage, aseguramos autenticación
+        // Sincronizar con localStorage en caso de cambios externos
         const storedUser = localStorage.getItem("user");
         const storedAccessToken = localStorage.getItem("accessToken");
         const storedRefreshToken = localStorage.getItem("refreshToken");
         
         if (storedUser && storedAccessToken) {
-            setIsAuthenticated(true);
-            setUser(JSON.parse(storedUser));
-            setAccessToken(storedAccessToken);
-            if (storedRefreshToken) {
-                setRefreshToken(storedRefreshToken);
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                setIsAuthenticated(true);
+                setUser(parsedUser);
+                setAccessToken(storedAccessToken);
+                if (storedRefreshToken) {
+                    setRefreshToken(storedRefreshToken);
+                }
+            } catch (error) {
+                console.error("Error parsing stored user:", error);
             }
         } else {
             setIsAuthenticated(false);

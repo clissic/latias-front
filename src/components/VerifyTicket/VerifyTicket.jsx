@@ -140,6 +140,35 @@ export function VerifyTicket() {
               </div>
             </div>
 
+            <div className="ticket-section">
+              <h3 className="text-orange mb-3">
+                <i className="bi bi-info-circle-fill me-2"></i>
+                Estado del Ticket
+              </h3>
+              <div className="ticket-info">
+                <p>
+                  <strong>Estado:</strong>{" "}
+                  {verification.available !== undefined && verification.available === false ? (
+                    <span className="badge bg-warning text-dark">
+                      <i className="bi bi-exclamation-triangle-fill me-1"></i>
+                      Ya fue utilizado
+                    </span>
+                  ) : (
+                    <span className="badge bg-success">
+                      <i className="bi bi-check-circle-fill me-1"></i>
+                      Habilitado
+                    </span>
+                  )}
+                </p>
+                {verification.available !== undefined && verification.available === false && (
+                  <p className="text-warning mt-2">
+                    <i className="bi bi-exclamation-triangle me-2"></i>
+                    Este ticket ya fue utilizado anteriormente y no puede ser usado nuevamente.
+                  </p>
+                )}
+              </div>
+            </div>
+
             <div className="ticket-footer">
               <p className="text-center text-muted">
                 <i className="bi bi-shield-check me-2"></i>

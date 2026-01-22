@@ -1,7 +1,81 @@
+import { useState } from "react";
 import { FadeIn } from "../FadeIn/FadeIn";
+import { apiService } from "../../services/apiService";
+import Swal from "sweetalert2";
 import "./Gestoria.css";
 
 export function Gestoria() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    body: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await apiService.sendContactEmail(formData);
+
+      if (response.status === "success") {
+        Swal.fire({
+          icon: "success",
+          title: "¡Mensaje enviado!",
+          text: response.msg || "Tu mensaje fue enviado exitosamente. Nos pondremos en contacto contigo pronto.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+
+        // Limpiar el formulario
+        setFormData({
+          name: "",
+          email: "",
+          body: "",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: response.msg || "Ocurrió un error al enviar el mensaje. Por favor, intenta nuevamente.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error al enviar mensaje:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Ocurrió un error al enviar el mensaje. Por favor, intenta nuevamente más tarde.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="text-white mb-5">
       <FadeIn>
@@ -182,8 +256,7 @@ export function Gestoria() {
           <div className="contact-div row">
             <form
               className="contact-subdiv text-white col-12 col-md-6"
-              action="https://formsubmit.co/joaquin.perez.coria@gmail.com"
-              method="post"
+              onSubmit={handleSubmit}
             >
               <div className="input-v1">
                 <label htmlFor="name">Nombre: </label>
@@ -191,7 +264,10 @@ export function Gestoria() {
                   className="text-white"
                   type="text"
                   name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="input-v1">
@@ -200,7 +276,10 @@ export function Gestoria() {
                   className="text-white"
                   type="email"
                   name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="input-textarea">
@@ -211,12 +290,27 @@ export function Gestoria() {
                   cols="80"
                   rows="2"
                   placeholder="Quiero saber más sobre..."
+                  value={formData.body}
+                  onChange={handleInputChange}
                   required
+                  disabled={loading}
                 ></textarea>
               </div>
               <div className="submit-cont col-12 col-md-4">
-                <button type="submit" id="submit-btn">
-                  ENVIAR
+                <button type="submit" id="submit-btn" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm me-2"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ width: "1em", height: "1em", borderWidth: "0.15em" }}
+                      ></span>
+                      Enviando...
+                    </>
+                  ) : (
+                    "ENVIAR"
+                  )}
                 </button>
               </div>
             </form>

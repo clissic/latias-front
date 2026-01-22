@@ -12,6 +12,7 @@ import { ActualizarUsuario } from "./ActualizarUsuario";
 import { CrearEvento } from "./CrearEvento";
 import { BuscarEvento } from "./BuscarEvento";
 import { ActualizarEvento } from "./ActualizarEvento";
+import { VerLogsCheckin } from "./VerLogsCheckin";
 import { apiService } from "../../../services/apiService";
 import "./Gestion.css";
 
@@ -374,6 +375,12 @@ export function Gestion({ user }) {
             ) : (
               <p className="text-white">Busca un evento y haz click en "Actualizar" para cargar sus datos aquí.</p>
             )}
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="12">
+          <Accordion.Header>Ver logs de check-in:</Accordion.Header>
+          <Accordion.Body>
+            <VerLogsCheckin />
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>

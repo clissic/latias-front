@@ -154,7 +154,7 @@ export function LogInForm() {
         notifications: true,
       },
       statistics: {
-        eventsAttended: 3,
+        eventsAttended: [], // Array de _id de eventos atendidos
         timeConnected: 45,
         certificatesQuantity: 2,
       },

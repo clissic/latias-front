@@ -333,6 +333,71 @@ class ApiService {
     return response.json();
   }
 
+  // ========== MÉTODOS DE FLOTA ==========
+
+  // Solicitar registro de barco nuevo
+  async requestBoatRegistration(boatData) {
+    const response = await this.request(`/boats/request-registration`, {
+      method: 'POST',
+      body: JSON.stringify(boatData),
+    });
+    return response.json();
+  }
+
+  // Solicitar agregar barco a la flota (deprecated - usar requestBoatRegistration)
+  async requestBoatToFleet(boatId) {
+    const response = await this.request(`/users/fleet/request`, {
+      method: 'POST',
+      body: JSON.stringify({ boatId }),
+    });
+    return response.json();
+  }
+
+  // Obtener flota del usuario
+  async getUserFleet() {
+    const response = await this.request(`/users/fleet`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Remover barco de la flota
+  async removeBoatFromFleet(boatId) {
+    const response = await this.request(`/users/fleet/${boatId}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  // Obtener todos los barcos activos (para seleccionar y agregar a la flota)
+  async getActiveBoats() {
+    const response = await fetch(`${this.baseURL}/boats/active`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Obtener barco por ID
+  async getBoatById(id) {
+    const response = await fetch(`${this.baseURL}/boats/id/${id}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  // Subir imagen de barco
+  async uploadBoatImage(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/boat-image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
+
   async uploadCourseImages(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/course-images`, {
@@ -462,6 +527,50 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify(contactData),
       includeAuth: false, // El formulario de contacto es público
+    });
+    return response.json();
+  }
+
+  // Métodos para certificados
+  async getCertificatesByBoat(boatId) {
+    const response = await this.request(`/certificates/boat/${boatId}`, {
+      method: 'GET',
+      includeAuth: false, // Es una ruta pública
+    });
+    return response.json();
+  }
+
+  async uploadCertificatePDF(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/certificate-pdf`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
+
+  async createCertificate(certificateData) {
+    const response = await this.request('/certificates/create', {
+      method: 'POST',
+      body: JSON.stringify(certificateData),
+    });
+    return response.json();
+  }
+
+  async updateCertificate(id, certificateData) {
+    const response = await this.request(`/certificates/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(certificateData),
+    });
+    return response.json();
+  }
+
+  async deleteCertificate(id) {
+    const response = await this.request(`/certificates/delete/${id}`, {
+      method: 'DELETE',
     });
     return response.json();
   }

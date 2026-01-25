@@ -25,6 +25,8 @@ import { CheckinRedirect } from './components/CheckinRedirect/CheckinRedirect.js
 import { ResetPassword  } from './components/ResetPass/ResetPass.jsx'
 import { VerifyTicket } from './components/VerifyTicket/VerifyTicket.jsx'
 import { Checkin } from './components/Checkin/Checkin.jsx'
+import { ApproveBoatRegistration } from './components/BoatRegistration/ApproveBoatRegistration.jsx'
+import { RejectBoatRegistration } from './components/BoatRegistration/RejectBoatRegistration.jsx'
 
 export function App () {
     return (
@@ -49,6 +51,8 @@ export function App () {
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                             <Route path="/reset-password" element={<CheckinRedirect><ResetPassword /></CheckinRedirect>} />
                             <Route path="/verify-ticket/:ticketId" element={<CheckinRedirect><VerifyTicket /></CheckinRedirect>} />
+                            <Route path="/boat-registration/approve/:id" element={<CheckinRedirect><ApproveBoatRegistration /></CheckinRedirect>} />
+                            <Route path="/boat-registration/reject/:id" element={<CheckinRedirect><RejectBoatRegistration /></CheckinRedirect>} />
                         </Routes>
                     <Footer />
                 </BrowserRouter>

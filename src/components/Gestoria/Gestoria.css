@@ -30,7 +30,7 @@
   background-image: url(/servicios-gestoria.jpg);
   background-position: center;
   background-size: cover;
-  opacity: 0.4; /* Ajusta este valor entre 0 y 1 para cambiar la opacidad */
+  opacity: 0.4;
   z-index: 0;
 }
 

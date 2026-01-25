@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { General } from "./General/General";
 import { Cursos } from "./Cursos/Cursos";
+import { Flota } from "./Flota/Flota";
 import { Eventos } from "./Eventos/Eventos";
 import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
@@ -73,6 +74,11 @@ export function Dashboard() {
                     label: "Cursos",
                   },
                   {
+                    to: "/dashboard/flota",
+                    icon: "bi-water",
+                    label: "Flota",
+                  },
+                  {
                     to: "/dashboard/eventos",
                     icon: "bi-calendar-event-fill",
                     label: "Eventos",
@@ -129,6 +135,7 @@ export function Dashboard() {
             <Routes>
               <Route path="general" element={<General user={user} />} />
               <Route path="cursos" element={<Cursos user={user} />} />
+              <Route path="flota" element={<Flota />} />
               <Route path="eventos" element={<Eventos />} />
               <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes user={user} />} />

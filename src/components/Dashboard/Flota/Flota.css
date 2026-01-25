@@ -1,0 +1,353 @@
+.dashboard-item-build-flota {
+  background-color: rgba(8, 43, 85, 0.5);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-item-build-flota:hover {
+  border-color: rgba(255, 165, 0, 0.6);
+  box-shadow: 0 4px 8px rgba(255, 165, 0, 0.2);
+}
+
+.boat-details p {
+  margin-bottom: 0.5rem;
+}
+
+.boat-details i {
+  width: 20px;
+}
+
+/* Estilos para el formulario de registro de barco - misma estética que el menú del dashboard */
+.flota-form-container {
+  height: auto;
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Estilos para el formulario de registro de barco - igual que crear curso */
+.flota-registration-form {
+  color: white;
+}
+
+.flota-form-label {
+  color: white;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.flota-form-control,
+.flota-form-select {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.flota-form-control:focus,
+.flota-form-select:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: white;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.flota-form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.flota-form-check-label {
+  color: white;
+  margin-left: 0.5rem;
+}
+
+.flota-form-check-input {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.flota-form-check-input:checked {
+  background-color: #ffa500;
+  border-color: #ffa500;
+}
+
+.flota-form-check-input:focus {
+  border-color: rgba(255, 165, 0, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+/* Estilos para el selector de países con buscador */
+.country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.country-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.country-dropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.country-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.country-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 165, 0, 0.7);
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.country-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.country-option:last-child {
+  border-bottom: none;
+}
+
+.country-flag {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.country-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.country-code {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.country-option.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.country-option.no-results:hover {
+  background-color: transparent;
+}
+
+/* Estilos para tarjetas minimalistas de barcos - igual que Gestión */
+.boat-card-minimal {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 10px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+}
+
+.boat-card-minimal:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-color: #082b55ac;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px #051933a0;
+}
+
+/* Estilos responsive para móvil - igual que Gestión */
+@media (max-width: 767.98px) {
+  .boat-card-minimal {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+}
+
+.boat-card-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boat-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.boat-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.boat-card-details {
+  flex: 1;
+}
+
+.boat-card-details p {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.boat-card-details i {
+  width: 18px;
+  font-size: 0.9rem;
+}
+
+.boat-card-details small {
+  display: inline-block;
+  word-break: break-word;
+}
+
+.boat-card-actions {
+  margin-top: auto;
+}
+
+/* Estilos para la vista de detalles del barco */
+.boat-detail-parallax {
+  position: relative;
+}
+
+.boat-detail-parallax::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+  z-index: 1;
+}
+
+/* Estilos para la tabla de certificados */
+.table-dark {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-dark th {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ffa500;
+  font-weight: 600;
+}
+
+.table-dark td {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.table-dark tbody tr:hover {
+  background-color: rgba(255, 165, 0, 0.1);
+}
+
+/* Estilos para los links de acciones en la tabla de certificados */
+.certificate-action-link {
+  color: #ffa500;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.certificate-action-link:hover {
+  color: #ff8c00;
+  text-decoration: underline;
+}
+
+.certificate-action-link-danger {
+  color: #dc3545;
+}
+
+.certificate-action-link-danger:hover {
+  color: #c82333;
+}
+
+.certificate-action-link i {
+  font-size: 0.9rem;
+}
+
+/* Estilos para paginación */
+.custom-pagination-item {
+  margin: 0 2px !important;
+}
+
+.custom-pagination-item a,
+.custom-pagination-item.page-link {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #082b557c !important;
+  color: #ffffff !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-pagination-item:hover:not(.disabled) a,
+.custom-pagination-item:focus:not(.disabled) a,
+.custom-pagination-item:hover:not(.disabled) .page-link,
+.custom-pagination-item:focus:not(.disabled) .page-link {
+  background-color: rgba(255, 165, 0, 0.2) !important;
+  border-color: rgba(255, 165, 0, 0.5) !important;
+  color: #ffa500 !important;
+  transform: translateY(-2px) !important;
+}
+
+.custom-pagination-item.active a,
+.custom-pagination-item.active .page-link {
+  background-color: rgba(255, 165, 0, 0.8) !important;
+  border-color: rgba(255, 165, 0, 0.8) !important;
+  color: #082b55 !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3) !important;
+}
+
+.custom-pagination-item.disabled a,
+.custom-pagination-item.disabled .page-link {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+.custom-pagination-item.disabled:hover a,
+.custom-pagination-item.disabled:hover .page-link {
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.5 !important;
+}

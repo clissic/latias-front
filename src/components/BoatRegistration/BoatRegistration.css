@@ -1,0 +1,49 @@
+.boat-registration-confirmation {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+}
+
+.boat-registration-confirmation .row > div {
+  width: 90%;
+  max-width: 90%;
+}
+
+@media (min-width: 992px) {
+  .boat-registration-confirmation .row > div {
+    width: 50vw;
+  }
+}
+
+/* Usar los mismos estilos que el formulario de flota */
+.boat-registration-confirmation .flota-form-container {
+  height: auto;
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.boat-registration-confirmation .boat-info {
+  background-color: rgba(8, 43, 85, 0.3);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.boat-registration-confirmation .boat-info p {
+  margin-bottom: 0.5rem;
+}
+
+.boat-registration-confirmation .d-flex.gap-3 {
+  margin-top: 1.5rem;
+}
+
+.boat-registration-confirmation .d-flex.gap-3 button {
+  min-width: 180px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+}

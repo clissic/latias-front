@@ -501,7 +501,7 @@ export function VerLogsCheckin() {
           <Table striped bordered hover variant="dark" className="text-white">
             <thead>
               <tr>
-                <th>Ticket ID</th>
+                <th>ID</th>
                 <th>Evento</th>
                 <th>Asistente</th>
                 <th>Verificado por</th>

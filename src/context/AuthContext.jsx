@@ -78,6 +78,11 @@ export function AuthProvider({ children }) {
     const login = (loginData) => {
         const { user: userData, tokens } = loginData.payload;
         
+        // Limpiar datos anteriores antes de guardar los nuevos
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        
         setIsAuthenticated(true);
         setUser(userData);
         setAccessToken(tokens.accessToken);

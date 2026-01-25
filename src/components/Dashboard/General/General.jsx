@@ -6,12 +6,13 @@ import "./General.css";
 export function General({ user }) {
   if (!user) return null;
 
-  // Debug: ver qué datos está recibiendo
-  console.log("General component - user data:", user);
-
   // Asegurar que purchasedCourses sea un array
   const purchasedCourses = Array.isArray(user.purchasedCourses) ? user.purchasedCourses : [];
   const approvedCourses = Array.isArray(user.approvedCourses) ? user.approvedCourses : [];
+  
+  // Asegurar que statistics existe y tiene la estructura correcta
+  const statistics = user.statistics || {};
+  const eventsAttended = Array.isArray(statistics.eventsAttended) ? statistics.eventsAttended : [];
   
   const firstCourse = purchasedCourses[0] || null;
 
@@ -77,9 +78,13 @@ export function General({ user }) {
         <div className="div-border-color my-4"></div>
         <h3 className="mb-3 text-orange">Estadísticas:</h3>
         <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
-          <Stat icon="bi-stopwatch-fill" value={((user.statistics?.timeConnected || 0) / 60).toFixed(1)} label="Horas conectado/a" />
-          <Stat icon="bi-calendar-event-fill" value={user.statistics?.eventsAttended || 0} label="Eventos atendidos" />
-          <Stat icon="bi-award-fill" value={user.statistics?.certificatesQuantity || 0} label="Certificados obtenidos" />
+          <Stat icon="bi-stopwatch-fill" value={((statistics.timeConnected || 0) / 60).toFixed(1)} label="Horas conectado/a" />
+          <Stat 
+            icon="bi-calendar-event-fill" 
+            value={eventsAttended.length} 
+            label="Eventos atendidos" 
+          />
+          <Stat icon="bi-award-fill" value={statistics.certificatesQuantity || 0} label="Certificados obtenidos" />
         </div>
       </div>
 
@@ -115,10 +120,23 @@ export function General({ user }) {
 
 // Componente auxiliar para evitar repetición de estadísticas
 function Stat({ icon, value, label }) {
+  // Asegurar que value sea siempre un número o string, nunca un objeto
+  let displayValue;
+  if (typeof value === 'object' && value !== null) {
+    // Si es un objeto, intentar extraer un valor numérico o usar 0
+    displayValue = '0';
+  } else if (typeof value === 'number') {
+    displayValue = String(value);
+  } else if (typeof value === 'string') {
+    displayValue = value;
+  } else {
+    displayValue = '0';
+  }
+  
   return (
     <div className="col-12 col-lg-4 d-flex flex-row flex-lg-column text-center align-items-center justify-content-between">
       <i className={`col-3 col-lg-12 bi ${icon} text-orange custom-display-1`}></i>
-      <p className="col-3 col-lg-12 display-4 m-0">{value}</p>
+      <p className="col-3 col-lg-12 display-4 m-0">{displayValue}</p>
       <p className="col-3 col-lg-12 m-0">{label}</p>
     </div>
   );

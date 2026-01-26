@@ -2,46 +2,8 @@
   width: 100%;
 }
 
-.gestionar-mis-cursos-container .table {
-  background-color: #082b55;
-}
-
-.gestionar-mis-cursos-container .table thead th {
-  background-color: rgba(255, 165, 0, 0.2);
-  border-color: rgba(255, 165, 0, 0.3);
-  color: #ffa500;
-  font-weight: bold;
-}
-
-.gestionar-mis-cursos-container .table tbody tr {
-  transition: background-color 0.2s ease;
-}
-
-.gestionar-mis-cursos-container .table tbody tr:hover {
-  background-color: rgba(255, 165, 0, 0.1);
-}
+/* Estilos de tablas y action-links movidos a App.css (globales) */
 
 .gestionar-mis-cursos-container .btn {
   white-space: nowrap;
-}
-
-.action-link {
-  color: #ffa500;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 0;
-}
-
-.action-link:hover {
-  color: #ff8c00;
-  text-decoration: none;
-  transform: translateX(3px);
-}
-
-.action-link:active {
-  color: #ff7f00;
 }

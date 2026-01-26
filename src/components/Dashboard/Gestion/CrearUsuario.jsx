@@ -229,7 +229,7 @@ export function CrearUsuario() {
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
           <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle me-2"></i> CREAR USUARIO
+            <i className="bi bi-check-circle-fill me-2"></i> CREAR USUARIO
           </Button>
         </div>
       </div>

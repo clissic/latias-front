@@ -186,16 +186,17 @@
   color: #ffa500;
 }
 
-.btn-outline-orange {
+.btn-orange {
+  background-color: #ffa500;
   border-color: #ffa500;
-  color: #ffa500;
+  color: #082b55;
   min-width: 120px; /* Ancho fijo para el botón de actualizar */
   white-space: nowrap;
 }
 
-.btn-outline-orange:hover {
-  background-color: #ffa500;
-  border-color: #ffa500;
+.btn-orange:hover {
+  background-color: #ff8c00;
+  border-color: #ff8c00;
   color: #082b55;
 }
 
@@ -219,14 +220,15 @@
   box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
-.btn-outline-danger {
-  border-color: #dc3545;
-  color: #dc3545;
-}
-
-.btn-outline-danger:hover {
+.btn-danger {
   background-color: #dc3545;
   border-color: #dc3545;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #c82333;
   color: #ffffff;
 }
 
@@ -315,7 +317,7 @@
     flex: 1;
   }
 
-  .btn-outline-orange {
+  .btn-orange {
     min-width: auto;
     flex-shrink: 0;
   }

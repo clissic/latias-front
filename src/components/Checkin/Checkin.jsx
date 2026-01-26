@@ -262,7 +262,7 @@ export function Checkin() {
                   </>
                 ) : (
                   <>
-                    <i className="bi bi-check-circle me-2"></i>
+                    <i className="bi bi-check-circle-fill me-2"></i>
                     Verificar Ticket
                   </>
                 )}
@@ -298,7 +298,7 @@ export function Checkin() {
               </div>
               {!autoUpdate && (
                 <button
-                  className="btn btn-sm btn-outline-orange"
+                  className="btn btn-sm btn-orange"
                   onClick={loadLogs}
                   disabled={loadingLogs}
                 >
@@ -387,20 +387,20 @@ export function Checkin() {
                 </div>
                 
                 {/* Paginación */}
-                {totalPages > 0 && (
-                  <div className="d-flex justify-content-center align-items-center mt-4">
-                    <Pagination className="mb-0">
-                      <Pagination.First
-                        onClick={() => handlePageChange(1)}
-                        disabled={currentPage === 1 || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      <Pagination.Prev
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1 || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      {getPageNumbers().map((number) => (
+                <div className="d-flex justify-content-center align-items-center mt-4">
+                  <Pagination className="mb-0">
+                    <Pagination.First
+                      onClick={() => handlePageChange(1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Prev
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    {totalPages > 0 ? (
+                      getPageNumbers().map((number) => (
                         <Pagination.Item
                           key={number}
                           active={number === currentPage}
@@ -409,25 +409,29 @@ export function Checkin() {
                         >
                           {number}
                         </Pagination.Item>
-                      ))}
-                      <Pagination.Next
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      <Pagination.Last
-                        onClick={() => handlePageChange(totalPages)}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                    </Pagination>
-                    <div className="ms-3 text-white">
-                      <small>
-                        Página {currentPage} de {totalPages} ({logs.length} registros)
-                      </small>
-                    </div>
+                      ))
+                    ) : (
+                      <Pagination.Item active disabled className="custom-pagination-item">
+                        1
+                      </Pagination.Item>
+                    )}
+                    <Pagination.Next
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Last
+                      onClick={() => handlePageChange(totalPages || 1)}
+                      disabled={currentPage === (totalPages || 1) || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                  </Pagination>
+                  <div className="ms-3 text-white">
+                    <small>
+                      Página {currentPage} de {totalPages || 1} ({logs.length} registros)
+                    </small>
                   </div>
-                )}
+                </div>
               </>
             )}
           </div>
@@ -435,7 +439,7 @@ export function Checkin() {
 
         <div className="checkin-logout-container">
           <button
-            className="btn btn-outline-danger"
+            className="btn btn-danger"
             onClick={handleLogout}
           >
             <i className="bi bi-box-arrow-right me-2"></i>

@@ -147,7 +147,7 @@ export function ApproveBoatRegistration() {
                       <h5 className="text-orange mb-3">Información del Barco</h5>
                       <p><strong>Nombre:</strong> {boat.name}</p>
                       <p><strong>Número de Registro:</strong> {boat.registrationNumber}</p>
-                      <p><strong>País de Registro:</strong> {boat.registrationCountry}</p>
+                      <p><strong>Bandera:</strong> {boat.registrationCountry}</p>
                       <p><strong>Puerto de Registro:</strong> {boat.registrationPort}</p>
                       {boat.currentPort && <p><strong>Puerto Actual:</strong> {boat.currentPort}</p>}
                       <p><strong>Tipo:</strong> {boat.boatType}</p>

@@ -227,7 +227,7 @@ export function Eventos() {
               {eventos.map((evento) => (
                 <div
                   key={evento._id || evento.eventId}
-                  className="dashboard-item-build-eventos container d-flex flex-column flex-lg-row gap-4 align-items-start"
+                  className="dashboard-item-build-eventos container d-flex flex-column flex-lg-row gap-4 align-items-start justify-content-around"
                 >
                   {/* Columna izquierda: Imagen y botón Agendar */}
                   <div className="col-12 col-lg-3 d-flex flex-column align-items-center gap-3">
@@ -267,36 +267,36 @@ export function Eventos() {
                   </div>
                   
                   {/* Columna derecha: Datos del evento */}
-                  <div className="col-12 col-lg-9">
+                  <div className="col-12 col-lg-8">
                     <h3 className="text-orange mb-3">{evento.title}</h3>
                     {evento.description && (
-                      <h6 className="my-2 mb-3">{evento.description}</h6>
+                      <h6 className="mb-3">{evento.description}</h6>
                     )}
                     <div className="event-details">
-                      <p className="m-2">
+                      <p>
                         <i className="bi bi-calendar3 me-2 text-orange"></i>
                         Fecha: <strong>{formatDate(evento.date)}</strong>
                       </p>
-                      <p className="m-2">
+                      <p>
                         <i className="bi bi-clock me-2 text-orange"></i>
                         Hora: <strong>{evento.hour || "No especificada"}</strong>
                       </p>
-                      <p className="m-2">
+                      <p>
                         <i className="bi bi-geo-alt me-2 text-orange"></i>
                         Ubicación: <strong>{formatLocation(evento.location)}</strong>
                       </p>
-                      <p className="m-2">
+                      <p>
                         <i className="bi bi-person-badge me-2 text-orange"></i>
                         Orador: <strong>{formatSpeaker(evento.speaker)}</strong>
                       </p>
                       {evento.price > 0 && (
-                        <p className="m-2">
+                        <p>
                           <i className="bi bi-currency-dollar me-2 text-orange"></i>
                           Precio: <strong>{formatPrice(evento.price, evento.currency || "USD")}</strong>
                         </p>
                       )}
                       {evento.tickets && (
-                        <p className="m-2">
+                        <p>
                           <i className="bi bi-ticket-perforated me-2 text-orange"></i>
                           Tickets disponibles: <strong>{evento.tickets.remainingTickets} / {evento.tickets.availableTickets}</strong>
                         </p>

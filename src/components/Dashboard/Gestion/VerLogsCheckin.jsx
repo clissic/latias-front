@@ -280,7 +280,7 @@ export function VerLogsCheckin() {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-2 gap-md-0">
         <h5 className="text-orange mb-0">Registro de Check-in</h5>
         <button
-          className="btn btn-sm btn-outline-orange"
+          className="btn btn-sm btn-orange"
           onClick={loadLogs}
           disabled={loading}
         >
@@ -498,7 +498,7 @@ export function VerLogsCheckin() {
         </div>
       ) : (
         <div className="table-responsive" ref={tableHeaderRef}>
-          <Table striped bordered hover variant="dark" className="text-white">
+          <Table striped bordered hover variant="dark" className="table-dark">
             <thead>
               <tr>
                 <th>ID</th>
@@ -634,13 +634,11 @@ export function VerLogsCheckin() {
             className="custom-pagination-item"
           />
         </Pagination>
-        {totalPages > 0 && (
-          <div className="ms-3 text-white">
-            <small>
-              Página {currentPage} de {totalPages} ({filteredLogs.length} registros)
-            </small>
-          </div>
-        )}
+        <div className="ms-3 text-white">
+          <small>
+            Página {currentPage} de {totalPages || 1} ({filteredLogs.length} registros)
+          </small>
+        </div>
       </div>
     </div>
   );

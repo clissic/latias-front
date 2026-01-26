@@ -139,3 +139,122 @@ body {
   border-radius: 10px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
+
+/* ============================================
+   ESTILOS GLOBALES PARA TABLAS
+   ============================================ */
+
+/* Contenedor responsive para tablas */
+.table-responsive {
+  border-radius: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* Scrollbar personalizado para las tablas */
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 165, 0, 0.7);
+}
+
+/* Estilos para tablas dark */
+.table-dark {
+  background-color: #082b55;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.table-dark thead th {
+  background-color: rgba(255, 165, 0, 0.2);
+  border-color: rgba(255, 165, 0, 0.3);
+  color: #ffa500;
+  font-weight: bold;
+}
+
+.table-dark tbody td {
+  border-color: rgba(255, 165, 0, 0.2);
+  color: white;
+}
+
+.table-dark tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-dark tbody tr:hover {
+  background-color: rgba(255, 165, 0, 0.1);
+}
+
+/* Estilos para ícono de copiar ID */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Estilos globales para links de acciones en tablas */
+.action-link {
+  color: #ffa500;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.action-link:hover {
+  color: #ff8c00;
+  text-decoration: none;
+}
+
+.action-link:active {
+  color: #ff7f00;
+}
+
+/* Estilos para links de acción peligrosa (Eliminar) */
+.action-link-danger {
+  color: #dc3545;
+}
+
+.action-link-danger:hover {
+  color: #c82333;
+  text-decoration: none;
+}
+
+/* Responsive para tablas */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.875rem;
+    overflow-x: auto;
+    overflow-y: visible;
+    display: block;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+  }
+
+  .table-responsive table {
+    display: table;
+    width: 100%;
+    min-width: 800px;
+    margin-bottom: 0;
+  }
+
+  .table-responsive th,
+  .table-responsive td {
+    white-space: nowrap;
+    padding: 0.5rem;
+  }
+}

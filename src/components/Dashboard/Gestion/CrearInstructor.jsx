@@ -463,7 +463,7 @@ export function CrearInstructor() {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Certificaciones:</h5>
           <Button variant="success" size="sm" onClick={addCertification}>
-            <i className="bi bi-plus-circle me-1"></i> Agregar Certificación
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Certificación
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -496,7 +496,7 @@ export function CrearInstructor() {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Logros:</h5>
           <Button variant="success" size="sm" onClick={addAchievement}>
-            <i className="bi bi-plus-circle me-1"></i> Agregar Logro
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Logro
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -529,7 +529,7 @@ export function CrearInstructor() {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Cursos asignados:</h5>
           <Button variant="success" size="sm" onClick={addCourse}>
-            <i className="bi bi-plus-circle me-1"></i> Agregar Curso
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Curso
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -638,7 +638,7 @@ export function CrearInstructor() {
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
           <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle me-2"></i> CREAR INSTRUCTOR
+            <i className="bi bi-check-circle-fill me-2"></i> CREAR INSTRUCTOR
           </Button>
         </div>
       </div>

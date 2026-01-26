@@ -193,7 +193,7 @@ export function GestionarMisCursos({ user, onBack }) {
         </div>
       ) : (
         <div className="table-responsive">
-          <Table striped bordered hover variant="dark" className="text-white">
+          <Table striped bordered hover variant="dark" className="table-dark">
             <thead>
               <tr>
                 <th>ID</th>
@@ -251,7 +251,7 @@ export function GestionarMisCursos({ user, onBack }) {
                         className="action-link"
                         onClick={() => handleModifyCourse(course)}
                       >
-                        <i className="bi bi-pencil-square me-1"></i>
+                        <i className="bi bi-pencil-square-fill me-1"></i>
                         Modificar curso
                       </span>
                     </div>

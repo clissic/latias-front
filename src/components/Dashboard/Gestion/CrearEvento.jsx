@@ -544,7 +544,7 @@ export function CrearEvento() {
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle me-2"></i> CREAR EVENTO
+                <i className="bi bi-check-circle-fill me-2"></i> CREAR EVENTO
               </>
             )}
           </Button>

@@ -473,15 +473,15 @@ export function BuscarEvento({ onUpdateEvent }) {
                         <span
                           className="action-link"
                           onClick={() => handleUpdateClick(event)}
-                          style={{ cursor: "pointer" }}
                         >
-                          Actualizar
+                          <i className="bi bi-pencil-fill me-1"></i>
+                          Modificar
                         </span>
                         <span
-                          className="action-link text-danger"
+                          className="action-link action-link-danger"
                           onClick={() => handleDeleteClick(event)}
-                          style={{ cursor: "pointer" }}
                         >
+                          <i className="bi bi-trash-fill me-1"></i>
                           Eliminar
                         </span>
                       </div>
@@ -532,13 +532,11 @@ export function BuscarEvento({ onUpdateEvent }) {
                   className="custom-pagination-item"
                 />
               </Pagination>
-              {totalPages > 0 && (
-                <div className="ms-3 text-white">
-                  <small>
-                    Página {currentPage} de {totalPages} ({results.length} registros)
-                  </small>
-                </div>
-              )}
+              <div className="ms-3 text-white">
+                <small>
+                  Página {currentPage} de {totalPages || 1} ({results.length} registros)
+                </small>
+              </div>
             </div>
           </>
         </div>

@@ -365,7 +365,7 @@ export function BuscarUsuario({ onUpdateUser }) {
           {results.length > 0 ? (
             <>
               <div className="table-responsive">
-                <Table striped bordered hover variant="dark" className="text-white">
+                <Table striped bordered hover variant="dark" className="table-dark">
                   <thead>
                     <tr>
                       <th>ID</th>
@@ -417,14 +417,14 @@ export function BuscarUsuario({ onUpdateUser }) {
                             className="action-link"
                             onClick={() => handleUpdateClick(user)}
                           >
-                            <i className="bi bi-pencil-square me-1"></i>
-                            Actualizar
+                            <i className="bi bi-pencil-fill me-1"></i>
+                            Modificar
                           </span>
                           <span
-                            className="action-link"
+                            className="action-link action-link-danger"
                             onClick={() => handleDeleteClick(user)}
                           >
-                            <i className="bi bi-trash me-1"></i>
+                            <i className="bi bi-trash-fill me-1"></i>
                             Eliminar
                           </span>
                         </div>
@@ -475,13 +475,11 @@ export function BuscarUsuario({ onUpdateUser }) {
                     className="custom-pagination-item"
                   />
                 </Pagination>
-                {totalPages > 0 && (
-                  <div className="ms-3 text-white">
-                    <small>
-                      Página {currentPage} de {totalPages} ({results.length} registros)
-                    </small>
-                  </div>
-                )}
+                <div className="ms-3 text-white">
+                  <small>
+                    Página {currentPage} de {totalPages || 1} ({results.length} registros)
+                  </small>
+                </div>
               </div>
             </>
           ) : (

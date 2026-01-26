@@ -1,9 +1,66 @@
-import React, { useState, useEffect } from "react";
-import { Pagination } from "react-bootstrap";
+import React, { useState, useEffect, useRef } from "react";
+import { Pagination, Table } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
 import "./Flota.css";
+
+// Componente helper para renderizar emojis con Twemoji (cargado desde CDN)
+const TwemojiFlag = ({ emoji, className = "" }) => {
+  const flagRef = useRef(null);
+
+  useEffect(() => {
+    if (flagRef.current && emoji && window.twemoji) {
+      window.twemoji.parse(flagRef.current, {
+        folder: 'svg',
+        ext: '.svg',
+        className: `twemoji-flag ${className}`,
+        size: '36x36'
+      });
+    }
+  }, [emoji, className]);
+
+  return <span ref={flagRef} className={className}>{emoji}</span>;
+};
+
+// Función helper para obtener país por código
+const getCountryByCode = (code) => {
+  return countries.find(country => country.code === code) || null;
+};
+
+// Componente para mostrar bandera del país con tooltip
+const CountryFlag = ({ countryCode, className = "" }) => {
+  const flagRef = useRef(null);
+  const country = getCountryByCode(countryCode);
+
+  useEffect(() => {
+    if (flagRef.current && country && window.twemoji) {
+      window.twemoji.parse(flagRef.current, {
+        folder: 'svg',
+        ext: '.svg',
+        className: `twemoji-flag ${className}`,
+        size: '36x36'
+      });
+    }
+  }, [countryCode, country, className]);
+
+  if (!country) {
+    return <span className={className}>{countryCode}</span>;
+  }
+
+  return (
+    <span
+      ref={flagRef}
+      className={`country-flag-display ${className}`}
+      data-bs-toggle="tooltip"
+      data-bs-placement="top"
+      data-bs-title={country.name}
+      title={country.name}
+    >
+      {country.flag}
+    </span>
+  );
+};
 
 // Lista de países con sus códigos ISO y emojis de banderas
 const countries = [
@@ -112,6 +169,50 @@ export function Flota() {
   useEffect(() => {
     loadFleet();
   }, []);
+
+  // Inicializar tooltips de Bootstrap 5
+  useEffect(() => {
+    const initTooltips = () => {
+      if (window.bootstrap && window.bootstrap.Tooltip) {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => {
+          // Verificar si ya tiene un tooltip inicializado y eliminarlo
+          const existingTooltip = window.bootstrap.Tooltip.getInstance(tooltipTriggerEl);
+          if (existingTooltip) {
+            existingTooltip.dispose();
+          }
+          return new window.bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        return () => {
+          tooltipList.forEach(tooltip => {
+            if (tooltip && typeof tooltip.dispose === 'function') {
+              tooltip.dispose();
+            }
+          });
+        };
+      }
+    };
+
+    // Pequeño delay para asegurar que el DOM esté actualizado
+    const timeoutId = setTimeout(() => {
+      initTooltips();
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      // Limpiar tooltips al desmontar
+      if (window.bootstrap && window.bootstrap.Tooltip) {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        tooltipTriggerList.forEach(el => {
+          const tooltip = window.bootstrap.Tooltip.getInstance(el);
+          if (tooltip) {
+            tooltip.dispose();
+          }
+        });
+      }
+    };
+  }, [fleet, selectedBoat]);
 
   // Cerrar dropdown al hacer clic fuera
   useEffect(() => {
@@ -619,7 +720,7 @@ export function Flota() {
     e.preventDefault();
     
     // Validar campos requeridos
-    if (!certificateFormData.certificateType || !certificateFormData.number || 
+    if (!certificateFormData.certificateType || 
         !certificateFormData.issueDate || !certificateFormData.expirationDate) {
       Swal.fire({
         icon: "warning",
@@ -654,10 +755,13 @@ export function Flota() {
       }
 
       // Preparar datos del certificado
+      // Si el número está vacío o solo tiene espacios, usar "S/N" como default
+      const certificateNumber = certificateFormData.number?.trim() || "S/N";
+      
       const certificateData = {
         boatId: selectedBoat._id,
         certificateType: certificateFormData.certificateType,
-        number: certificateFormData.number,
+        number: certificateNumber,
         issueDate: certificateFormData.issueDate,
         expirationDate: certificateFormData.expirationDate,
         annualInspection: certificateFormData.annualInspection,
@@ -799,6 +903,93 @@ export function Flota() {
     });
   };
 
+  // Función para verificar si un certificado está a 3 meses o menos de vencerse
+  const isCertificateExpiringSoon = (expirationDate) => {
+    if (!expirationDate) return false;
+    const expiration = new Date(expirationDate);
+    const today = new Date();
+    const threeMonthsFromNow = new Date();
+    threeMonthsFromNow.setMonth(today.getMonth() + 3);
+    
+    // Normalizar fechas a inicio del día para comparación
+    today.setHours(0, 0, 0, 0);
+    expiration.setHours(0, 0, 0, 0);
+    threeMonthsFromNow.setHours(0, 0, 0, 0);
+    
+    // Está próximo a vencer si la fecha de vencimiento está entre hoy y 3 meses desde hoy
+    return expiration >= today && expiration <= threeMonthsFromNow;
+  };
+
+  // Función para calcular días restantes hasta el vencimiento
+  const getDaysUntilExpiration = (expirationDate) => {
+    if (!expirationDate) return null;
+    const expiration = new Date(expirationDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    expiration.setHours(0, 0, 0, 0);
+    const diffTime = expiration - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Función para mostrar modal de advertencia de certificado próximo a vencer
+  const handleCertificateExpiringWarning = (certificate) => {
+    const daysLeft = getDaysUntilExpiration(certificate.expirationDate);
+    Swal.fire({
+      icon: "warning",
+      title: "Certificado próximo a vencer",
+      html: `
+        <p>El certificado <strong>${certificate.certificateType}</strong> (N° ${certificate.number}) está próximo a vencer.</p>
+        <p><strong>Fecha de vencimiento:</strong> ${formatDate(certificate.expirationDate)}</p>
+        <p><strong>Días restantes:</strong> ${daysLeft} día${daysLeft !== 1 ? 's' : ''}</p>
+        <p class="text-warning">Se recomienda iniciar los trámites de renovación lo antes posible.</p>
+      `,
+      confirmButtonText: "Entendido",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+      },
+    });
+  };
+
+  // Función para solicitar contacto con gestor
+  const handleRequestGestorContact = async (certificate) => {
+    const result = await Swal.fire({
+      icon: "question",
+      title: "Solicitar contacto con gestor",
+      html: `
+        <p>¿Deseas solicitar que el gestor se contacte con el administrador del barco para comenzar los trámites de renovación del certificado?</p>
+        <p><strong>Certificado:</strong> ${certificate.certificateType} (N° ${certificate.number})</p>
+        <p><strong>Vencimiento:</strong> ${formatDate(certificate.expirationDate)}</p>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Sí, solicitar",
+      cancelButtonText: "Cancelar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+      },
+    });
+
+    if (result.isConfirmed) {
+      // Aquí se podría hacer una llamada a la API para notificar al gestor
+      // Por ahora solo mostramos un mensaje de confirmación
+      Swal.fire({
+        icon: "success",
+        title: "Solicitud enviada",
+        text: "Tu solicitud ha sido enviada. El gestor se contactará con el administrador del barco para iniciar los trámites de renovación.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
+    }
+  };
+
   // Funciones de paginación
   const totalPages = Math.ceil(fleet.length / boatsPerPage);
   const indexOfLastBoat = currentPage * boatsPerPage;
@@ -834,10 +1025,11 @@ export function Flota() {
   if (loading) {
     return (
       <FadeIn>
-        <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-center container">
-          <div className="spinner-border text-orange" role="status">
+        <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-center justify-content-center container" style={{ minHeight: "60vh" }}>
+          <div className="spinner-border text-orange mb-3" role="status">
             <span className="visually-hidden">Cargando flota...</span>
           </div>
+          <p className="text-white mb-0 display-6">Cargando su flota...</p>
         </div>
       </FadeIn>
     );
@@ -854,7 +1046,7 @@ export function Flota() {
                 className="btn btn-warning"
                 onClick={handleOpenAddForm}
               >
-                <i className="bi bi-plus-circle me-2"></i>
+                <i className="bi bi-plus-circle-fill me-2"></i>
                 Agregar Barco
               </button>
             )}
@@ -906,7 +1098,7 @@ export function Flota() {
                   <div className="col-12 col-md-6">
                     <p className="mb-2">
                       <i className="bi bi-flag-fill me-2 text-orange"></i>
-                      <strong className="text-orange">País de Registro:</strong> <span className="text-white">{selectedBoat.registrationCountry}</span>
+                      <strong className="text-orange">Bandera:</strong> <span className="text-white"><CountryFlag countryCode={selectedBoat.registrationCountry} /></span>
                     </p>
                   </div>
                   <div className="col-12 col-md-6">
@@ -979,7 +1171,7 @@ export function Flota() {
                       className="btn btn-warning"
                       onClick={() => handleAddCertificate(selectedBoat._id)}
                     >
-                      <i className="bi bi-plus-circle me-2"></i>
+                      <i className="bi bi-plus-circle-fill me-2"></i>
                       Agregar Certificado
                     </button>
                   )}
@@ -993,13 +1185,13 @@ export function Flota() {
                   </div>
                 ) : boatCertificates.length > 0 ? (
                   <div className="table-responsive">
-                    <table className="table table-dark table-hover">
+                    <Table striped bordered hover variant="dark" className="table-dark">
                       <thead>
                         <tr>
-                          <th>Tipo de Certificado</th>
+                          <th>Tipo</th>
                           <th>Número</th>
-                          <th>Fecha de Emisión</th>
-                          <th>Fecha de Vencimiento</th>
+                          <th>Emisión</th>
+                          <th>Vencimiento</th>
                           <th>Estado</th>
                           {boatCertificates.some(cert => cert.observations) && <th>Observaciones</th>}
                           <th>Acciones</th>
@@ -1013,7 +1205,20 @@ export function Flota() {
                             <td>{formatDate(certificate.issueDate)}</td>
                             <td>{formatDate(certificate.expirationDate)}</td>
                             <td>
-                              {certificate.status === 'vigente' && <span className="badge bg-success">Vigente</span>}
+                              {certificate.status === 'vigente' && (
+                                isCertificateExpiringSoon(certificate.expirationDate) ? (
+                                  <span 
+                                    className="badge bg-warning certificate-expiring-badge"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleCertificateExpiringWarning(certificate)}
+                                    title="Click para más información"
+                                  >
+                                    Vigente
+                                  </span>
+                                ) : (
+                                  <span className="badge bg-success">Vigente</span>
+                                )
+                              )}
                               {certificate.status === 'vencido' && <span className="badge bg-danger">Vencido</span>}
                               {certificate.status === 'anulado' && <span className="badge bg-secondary">Anulado</span>}
                             </td>
@@ -1027,8 +1232,8 @@ export function Flota() {
                                     href={certificate.pdfFile} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="certificate-action-link"
-                                    title="Ver PDF"
+                                  className="action-link"
+                                  title="Ver PDF"
                                   >
                                     <i className="bi bi-file-earmark-pdf-fill me-1"></i>
                                     Ver PDF
@@ -1036,7 +1241,7 @@ export function Flota() {
                                 )}
                                 <a 
                                   href="#"
-                                  className="certificate-action-link"
+                                  className="action-link"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     handleModifyCertificate(certificate);
@@ -1048,7 +1253,7 @@ export function Flota() {
                                 </a>
                                 <a 
                                   href="#"
-                                  className="certificate-action-link certificate-action-link-danger"
+                                  className="action-link action-link-danger"
                                   onClick={(e) => {
                                     e.preventDefault();
                                     handleDeleteCertificate(certificate._id);
@@ -1058,12 +1263,26 @@ export function Flota() {
                                   <i className="bi bi-trash-fill me-1"></i>
                                   Eliminar
                                 </a>
+                                {(certificate.status === 'vigente' && isCertificateExpiringSoon(certificate.expirationDate)) || certificate.status === 'vencido' ? (
+                                  <a 
+                                    href="#"
+                                    className="action-link"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleRequestGestorContact(certificate);
+                                    }}
+                                    title="Solicitar contacto con gestor"
+                                  >
+                                    <i className="bi bi-person-badge-fill me-1"></i>
+                                    Gestor
+                                  </a>
+                                ) : null}
                               </div>
                             </td>
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </Table>
                   </div>
                 ) : (
                   <div className="text-center py-5">
@@ -1080,7 +1299,7 @@ export function Flota() {
                     <h4 className="text-orange mb-0">{editingCertificateId ? "Modificar Certificado" : "Agregar Certificado"}</h4>
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-secondary"
+                      className="btn btn-sm btn-secondary"
                       onClick={handleCancelCertificateForm}
                     >
                       <i className="bi bi-x-lg"></i>
@@ -1110,14 +1329,14 @@ export function Flota() {
                         </select>
                       </div>
                       <div className="col-12 col-md-6">
-                        <label className="flota-form-label">Número <span className="text-danger">*</span></label>
+                        <label className="flota-form-label">Número</label>
                         <input
                           type="text"
                           className="form-control flota-form-control"
                           name="number"
                           value={certificateFormData.number}
                           onChange={handleCertificateInputChange}
-                          required
+                          placeholder="S/N"
                         />
                       </div>
                       <div className="col-12 col-md-6">
@@ -1169,7 +1388,7 @@ export function Flota() {
                         </small>
                         {certificatePdfFile && (
                           <small className="text-success d-block mt-1">
-                            <i className="bi bi-check-circle me-1"></i>
+                            <i className="bi bi-check-circle-fill me-1"></i>
                             Archivo seleccionado: {certificatePdfFile.name}
                           </small>
                         )}
@@ -1207,7 +1426,7 @@ export function Flota() {
                           </>
                         ) : (
                           <>
-                            <i className="bi bi-check-circle me-2"></i>
+                            <i className="bi bi-check-circle-fill me-2"></i>
                             {editingCertificateId ? "Actualizar Certificado" : "Crear Certificado"}
                           </>
                         )}
@@ -1226,7 +1445,7 @@ export function Flota() {
                   <h5 className="text-orange mb-0">Solicitar Registro de Barco</h5>
                   <button
                     type="button"
-                    className="btn btn-sm btn-outline-secondary"
+                    className="btn btn-sm btn-secondary"
                     onClick={handleCancelForm}
                   >
                     <i className="bi bi-x-lg"></i>
@@ -1260,23 +1479,36 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <label className="flota-form-label">País de Registro <span className="text-danger">*</span></label>
                       <div className="position-relative">
-                        <input
-                          type="text"
-                          className="form-control flota-form-control"
-                          value={countrySearch}
-                          onChange={handleCountrySearch}
-                          onFocus={() => {
-                            if (!formData.registrationCountry) {
-                              setShowCountryDropdown(true);
-                            } else {
-                              // Si ya hay un país seleccionado, mostrar todos al enfocar
+                        {formData.registrationCountry && countrySearch && !showCountryDropdown ? (
+                          <div
+                            className="form-control flota-form-control country-input-display"
+                            onClick={() => {
                               setCountrySearch("");
                               setShowCountryDropdown(true);
-                            }
-                          }}
-                          placeholder="Buscar país..."
-                          required
-                        />
+                            }}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <TwemojiFlag emoji={countrySearch} />
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-control flota-form-control"
+                            value={countrySearch}
+                            onChange={handleCountrySearch}
+                            onFocus={() => {
+                              if (!formData.registrationCountry) {
+                                setShowCountryDropdown(true);
+                              } else {
+                                // Si ya hay un país seleccionado, mostrar todos al enfocar
+                                setCountrySearch("");
+                                setShowCountryDropdown(true);
+                              }
+                            }}
+                            placeholder="Buscar país..."
+                            required
+                          />
+                        )}
                         {showCountryDropdown && (
                           <div className="country-dropdown">
                             {filteredCountries.length > 0 ? (
@@ -1286,7 +1518,9 @@ export function Flota() {
                                   className="country-option"
                                   onClick={() => handleCountrySelect(country)}
                                 >
-                                  <span className="country-flag">{country.flag}</span>
+                                  <span className="country-flag">
+                                    <TwemojiFlag emoji={country.flag} />
+                                  </span>
                                   <span className="country-name">{country.name}</span>
                                   <span className="country-code">{country.code}</span>
                                 </div>
@@ -1450,7 +1684,7 @@ export function Flota() {
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-check-circle me-2"></i> SOLICITAR REGISTRO
+                          <i className="bi bi-check-circle-fill me-2"></i> SOLICITAR REGISTRO
                         </>
                       )}
                     </button>
@@ -1473,7 +1707,7 @@ export function Flota() {
                   if (!boat) return null;
 
                   return (
-                    <div key={fleetItem._id || index} className="col-12 col-md-6">
+                    <div key={fleetItem._id || index} className="col-12 col-lg-6">
                       <div className="boat-card-minimal">
                         {boat.image && (
                           <div className="boat-card-image">
@@ -1496,7 +1730,7 @@ export function Flota() {
                               <div className="col-6">
                                 <p className="mb-1">
                                   <i className="bi bi-flag-fill me-1 text-orange"></i>
-                                  <small><strong>País:</strong> {boat.registrationCountry}</small>
+                                  <small><strong>Bandera:</strong> <CountryFlag countryCode={boat.registrationCountry} /></small>
                                 </p>
                               </div>
                               <div className="col-6">
@@ -1559,19 +1793,19 @@ export function Flota() {
                               </div>
                             </div>
                           </div>
-                          <div className="boat-card-actions mt-3">
+                          <div className="boat-card-actions mt-3 d-flex gap-2">
                             <button
-                              className="btn btn-sm btn-outline-warning w-100 mb-2"
+                              className="btn btn-sm btn-warning flex-fill"
                               onClick={() => handleShowDetails(boat._id || fleetItem.boatId, fleetItem)}
                             >
-                              <i className="bi bi-info-circle me-2"></i>
+                              <i className="bi bi-info-circle-fill me-2"></i>
                               Más detalles
                             </button>
                             <button
-                              className="btn btn-sm btn-outline-danger w-100"
+                              className="btn btn-sm btn-danger flex-fill"
                               onClick={() => handleRemoveBoat(boat._id || fleetItem.boatId)}
                             >
-                              <i className="bi bi-trash me-2"></i>
+                              <i className="bi bi-trash-fill me-2"></i>
                               Remover
                             </button>
                           </div>
@@ -1583,53 +1817,49 @@ export function Flota() {
                 </div>
                 
                 {/* Paginación */}
-                {fleet.length > boatsPerPage && (
-                  <div className="d-flex flex-column align-items-center mt-4">
-                    <Pagination className="mb-0">
-                      <Pagination.First
-                        onClick={() => handlePageChange(1)}
-                        disabled={currentPage === 1 || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      <Pagination.Prev
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1 || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      {totalPages > 0 ? (
-                        getPageNumbers().map((number) => (
-                          <Pagination.Item
-                            key={number}
-                            active={number === currentPage}
-                            onClick={() => handlePageChange(number)}
-                            className="custom-pagination-item"
-                          >
-                            {number}
-                          </Pagination.Item>
-                        ))
-                      ) : (
-                        <Pagination.Item active disabled className="custom-pagination-item">
-                          1
+                <div className="d-flex flex-column align-items-center mt-4">
+                  <Pagination className="mb-0">
+                    <Pagination.First
+                      onClick={() => handlePageChange(1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Prev
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    {totalPages > 0 ? (
+                      getPageNumbers().map((number) => (
+                        <Pagination.Item
+                          key={number}
+                          active={number === currentPage}
+                          onClick={() => handlePageChange(number)}
+                          className="custom-pagination-item"
+                        >
+                          {number}
                         </Pagination.Item>
-                      )}
-                      <Pagination.Next
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                      <Pagination.Last
-                        onClick={() => handlePageChange(totalPages)}
-                        disabled={currentPage === totalPages || totalPages === 0}
-                        className="custom-pagination-item"
-                      />
-                    </Pagination>
-                    {totalPages > 0 && (
-                      <div className="text-white mt-2">
-                        Página {currentPage} de {totalPages} ({fleet.length} barcos)
-                      </div>
+                      ))
+                    ) : (
+                      <Pagination.Item active disabled className="custom-pagination-item">
+                        1
+                      </Pagination.Item>
                     )}
+                    <Pagination.Next
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Last
+                      onClick={() => handlePageChange(totalPages || 1)}
+                      disabled={currentPage === (totalPages || 1) || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                  </Pagination>
+                  <div className="text-white mt-2">
+                    Página {currentPage} de {totalPages || 1} ({fleet.length} barcos)
                   </div>
-                )}
+                </div>
               </>
             )}
             </div>

@@ -348,7 +348,7 @@ export function MercadoPagoPayment() {
 
             <div className="text-center mt-4">
               <button 
-                className="btn btn-outline-secondary" 
+                className="btn btn-secondary" 
                 onClick={() => navigate(`/course/${courseId}`)}
               >
                 <i className="bi bi-arrow-left me-2"></i>

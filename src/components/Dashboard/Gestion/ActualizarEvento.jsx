@@ -558,7 +558,7 @@ export function ActualizarEvento({ event }) {
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle me-2"></i> ACTUALIZAR
+                <i className="bi bi-check-circle-fill me-2"></i> ACTUALIZAR
               </>
             )}
           </Button>

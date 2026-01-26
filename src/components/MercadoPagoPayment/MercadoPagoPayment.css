@@ -180,16 +180,19 @@
   box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
-.btn-outline-secondary {
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
+  color: #ffffff;
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.btn-outline-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
   transform: translateY(-2px);
 }
 

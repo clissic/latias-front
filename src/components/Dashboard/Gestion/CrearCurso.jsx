@@ -1082,7 +1082,7 @@ export function CrearCurso() {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Módulos:</h5>
           <Button variant="success" size="sm" onClick={addModule}>
-            <i className="bi bi-plus-circle me-1"></i> Agregar Módulo
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Módulo
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -1135,7 +1135,7 @@ export function CrearCurso() {
                   size="sm"
                   onClick={() => addLesson(moduleIndex)}
                 >
-                  <i className="bi bi-plus-circle me-1"></i> Agregar Lección
+                  <i className="bi bi-plus-circle-fill me-1"></i> Agregar Lección
                 </Button>
               </div>
 
@@ -1196,7 +1196,7 @@ export function CrearCurso() {
                   size="sm"
                   onClick={() => addQuestion(moduleIndex)}
                 >
-                  <i className="bi bi-plus-circle me-1"></i> Agregar Pregunta
+                  <i className="bi bi-plus-circle-fill me-1"></i> Agregar Pregunta
                 </Button>
               </div>
 
@@ -1235,7 +1235,7 @@ export function CrearCurso() {
                         size="sm"
                         onClick={() => addOption(moduleIndex, questionIndex)}
                       >
-                        <i className="bi bi-plus-circle me-1"></i> Agregar Opción
+                        <i className="bi bi-plus-circle-fill me-1"></i> Agregar Opción
                       </Button>
                     </div>
 
@@ -1289,7 +1289,7 @@ export function CrearCurso() {
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
           <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle me-2"></i> CREAR CURSO
+            <i className="bi bi-check-circle-fill me-2"></i> CREAR CURSO
           </Button>
         </div>
       </div>

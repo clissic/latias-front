@@ -216,13 +216,11 @@ export function Cursos() {
                 className="custom-pagination-item"
               />
             </Pagination>
-            {totalPages > 0 && (
-              <div className="ms-3 text-white">
-                <small>
-                  Página {currentPage} de {totalPages} ({courses.length} cursos)
-                </small>
-              </div>
-            )}
+            <div className="ms-3 text-white">
+              <small>
+                Página {currentPage} de {totalPages || 1} ({courses.length} cursos)
+              </small>
+            </div>
           </div>
         </section>
       </div>

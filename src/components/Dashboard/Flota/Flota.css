@@ -137,6 +137,44 @@
   margin-right: 0.75rem;
   min-width: 2rem;
   text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-flag .twemoji-flag {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-block;
+}
+
+/* Estilos para la bandera del país en las tarjetas y detalles */
+.country-flag-display {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+
+.country-flag-display .twemoji-flag {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.country-input-display {
+  display: flex;
+  align-items: center;
+  min-height: calc(1.5rem + 0.75rem + 2px);
+}
+
+.country-input-display .twemoji-flag {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  margin-right: 0.25rem;
 }
 
 .country-name {
@@ -233,8 +271,19 @@
   word-break: break-word;
 }
 
+
 .boat-card-actions {
   margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.boat-card-actions .btn {
+  height: 100%;
+  min-height: 38px; /* Altura mínima para botones sm de Bootstrap */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Estilos para la vista de detalles del barco */
@@ -253,53 +302,27 @@
   z-index: 1;
 }
 
-/* Estilos para la tabla de certificados */
-.table-dark {
-  background-color: rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.1);
-}
+/* Estilos de tablas y action-links movidos a App.css (globales) */
 
-.table-dark th {
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #ffa500;
+/* Estilos para badge de certificado próximo a vencer */
+.certificate-expiring-badge {
+  animation: blink-warning 1.5s infinite;
+  background-color: #ffa500 !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
-.table-dark td {
-  border-color: rgba(255, 255, 255, 0.1);
-  color: white;
+@keyframes blink-warning {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 5px rgba(255, 165, 0, 0.5);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.8);
+  }
 }
 
-.table-dark tbody tr:hover {
-  background-color: rgba(255, 165, 0, 0.1);
-}
-
-/* Estilos para los links de acciones en la tabla de certificados */
-.certificate-action-link {
-  color: #ffa500;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-}
-
-.certificate-action-link:hover {
-  color: #ff8c00;
-  text-decoration: underline;
-}
-
-.certificate-action-link-danger {
-  color: #dc3545;
-}
-
-.certificate-action-link-danger:hover {
-  color: #c82333;
-}
-
-.certificate-action-link i {
-  font-size: 0.9rem;
-}
 
 /* Estilos para paginación */
 .custom-pagination-item {

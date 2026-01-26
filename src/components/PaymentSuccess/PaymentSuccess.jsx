@@ -151,7 +151,7 @@ export function PaymentSuccess() {
                       Volver a Cursos
                     </button>
                     <button 
-                      className="btn btn-outline-light" 
+                      className="btn btn-light" 
                       onClick={() => navigate('/dashboard')}
                     >
                       Ir al Dashboard
@@ -186,7 +186,7 @@ export function PaymentSuccess() {
                   </>
                 ) : (
                   <>
-                    <i className="bi bi-check-circle text-success display-1"></i>
+                    <i className="bi bi-check-circle-fill text-success display-1"></i>
                     <h2 className="text-success mt-3">¡Pago Exitoso!</h2>
                     <p className="text-white mb-4">
                       Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.
@@ -244,7 +244,7 @@ export function PaymentSuccess() {
                     Ir al Dashboard
                   </button>
                   <button 
-                    className="btn btn-outline-light" 
+                    className="btn btn-light" 
                     onClick={handleGoToCourses}
                   >
                     <i className="bi bi-book me-2"></i>

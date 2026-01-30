@@ -2,8 +2,6 @@
   width: 100%;
 }
 
-/* Estilos de tablas y action-links movidos a App.css (globales) */
-
 .gestionar-mis-cursos-container .btn {
   white-space: nowrap;
 }

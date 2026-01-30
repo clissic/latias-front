@@ -13,8 +13,6 @@
   margin-top: 2rem;
 }
 
-/* Estilos de tablas movidos a App.css (globales) */
-
 .form-control:focus,
 .form-select:focus {
   background-color: #212529;
@@ -27,9 +25,6 @@
   color: #6c757d;
 }
 
-/* Estilos de action-link movidos a App.css (globales) */
-
-/* Estilos para el modal */
 .custom-modal .modal-content {
   background-color: #082b55;
   color: #ffffff;

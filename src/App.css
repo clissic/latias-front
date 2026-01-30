@@ -125,8 +125,8 @@ body {
 }
 
 .custom-swal-button {
-  background-color: rgb(194, 126, 0) !important; /* Fondo naranja */
-  color: white !important; /* Texto blanco */
+  background-color: rgb(194, 126, 0) !important;
+  color: white !important;
   border: none !important;
   padding: 10px 20px !important;
   font-size: 16px !important;
@@ -140,11 +140,6 @@ body {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* ============================================
-   ESTILOS GLOBALES PARA TABLAS
-   ============================================ */
-
-/* Contenedor responsive para tablas */
 .table-responsive {
   border-radius: 8px;
   overflow-x: auto;
@@ -153,7 +148,6 @@ body {
   width: 100%;
 }
 
-/* Scrollbar personalizado para las tablas */
 .table-responsive::-webkit-scrollbar {
   height: 8px;
 }
@@ -172,7 +166,6 @@ body {
   background: rgba(255, 165, 0, 0.7);
 }
 
-/* Estilos para tablas dark */
 .table-dark {
   background-color: #082b55;
   border-color: rgba(255, 255, 255, 0.1);
@@ -198,12 +191,10 @@ body {
   background-color: rgba(255, 165, 0, 0.1);
 }
 
-/* Estilos para ícono de copiar ID */
 .cursor-pointer {
   cursor: pointer;
 }
 
-/* Estilos globales para links de acciones en tablas */
 .action-link {
   color: #ffa500;
   cursor: pointer;
@@ -223,7 +214,6 @@ body {
   color: #ff7f00;
 }
 
-/* Estilos para links de acción peligrosa (Eliminar) */
 .action-link-danger {
   color: #dc3545;
 }
@@ -233,7 +223,6 @@ body {
   text-decoration: none;
 }
 
-/* Responsive para tablas */
 @media (max-width: 768px) {
   .table-responsive {
     font-size: 0.875rem;

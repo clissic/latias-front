@@ -19,7 +19,6 @@
   width: 20px;
 }
 
-/* Estilos para el formulario de registro de barco - misma estética que el menú del dashboard */
 .flota-form-container {
   height: auto;
   border: #082b557c 1px solid;
@@ -30,7 +29,6 @@
   margin-bottom: 2rem;
 }
 
-/* Estilos para el formulario de registro de barco - igual que crear curso */
 .flota-registration-form {
   color: white;
 }
@@ -80,7 +78,6 @@
   box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
 }
 
-/* Estilos para el selector de países con buscador */
 .country-dropdown {
   position: absolute;
   top: 100%;
@@ -148,7 +145,6 @@
   display: inline-block;
 }
 
-/* Estilos para la bandera del país en las tarjetas y detalles */
 .country-flag-display {
   display: inline-flex;
   align-items: center;
@@ -199,7 +195,6 @@
   background-color: transparent;
 }
 
-/* Estilos para tarjetas minimalistas de barcos - igual que Gestión */
 .boat-card-minimal {
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid #082b557c;
@@ -219,7 +214,6 @@
   box-shadow: 0 10px 20px #051933a0;
 }
 
-/* Estilos responsive para móvil - igual que Gestión */
 @media (max-width: 767.98px) {
   .boat-card-minimal {
     padding: 1.5rem;
@@ -280,13 +274,12 @@
 
 .boat-card-actions .btn {
   height: 100%;
-  min-height: 38px; /* Altura mínima para botones sm de Bootstrap */
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Estilos para la vista de detalles del barco */
 .boat-detail-parallax {
   position: relative;
 }
@@ -302,9 +295,6 @@
   z-index: 1;
 }
 
-/* Estilos de tablas y action-links movidos a App.css (globales) */
-
-/* Estilos para badge de certificado próximo a vencer */
 .certificate-expiring-badge {
   animation: blink-warning 1.5s infinite;
   background-color: #ffa500 !important;
@@ -323,8 +313,6 @@
   }
 }
 
-
-/* Estilos para paginación */
 .custom-pagination-item {
   margin: 0 2px !important;
 }

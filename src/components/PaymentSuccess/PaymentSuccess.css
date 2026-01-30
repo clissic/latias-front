@@ -114,7 +114,6 @@
   height: 3rem;
 }
 
-/* Animaciones */
 @keyframes fadeInUp {
   from {
     opacity: 0;

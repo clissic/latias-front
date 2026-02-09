@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { General } from "./General/General";
+import { GestorDetalle } from "./General/GestorDetalle";
 import { Cursos } from "./Cursos/Cursos";
 import { Flota } from "./Flota/Flota";
 import { Eventos } from "./Eventos/Eventos";
@@ -9,10 +10,13 @@ import { Certificados } from "./Certificados/Certificados";
 import { CerrarSesion } from "./CerrarSesion/CerrarSesion";
 import { Ajustes } from "./Ajustes/Ajustes";
 import { Gestion } from "./Gestion/Gestion";
+import { Portafolio } from "./Portafolio/Portafolio";
 import { Camarote } from "./Camarote/Camarote";
 import { ProtectedRoute } from '../../components/ProtectedRoute/ProtectedRoute.jsx'
 import { ProtectedAdminRoute } from '../../components/ProtectedAdminRoute/ProtectedAdminRoute.jsx'
+import { ProtectedGestorRoute } from '../../components/ProtectedGestorRoute/ProtectedGestorRoute.jsx'
 import { useAuth } from '../../context/AuthContext';
+import { hasCategory } from '../../utils/userCategory';
 import "./Dashboard.css";
 
 export function Dashboard() {
@@ -28,7 +32,7 @@ export function Dashboard() {
 
   // Redirige usuarios checkin a /checkin
   useEffect(() => {
-    if (user?.category === "checkin") {
+    if (hasCategory(user, "checkin")) {
       navigate('/checkin', { replace: true });
     }
   }, [user, navigate]);
@@ -38,7 +42,7 @@ export function Dashboard() {
   }
 
   // Si el usuario es checkin, no mostrar nada (será redirigido)
-  if (user?.category === "checkin") {
+  if (hasCategory(user, "checkin")) {
     return null;
   }
 
@@ -94,18 +98,25 @@ export function Dashboard() {
                     label: "Ajustes",
                   },
                   // Mostrar "Gestión" solo para administradores
-                  ...(user?.category === "Administrador" ? [{
+                  ...(hasCategory(user, "Administrador") ? [{
                     to: "/dashboard/gestion",
                     icon: "bi-shield-fill-check",
                     label: "Gestión",
-                    customClass: "mt-3"
+                    areaTitle: "Área Administrador"
+                  }] : []),
+                  // Mostrar "Portafolio" solo para gestores
+                  ...(hasCategory(user, "Gestor") ? [{
+                    to: "/dashboard/portafolio",
+                    icon: "bi-briefcase-fill",
+                    label: "Portafolio",
+                    areaTitle: "Área Gestor"
                   }] : []),
                   // Mostrar "Camarote" solo para instructores
-                  ...(user?.category === "Instructor" ? [{
+                  ...(hasCategory(user, "Instructor") ? [{
                     to: "/dashboard/camarote",
                     icon: "bi-door-open-fill",
                     label: "Camarote",
-                    customClass: "mt-3"
+                    areaTitle: "Área Instructor"
                   }] : []),
                   {
                     to: "/dashboard/cerrar-sesion",
@@ -113,17 +124,29 @@ export function Dashboard() {
                     label: "Cerrar sesión",
                     customClass: "mt-5"
                   },
-                ].map(({ to, icon, label, customClass }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    className={({ isActive }) => (isActive ? "active" : "")}
-                  >
-                    <li className={`dashboard-menu-item custom-lg-size ${customClass}`}>
-                      <i className={`me-2 bi ${icon}`}></i> <span className="d-inline d-md-none d-lg-inline">{label}</span>
-                    </li>
-                  </NavLink>
-                ))}
+                ].map((item) => {
+                  const { to, icon, label, customClass, areaTitle } = item;
+                  const link = (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      className={({ isActive }) => (isActive ? "active" : "")}
+                    >
+                      <li className={`dashboard-menu-item custom-lg-size ${customClass}`}>
+                        <i className={`me-2 bi ${icon}`}></i> <span className="d-inline d-md-none d-lg-inline">{label}</span>
+                      </li>
+                    </NavLink>
+                  );
+                  if (areaTitle) {
+                    return (
+                      <React.Fragment key={to}>
+                        <li className="dashboard-menu-area-label">{areaTitle}</li>
+                        {link}
+                      </React.Fragment>
+                    );
+                  }
+                  return link;
+                })}
               </ul>
             </div>
             <div className="w-100 text-center d-none d-md-block">
@@ -133,6 +156,7 @@ export function Dashboard() {
 
           <section className="dashboard-content-column col-12 col-md-9">
             <Routes>
+              <Route path="general/gestor" element={<GestorDetalle user={user} />} />
               <Route path="general" element={<General user={user} />} />
               <Route path="cursos" element={<Cursos user={user} />} />
               <Route path="flota" element={<Flota />} />
@@ -140,6 +164,7 @@ export function Dashboard() {
               <Route path="certificados" element={<Certificados user={user} />} />
               <Route path="ajustes" element={<Ajustes user={user} />} />
               <Route path="gestion" element={<ProtectedAdminRoute><Gestion user={user} /></ProtectedAdminRoute>} />
+              <Route path="portafolio" element={<ProtectedGestorRoute><Portafolio user={user} /></ProtectedGestorRoute>} />
               <Route path="camarote" element={<Camarote user={user} />} />
               <Route path="cerrar-sesion" element={<CerrarSesion />} />
               <Route path="*" element={<General />} />

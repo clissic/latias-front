@@ -1,16 +1,16 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { hasCategory } from "../../utils/userCategory";
 
-export function ProtectedCheckinRoute({ children }) {
+export function ProtectedGestorRoute({ children }) {
   const { isAuthenticated, user } = useAuth();
+  const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Verificar que el usuario es de categoría checkin
-  if (!hasCategory(user, "checkin")) {
+  if (!hasCategory(user, "Gestor")) {
     return <Navigate to="/dashboard/general" replace />;
   }
 

@@ -176,14 +176,6 @@ export function GestionarMisCursos({ user, onBack }) {
     <div className="gestionar-mis-cursos-container">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="text-orange mb-0">Gestionar mis cursos asignados</h4>
-        <Button 
-          variant="outline-secondary"
-          onClick={onBack}
-          className="btn-orange-custom"
-        >
-          <i className="bi bi-arrow-left me-2"></i>
-          Volver
-        </Button>
       </div>
 
       {courses.length === 0 ? (
@@ -262,6 +254,17 @@ export function GestionarMisCursos({ user, onBack }) {
           </Table>
         </div>
       )}
+      
+      <div className="mt-4 d-flex justify-content-end">
+        <Button 
+          variant="outline"
+          onClick={onBack}
+          className="btn-outline-orange"
+        >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
+          Volver
+        </Button>
+      </div>
     </div>
   );
 }

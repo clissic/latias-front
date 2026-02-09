@@ -11,12 +11,9 @@ export function PaymentSuccess() {
   const [error, setError] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
 
-  // Mercado Pago envía estos parámetros cuando redirige después del pago
+  // Parámetros de retorno de Checkout Pro (back_urls): payment_id, collection_id, status, etc.
   const paymentId = searchParams.get('payment_id');
-  const status = searchParams.get('status');
-  const preferenceId = searchParams.get('preference_id');
   const collectionId = searchParams.get('collection_id');
-  const collectionStatus = searchParams.get('collection_status');
 
   useEffect(() => {
     // Obtener el ID del pago (puede venir como payment_id o collection_id)
@@ -143,18 +140,19 @@ export function PaymentSuccess() {
                   <i className="bi bi-exclamation-triangle text-danger display-1"></i>
                   <h2 className="text-danger mt-3">Error en el Pago</h2>
                   <p className="text-white">{error}</p>
-                  <div className="mt-4">
-                    <button 
-                      className="btn btn-warning me-3" 
-                      onClick={handleGoToCourses}
-                    >
-                      Volver a Cursos
-                    </button>
+                  <div className="mt-4 d-flex justify-content-end gap-2">
                     <button 
                       className="btn btn-light" 
                       onClick={() => navigate('/dashboard')}
                     >
                       Ir al Dashboard
+                    </button>
+                    <button 
+                      className="btn btn-outline-orange" 
+                      onClick={handleGoToCourses}
+                    >
+                      <i className="bi bi-arrow-left-circle-fill me-2"></i>
+                      Volver a Cursos
                     </button>
                   </div>
                 </div>

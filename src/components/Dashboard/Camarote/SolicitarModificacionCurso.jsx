@@ -709,9 +709,9 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
         <h4 className="text-orange mb-0">Solicitar Modificación de Curso</h4>
         {onBack && (
           <Button 
-            variant="outline-secondary"
+            variant="outline"
             onClick={onBack}
-            className="btn-orange-custom"
+            className="btn-outline-orange"
           >
             <i className="bi bi-arrow-left me-2"></i>
             Volver

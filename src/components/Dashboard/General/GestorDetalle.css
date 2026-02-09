@@ -1,0 +1,108 @@
+.gestor-detalle-card {
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.gestor-detalle-card h3 {
+  color: #ffa500;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.gestor-detalle-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem 1.5rem;
+  color: #fff;
+}
+
+.gestor-detalle-info p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.gestor-detalle-filters {
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.gestor-detalle-filters h4 {
+  color: #ffa500;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.gestor-detalle-filters .form-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.gestor-detalle-filters .form-control,
+.gestor-detalle-filters .form-select {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.gestor-detalle-filters .form-control:focus,
+.gestor-detalle-filters .form-select:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.gestor-detalle-table-wrap {
+  border: #082b557c 1px solid;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.gestor-detalle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.gestor-detalle-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.gestor-detalle-buttons .btn-warning {
+  background-color: #ffa500;
+  border-color: #ffa500;
+  color: #082b55;
+}
+
+.gestor-detalle-buttons .btn-warning:hover {
+  background-color: #e59400;
+  border-color: #e59400;
+  color: #082b55;
+}
+
+.gestor-detalle-empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.gestor-detalle-empty i {
+  font-size: 3rem;
+  color: #ffa500;
+  margin-bottom: 0.5rem;
+}

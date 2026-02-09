@@ -175,6 +175,29 @@ class ApiService {
     return response.json();
   }
 
+  async getGestors() {
+    const response = await this.request('/users/gestors', {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  /** Clientes que eligieron al usuario actual como gestor (solo categoría Gestor). Incluye fleetCount. */
+  async getGestorClients() {
+    const response = await this.request('/users/gestor/clients', { method: 'GET' });
+    return response.json();
+  }
+
+  async updateMyManager(managerId, jurisdictionName) {
+    const body = { managerId: managerId || '' };
+    if (jurisdictionName) body.jurisdiction = jurisdictionName;
+    const response = await this.request('/users/profile/manager', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+    return response.json();
+  }
+
   async deleteUser(userId) {
     const response = await this.request(`/users/${userId}`, {
       method: 'DELETE',
@@ -385,6 +408,14 @@ class ApiService {
     return response.json();
   }
 
+  // Obtener barcos por propietario (propio usuario o gestor viendo cliente)
+  async getBoatsByOwner(ownerId) {
+    const response = await this.request(`/boats/owner/${ownerId}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
   // Subir imagen de barco
   async uploadBoatImage(formData) {
     const accessToken = localStorage.getItem('accessToken');
@@ -571,6 +602,65 @@ class ApiService {
   async deleteCertificate(id) {
     const response = await this.request(`/certificates/delete/${id}`, {
       method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  // ========== SOLICITUDES AL GESTOR (SHIP-REQUESTS) ==========
+
+  async getShipRequestsByOwner(ownerId) {
+    const response = await this.request(`/ship-requests/owner/${ownerId}`, { method: 'GET' });
+    return response.json();
+  }
+
+  async getShipRequestsByShip(shipId) {
+    const response = await this.request(`/ship-requests/ship/${shipId}`, { method: 'GET' });
+    return response.json();
+  }
+
+  async getShipRequestById(id) {
+    const response = await this.request(`/ship-requests/${id}`, { method: 'GET' });
+    return response.json();
+  }
+
+  async updateShipRequest(id, data) {
+    const response = await this.request(`/ship-requests/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+
+  async updateShipRequestStatus(id, status, rejectionReason = null) {
+    const body = { status };
+    if (rejectionReason != null && String(rejectionReason).trim() !== "") {
+      body.rejectionReason = String(rejectionReason).trim();
+    }
+    const response = await this.request(`/ship-requests/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    });
+    return response.json();
+  }
+
+  async deleteShipRequest(id) {
+    const response = await this.request(`/ship-requests/${id}`, { method: 'DELETE' });
+    return response.json();
+  }
+
+  async createShipRequest(data) {
+    const response = await this.request('/ship-requests', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+
+  /** Crea solicitud desde certificado y envía email al gestor. types: ["Renovación"|"Preparación"|"Asesoramiento"], notes opcional */
+  async createCertificateRequest(shipId, certificate, types, notes = null) {
+    const response = await this.request('/ship-requests/certificate', {
+      method: 'POST',
+      body: JSON.stringify({ shipId, certificate, types, notes: notes || undefined }),
     });
     return response.json();
   }

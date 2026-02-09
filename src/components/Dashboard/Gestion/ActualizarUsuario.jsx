@@ -12,11 +12,12 @@ export function ActualizarUsuario({ user }) {
     ci: "",
     birth: "",
     phone: "",
-    category: "Cadete"
+    category: ["Cadete"]
   });
 
   useEffect(() => {
     if (user) {
+      const cats = Array.isArray(user.category) ? user.category : (user.category != null ? [user.category] : ["Cadete"]);
       setUserData({
         firstName: user.firstName || "",
         lastName: user.lastName || "",
@@ -24,7 +25,7 @@ export function ActualizarUsuario({ user }) {
         ci: user.ci || "",
         birth: user.birth ? new Date(user.birth).toISOString().split('T')[0] : "",
         phone: user.phone || "",
-        category: user.category || "Cadete"
+        category: [...cats]
       });
     }
   }, [user]);
@@ -37,11 +38,19 @@ export function ActualizarUsuario({ user }) {
     }));
   };
 
+  const handleCategoryChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value);
+    setUserData(prev => ({ ...prev, category: selected }));
+  };
+
   const validateForm = () => {
     if (!userData.firstName || !userData.lastName || !userData.email || !userData.ci || !userData.birth) {
       return "Los campos firstName, lastName, email, ci y birth son requeridos";
     }
-
+    const cats = Array.isArray(userData.category) ? userData.category : [];
+    if (cats.length === 0) {
+      return "Seleccione al menos una categoría";
+    }
     return null;
   };
 
@@ -196,17 +205,21 @@ export function ActualizarUsuario({ user }) {
           </Form.Group>
 
           <Form.Group className="col-12 col-md-6">
-            <Form.Label>Categoría *</Form.Label>
+            <Form.Label>Categoría(s) *</Form.Label>
             <Form.Select
               name="category"
-              value={userData.category}
-              onChange={handleChange}
+              multiple
+              value={Array.isArray(userData.category) ? userData.category : [userData.category]}
+              onChange={handleCategoryChange}
               required
             >
               <option value="Cadete">Cadete</option>
               <option value="Instructor">Instructor</option>
               <option value="Administrador">Administrador</option>
+              <option value="Gestor">Gestor</option>
+              <option value="checkin">checkin</option>
             </Form.Select>
+            <Form.Text className="text-muted">Mantén Ctrl (o Cmd) para seleccionar varias</Form.Text>
           </Form.Group>
         </div>
       </div>

@@ -240,11 +240,12 @@ export function Gestion({ user }) {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>
@@ -286,11 +287,12 @@ export function Gestion({ user }) {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>
@@ -332,11 +334,12 @@ export function Gestion({ user }) {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>
@@ -384,11 +387,12 @@ export function Gestion({ user }) {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>
@@ -409,11 +413,12 @@ export function Gestion({ user }) {
       <div className="text-center text-white p-4">
         <p>La gestión de certificados estará disponible próximamente.</p>
       </div>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>
@@ -434,11 +439,12 @@ export function Gestion({ user }) {
       <div className="text-center text-white p-4">
         <p>La gestión de buques estará disponible próximamente.</p>
       </div>
-      <div className="mt-4 d-flex justify-content-center">
+      <div className="mt-4 d-flex justify-content-end">
         <button 
-          className="btn btn-orange-custom"
+          className="btn btn-outline-orange"
           onClick={handleBackClick}
         >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </button>
       </div>

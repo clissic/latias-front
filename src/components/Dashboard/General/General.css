@@ -24,3 +24,119 @@
   height: 100%;
   background: linear-gradient(to right, black, orange);
 }
+
+.general-btn-asignar-gestor {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.general-btn-gestor-assigned {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+}
+
+/* Modales (tema oscuro) */
+.general-modal-dark .modal-content,
+.general-modal-content {
+  background-color: #082b55;
+  color: #fff;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+}
+
+.general-modal-header {
+  border-bottom-color: rgba(255, 165, 0, 0.3);
+}
+
+.general-modal-header .btn-close {
+  filter: invert(1);
+}
+
+.general-modal-footer {
+  border-top-color: rgba(255, 165, 0, 0.3);
+}
+
+.general-form-select {
+  background-color: rgba(8, 43, 85, 0.8);
+  color: #fff;
+  border-color: rgba(255, 165, 0, 0.5);
+}
+
+.general-form-select option {
+  background-color: #082b55;
+  color: #fff;
+}
+
+.general-gestor-detail p {
+  margin-bottom: 0.5rem;
+}
+
+/* Desplegable de gestores (misma estrategia que Flota: banderas con Twemoji) */
+.general-gestor-select-display {
+  min-height: 38px;
+}
+
+.general-gestor-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.98);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 0.5rem;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 1050;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.general-gestor-option {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.general-gestor-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.general-gestor-option:last-child {
+  border-bottom: none;
+}
+
+.general-gestor-option-flag {
+  margin-right: 0.75rem;
+  min-width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.general-gestor-option-flag .twemoji-flag,
+.general-gestor-dropdown-flag .twemoji-flag,
+.general-gestor-btn-flag .twemoji-flag {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.general-gestor-btn-flag .twemoji-flag {
+  width: 20px;
+  height: 20px;
+}
+
+.general-gestor-option.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.general-gestor-option.no-results:hover {
+  background-color: transparent;
+}

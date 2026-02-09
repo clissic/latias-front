@@ -2,6 +2,17 @@
   border-top: 1px solid #1a237e;
 }
 
+/* Evitar overflow en mobile */
+.eventos-root {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.eventos-content {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
 .event-image-container {
   width: 100%;
   max-width: 300px;
@@ -28,7 +39,9 @@
 .event-details {
   word-wrap: break-word;
   overflow-wrap: break-word;
+  word-break: break-word;
   max-width: 100%;
+  min-width: 0;
 }
 
 .event-details p {
@@ -47,6 +60,38 @@
 
 .dashboard-item-build-eventos {
   overflow: hidden;
+  min-width: 0;
+}
+
+.dashboard-item-build-eventos .col-12 {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Columna de datos del evento: evitar overflow (título, descripción, event-details) */
+.dashboard-item-build-eventos .col-12.col-lg-8 {
+  padding: 0.5rem;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.dashboard-item-build-eventos .col-12.col-lg-8 h3,
+.dashboard-item-build-eventos .col-12.col-lg-8 h6,
+.dashboard-item-build-eventos .col-12.col-lg-8 .event-details {
+  min-width: 0;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.dashboard-item-build-eventos .col-12.col-lg-8 .event-details p,
+.dashboard-item-build-eventos .col-12.col-lg-8 .event-details strong {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .dashboard-item-build-eventos .col-12.col-lg-9 {
@@ -73,8 +118,97 @@
     max-width: 100%;
     margin: 0 auto;
   }
-  
+
+  .dashboard-item-build-eventos .col-12.col-lg-8,
   .dashboard-item-build-eventos .col-12.col-lg-9 {
     padding: 0.5rem 0;
   }
+}
+
+@media (max-width: 575.98px) {
+  .eventos-root {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .eventos-root .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .dashboard-item-build-eventos {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .dashboard-item-build-eventos .col-12 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .dashboard-item-build-eventos .col-12.col-lg-8 {
+    overflow-x: hidden;
+    min-width: 0;
+  }
+
+  .event-image-container {
+    max-width: 100%;
+  }
+
+  .event-image-placeholder {
+    min-height: 200px;
+  }
+}
+
+/* Paginación (estilo Flota) */
+.eventos-root .custom-pagination-item {
+  margin: 0 2px !important;
+}
+
+.eventos-root .custom-pagination-item a,
+.eventos-root .custom-pagination-item.page-link {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #082b557c !important;
+  color: #ffffff !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.eventos-root .custom-pagination-item:hover:not(.disabled) a,
+.eventos-root .custom-pagination-item:focus:not(.disabled) a,
+.eventos-root .custom-pagination-item:hover:not(.disabled) .page-link,
+.eventos-root .custom-pagination-item:focus:not(.disabled) .page-link {
+  background-color: rgba(255, 165, 0, 0.2) !important;
+  border-color: rgba(255, 165, 0, 0.5) !important;
+  color: #ffa500 !important;
+  transform: translateY(-2px) !important;
+}
+
+.eventos-root .custom-pagination-item.active a,
+.eventos-root .custom-pagination-item.active .page-link {
+  background-color: rgba(255, 165, 0, 0.8) !important;
+  border-color: rgba(255, 165, 0, 0.8) !important;
+  color: #082b55 !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3) !important;
+}
+
+.eventos-root .custom-pagination-item.disabled a,
+.eventos-root .custom-pagination-item.disabled .page-link {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+.eventos-root .custom-pagination-item.disabled:hover a,
+.eventos-root .custom-pagination-item.disabled:hover .page-link {
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.5 !important;
 }	

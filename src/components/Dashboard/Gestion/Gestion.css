@@ -51,6 +51,7 @@
   justify-content: center;
   min-height: 250px;
   animation: fadeIn 0.5s ease-in;
+  backdrop-filter: blur(3px);
 }
 
 /* Estilos responsive para móvil */

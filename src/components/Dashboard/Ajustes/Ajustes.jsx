@@ -491,7 +491,7 @@ export const Ajustes = () => {
           <Button variant="warning" type="submit" className="col-12" disabled={loading}>
             {loading ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "currentColor", borderRightColor: "transparent", verticalAlign: "middle" }}></span>
                 Guardando...
               </>
             ) : (
@@ -563,7 +563,7 @@ export const Ajustes = () => {
             <Button variant="warning" className="col-12" type="submit" disabled={loading}>
               {loading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "currentColor", borderRightColor: "transparent", verticalAlign: "middle" }}></span>
                   Actualizando...
                 </>
               ) : (

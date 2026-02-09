@@ -14,7 +14,7 @@ export function CrearUsuario() {
     confirmPassword: "",
     birth: "",
     phone: "",
-    category: "Cadete"
+    category: ["Cadete"]
   });
 
   const handleChange = (e) => {
@@ -23,6 +23,11 @@ export function CrearUsuario() {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleCategoryChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map((opt) => opt.value);
+    setUserData(prev => ({ ...prev, category: selected }));
   };
 
   const validateForm = () => {
@@ -36,6 +41,11 @@ export function CrearUsuario() {
 
     if (userData.password.length < 6) {
       return "La contraseña debe tener al menos 6 caracteres";
+    }
+
+    const cats = Array.isArray(userData.category) ? userData.category : [];
+    if (cats.length === 0) {
+      return "Seleccione al menos una categoría";
     }
 
     return null;
@@ -87,7 +97,7 @@ export function CrearUsuario() {
           confirmPassword: "",
           birth: "",
           phone: "",
-          category: "Cadete"
+          category: ["Cadete"]
         });
       } else {
         throw new Error(response.msg || "Error al crear el usuario");
@@ -183,17 +193,21 @@ export function CrearUsuario() {
           </Form.Group>
 
           <Form.Group className="col-12 col-md-6">
-            <Form.Label>Categoría *</Form.Label>
+            <Form.Label>Categoría(s) *</Form.Label>
             <Form.Select
               name="category"
-              value={userData.category}
-              onChange={handleChange}
+              multiple
+              value={Array.isArray(userData.category) ? userData.category : [userData.category]}
+              onChange={handleCategoryChange}
               required
             >
               <option value="Cadete">Cadete</option>
               <option value="Instructor">Instructor</option>
               <option value="Administrador">Administrador</option>
+              <option value="Gestor">Gestor</option>
+              <option value="checkin">checkin</option>
             </Form.Select>
+            <Form.Text className="text-muted">Mantén Ctrl (o Cmd) para seleccionar varias</Form.Text>
           </Form.Group>
 
           <Form.Group className="col-12 col-md-6">

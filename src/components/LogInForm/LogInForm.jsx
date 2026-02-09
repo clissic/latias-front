@@ -20,8 +20,9 @@ export function LogInForm() {
 
       if (data.status === "success") {
         login(data);
-        const userCategory = data.payload?.user?.category;
-        if (userCategory === "checkin") {
+        const user = data.payload?.user;
+        const isCheckin = Array.isArray(user?.category) ? user.category.includes("checkin") : user?.category === "checkin";
+        if (isCheckin) {
           navigate("/checkin", { replace: true });
         } else {
           Swal.fire({

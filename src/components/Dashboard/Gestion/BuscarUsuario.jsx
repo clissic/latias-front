@@ -65,9 +65,11 @@ export function BuscarUsuario({ onUpdateUser }) {
         }
 
         if (filters.category.trim()) {
-          filteredUsers = filteredUsers.filter((user) =>
-            user.category?.toLowerCase() === filters.category.toLowerCase()
-          );
+          const filterCat = filters.category.toLowerCase();
+          filteredUsers = filteredUsers.filter((user) => {
+            const cats = Array.isArray(user.category) ? user.category : (user.category != null ? [user.category] : []);
+            return cats.some((c) => String(c).toLowerCase() === filterCat);
+          });
         }
 
         setResults(filteredUsers);
@@ -322,6 +324,8 @@ export function BuscarUsuario({ onUpdateUser }) {
                 <option value="Cadete">Cadete</option>
                 <option value="Instructor">Instructor</option>
                 <option value="Administrador">Administrador</option>
+                <option value="Gestor">Gestor</option>
+                <option value="checkin">checkin</option>
               </Form.Select>
             </Form.Group>
           </div>
@@ -394,7 +398,7 @@ export function BuscarUsuario({ onUpdateUser }) {
                       <td>{user.lastName || "N/A"}</td>
                       <td>{user.email || "N/A"}</td>
                       <td>{user.ci || "N/A"}</td>
-                      <td>{user.category || "N/A"}</td>
+                      <td>{Array.isArray(user.category) ? user.category.join(", ") : (user.category || "N/A")}</td>
                       <td>{user.rank?.title || "N/A"}</td>
                       <td>
                         {Array.isArray(user.purchasedCourses) && user.purchasedCourses.length > 0 ? (

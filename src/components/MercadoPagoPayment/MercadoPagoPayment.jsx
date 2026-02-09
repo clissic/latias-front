@@ -6,8 +6,8 @@ import { apiService } from '../../services/apiService';
 import { useAuth } from '../../context/AuthContext';
 import './MercadoPagoPayment.css';
 
-// Inicializar Mercado Pago con la Public Key
-// La Public Key debe estar en las variables de entorno como VITE_MERCADOPAGO_PUBLIC_KEY
+// Checkout Pro: https://www.mercadopago.com.ar/developers/es/docs/checkout-pro/overview
+// Public Key desde Tus integraciones > Credenciales (prueba o producción)
 const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || '';
 
 // Solo mostrar logs de debug en desarrollo
@@ -40,7 +40,7 @@ if (publicKey) {
 export function MercadoPagoPayment() {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { user, getAuthHeaders } = useAuth();
+  const { user } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,9 +109,8 @@ export function MercadoPagoPayment() {
           throw new Error('El precio del curso no es válido');
         }
 
-        const response = await fetch('/api/mercadopago/create-preference', {
+        const response = await apiService.request('/mercadopago/create-preference', {
           method: 'POST',
-          headers: getAuthHeaders(),
           body: JSON.stringify({
             courseId: course.courseId || course._id,
             courseName: course.courseName || course.name,
@@ -127,7 +126,7 @@ export function MercadoPagoPayment() {
           throw new Error(data.msg || 'Error al crear la preferencia de pago');
         }
 
-        if (data.payload.preferenceId) {
+        if (data.payload?.preferenceId) {
           setPreferenceId(data.payload.preferenceId);
         } else {
           throw new Error('No se pudo obtener el ID de la preferencia');
@@ -141,7 +140,7 @@ export function MercadoPagoPayment() {
     };
 
     createPreference();
-  }, [course, user, preferenceId, creatingPreference, selectedPaymentMethod, getAuthHeaders]);
+  }, [course, user, preferenceId, creatingPreference, selectedPaymentMethod]);
 
   // Obtener la moneda del curso o usar USD por defecto
   const courseCurrency = course?.currency || 'USD';
@@ -173,12 +172,15 @@ export function MercadoPagoPayment() {
               <i className="bi bi-exclamation-triangle me-2"></i>
               {error}
             </div>
-            <button 
-              className="btn btn-warning w-100" 
-              onClick={() => navigate('/cursos')}
-            >
-              Volver a Cursos
-            </button>
+            <div className="d-flex justify-content-end">
+              <button 
+                className="btn btn-outline-orange" 
+                onClick={() => navigate('/cursos')}
+              >
+                <i className="bi bi-arrow-left-circle-fill me-2"></i>
+                Volver a Cursos
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -194,12 +196,15 @@ export function MercadoPagoPayment() {
               <i className="bi bi-exclamation-triangle me-2"></i>
               La configuración de Mercado Pago no está completa. Por favor, contacta al administrador.
             </div>
-            <button 
-              className="btn btn-warning w-100" 
-              onClick={() => navigate('/cursos')}
-            >
-              Volver a Cursos
-            </button>
+            <div className="d-flex justify-content-end">
+              <button 
+                className="btn btn-outline-orange" 
+                onClick={() => navigate('/cursos')}
+              >
+                <i className="bi bi-arrow-left-circle-fill me-2"></i>
+                Volver a Cursos
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -323,6 +328,7 @@ export function MercadoPagoPayment() {
               {selectedPaymentMethod === 'mercadopago' ? (
                 preferenceId ? (
                   <div className="mb-4">
+                    {/* Wallet Brick: redirige a Checkout Pro con la preferencia creada en el backend */}
                     <Wallet initialization={{ preferenceId }} />
                   </div>
                 ) : (
@@ -346,12 +352,12 @@ export function MercadoPagoPayment() {
               </div>
             </div>
 
-            <div className="text-center mt-4">
+            <div className="mt-4 d-flex justify-content-end">
               <button 
-                className="btn btn-secondary" 
+                className="btn btn-outline-orange" 
                 onClick={() => navigate(`/course/${courseId}`)}
               >
-                <i className="bi bi-arrow-left me-2"></i>
+                <i className="bi bi-arrow-left-circle-fill me-2"></i>
                 Volver al Curso
               </button>
             </div>

@@ -103,6 +103,19 @@ body {
   font-size: 3.5rem;
 }
 
+/* Botón Volver unificado (outline naranja, usado en Dashboard y flujos) */
+.btn-outline-orange {
+  color: #ffa500;
+  border-color: #ffa500;
+  background-color: transparent;
+}
+
+.btn-outline-orange:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+  border-color: #ffa500;
+}
+
 .custom-display-3 {
   font-size: 3rem;
 }

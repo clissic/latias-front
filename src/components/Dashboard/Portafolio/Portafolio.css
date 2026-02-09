@@ -1,0 +1,750 @@
+/* Estilos del apartado Portafolio del Dashboard (referencia: Eventos) */
+
+/* Contenedor principal: alineado con Eventos */
+.portafolio-root,
+.container.col-12.text-white.portafolio-root {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.portafolio-root h2 {
+  margin-bottom: 1rem;
+}
+
+.portafolio-root .div-border-color {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.portafolio-root h4 {
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.portafolio-root h4.text-orange:not(.portafolio-modal-title) {
+  margin-bottom: 1rem;
+}
+
+/* Vista detalle del cliente: misma estructura que Eventos (gap-4 entre bloques) */
+.portafolio-detail-view {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Contenedor con gap-4: separación igual que Eventos entre Datos / Filtros / Flota */
+.portafolio-detail-view .col-12.d-flex.flex-column.gap-4 {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.portafolio-detail-view .portafolio-detail-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+  margin-bottom: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.portafolio-detail-view .portafolio-detail-card h4 {
+  margin-bottom: 1rem;
+}
+
+.portafolio-detail-view .portafolio-detail-card .row {
+  margin-bottom: 0;
+}
+
+.portafolio-detail-view .portafolio-detail-card .row > [class*="col-"],
+.portafolio-detail-view .portafolio-detail-card .portafolio-detail-row > [class*="col-"] {
+  margin-bottom: 0.75rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Filtros dentro de vista detalle: sin margin-bottom (gap-4 del padre separa) */
+.portafolio-detail-view .portafolio-filters {
+  margin-bottom: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Filtros en lista de clientes (y detalle): mismo estilo que otros apartados */
+.portafolio-filters {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.portafolio-filters h4 {
+  margin-bottom: 0.75rem;
+}
+
+.portafolio-filters .row {
+  flex-wrap: wrap;
+}
+
+.portafolio-filters .form-control {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.portafolio-select,
+.portafolio-input {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.portafolio-select:focus,
+.portafolio-input:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.portafolio-select option {
+  background-color: #082b55;
+  color: #fff;
+}
+
+/* Tarjetas de clientes */
+.portafolio-client-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.portafolio-client-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Desplegable de países con búsqueda */
+.portafolio-country-trigger {
+  min-height: 38px;
+}
+
+.portafolio-country-wrap {
+  position: relative;
+}
+
+.portafolio-country-wrap.portafolio-country-open {
+  position: relative;
+  z-index: 1060;
+}
+
+.portafolio-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.98);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1060;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.portafolio-country-search {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  margin: 0;
+}
+
+.portafolio-country-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.portafolio-country-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.portafolio-country-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.portafolio-country-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.portafolio-country-option {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.portafolio-country-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.portafolio-country-option:last-child {
+  border-bottom: none;
+}
+
+.portafolio-country-flag {
+  margin-right: 0.75rem;
+  min-width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portafolio-country-flag .twemoji-flag {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}
+
+.portafolio-country-no-results {
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.portafolio-country-no-results:hover {
+  background-color: transparent;
+}
+
+/* Banderas (datos del cliente y tabla de barcos) */
+.portafolio-flag-char {
+  display: inline;
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.portafolio-flag-char img,
+.portafolio-flag-char .twemoji-flag {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+
+/* Vista detalle cliente: botón volver */
+.portafolio-back-btn {
+  color: #ffa500;
+  border-color: #ffa500;
+}
+
+.portafolio-back-btn:hover {
+  background-color: rgba(255, 165, 0, 0.15);
+  color: #ffa500;
+  border-color: #ffa500;
+}
+
+/* Tabla de barcos: thumb y celdas */
+.portafolio-boats-table .portafolio-thumb-col {
+  width: 70px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.portafolio-boat-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin: 0 auto;
+}
+
+.portafolio-boat-thumb-placeholder {
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* --- Tablas: overflow con scrollbar en mobile --- */
+.portafolio-table-wrap,
+.portafolio-detail-view .table-responsive,
+.portafolio-modal-content .table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.portafolio-table-wrap .table,
+.portafolio-detail-view .table-responsive .table,
+.portafolio-modal-content .table-responsive .table {
+  margin-bottom: 0;
+}
+
+/* Scrollbar visible en tablas (mobile y desktop) */
+.portafolio-table-wrap::-webkit-scrollbar,
+.portafolio-detail-view .table-responsive::-webkit-scrollbar,
+.portafolio-modal-content .table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+
+.portafolio-table-wrap::-webkit-scrollbar-track,
+.portafolio-detail-view .table-responsive::-webkit-scrollbar-track,
+.portafolio-modal-content .table-responsive::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.portafolio-table-wrap::-webkit-scrollbar-thumb,
+.portafolio-detail-view .table-responsive::-webkit-scrollbar-thumb,
+.portafolio-modal-content .table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+@media (max-width: 991px) {
+  .portafolio-detail-view .table-responsive,
+  .portafolio-modal-content .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .portafolio-detail-view .col-12.d-flex.flex-column.gap-4 {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Por debajo de 576px: eliminar overflow horizontal en "Datos del cliente" y resto */
+@media (max-width: 575.98px) {
+  .portafolio-detail-view {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .portafolio-detail-view .col-12.d-flex.flex-column.gap-4 {
+    padding-left: 0;
+    padding-right: 0;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .portafolio-detail-view .portafolio-detail-card {
+    padding: 0.75rem 1rem;
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  /* Todas las .row de la vista detalle sin márgenes negativos (origen del overflow) */
+  .portafolio-detail-view .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .portafolio-detail-view .portafolio-detail-card .row,
+  .portafolio-detail-view .portafolio-detail-card .portafolio-detail-row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .portafolio-detail-view .portafolio-filters .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .portafolio-detail-view .portafolio-filters {
+    padding: 0.75rem 1rem;
+  }
+
+  .portafolio-detail-view .portafolio-filters [class*="col-"] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .portafolio-detail-view .portafolio-detail-card .row > [class*="col-"],
+  .portafolio-detail-view .portafolio-detail-card .portafolio-detail-row > [class*="col-"] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .portafolio-detail-view .col-12:not(.d-flex) {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    min-width: 0;
+  }
+
+  .portafolio-detail-view .table-responsive.portafolio-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Modales */
+.portafolio-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 0.5rem;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 576px) {
+  .portafolio-modal-overlay {
+    padding: 1rem;
+  }
+}
+
+.portafolio-modal-content {
+  background: linear-gradient(135deg, #082b55 0%, #0a3560 100%);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 1rem;
+  padding: 1rem;
+  max-width: min(90vw, 900px);
+  width: 100%;
+  min-width: 0;
+  max-height: min(85vh, 90dvh);
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 576px) {
+  .portafolio-modal-content {
+    padding: 1.5rem;
+  }
+}
+
+.portafolio-modal-header {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.portafolio-modal-header .portafolio-modal-title {
+  min-width: 0;
+  word-break: break-word;
+  flex: 1;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+@media (min-width: 576px) {
+  .portafolio-modal-header .portafolio-modal-title {
+    font-size: 1.25rem;
+  }
+}
+
+.portafolio-modal-filters {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  min-width: 0;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.portafolio-modal-filters .row {
+  flex-wrap: wrap;
+}
+
+.portafolio-modal-filters .form-control,
+.portafolio-modal-filters .form-select {
+  font-size: 0.8rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.portafolio-modal-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.portafolio-modal-filter-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.portafolio-modal-pagination {
+  min-width: 0;
+  margin-top: 0.75rem;
+}
+
+.portafolio-modal-pagination .pagination {
+  flex-wrap: wrap;
+}
+
+/* Botón outline naranja */
+.btn-outline-orange {
+  color: #ffa500;
+  border-color: #ffa500;
+}
+
+.btn-outline-orange:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+  color: #ffa500;
+  border-color: #ffa500;
+}
+
+/* Celdas de acciones */
+.portafolio-actions-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.portafolio-actions-cell .action-link {
+  white-space: nowrap;
+}
+
+.portafolio-actions-cell.portafolio-actions-disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* SweetAlert2 en Portafolio */
+.portafolio-swal-popup {
+  background: #082b55 !important;
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 12px;
+}
+
+.portafolio-swal-popup .swal2-title,
+.portafolio-swal-popup .swal2-html-container,
+.portafolio-swal-popup .swal2-input-label {
+  color: #fff !important;
+}
+
+.portafolio-swal-input {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+
+.portafolio-swal-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.portafolio-swal-input:focus {
+  border-color: rgba(255, 165, 0, 0.5) !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25) !important;
+}
+
+.portafolio-swal-popup .swal2-validation-message {
+  color: #ffa500 !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Lista principal: márgenes tipo Eventos */
+.portafolio-root .gestion-cards-container {
+  margin-bottom: 1rem;
+}
+
+.portafolio-root .gestion-card-content p {
+  margin-bottom: 0.75rem;
+}
+
+.portafolio-root .text-center.py-5 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@media (max-width: 991px) {
+  .portafolio-filters {
+    padding: 0.75rem 1rem;
+  }
+
+  .portafolio-filters .row {
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+  }
+
+  .portafolio-filters [class*="col-"] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+}
+
+/* Tarjetas de flota del cliente (mismo estilo que Mi Flota) */
+.boat-card-minimal {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 10px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+}
+
+.boat-card-minimal:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-color: #082b55ac;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px #051933a0;
+}
+
+@media (max-width: 767.98px) {
+  .boat-card-minimal {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+}
+
+.boat-card-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boat-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.boat-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.boat-card-details {
+  flex: 1;
+}
+
+.boat-card-details p {
+  margin-bottom: 0.25rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.boat-card-details i {
+  width: 18px;
+  font-size: 0.9rem;
+}
+
+.boat-card-details small {
+  display: inline-block;
+  word-break: break-word;
+}
+
+.boat-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.boat-card-actions .btn {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boat-card-actions .btn-outline-warning:hover {
+  color: #000 !important;
+}
+
+.boat-card-actions .btn-outline-warning:hover i {
+  color: #000 !important;
+}
+
+/* Paginación flota (mismo estilo que Mi Flota) */
+.portafolio-detail-view .custom-pagination-item {
+  margin: 0 2px !important;
+  cursor: pointer;
+}
+
+.portafolio-detail-view .custom-pagination-item a,
+.portafolio-detail-view .custom-pagination-item.page-link {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #082b557c !important;
+  color: #ffffff !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.portafolio-detail-view .custom-pagination-item:hover:not(.disabled) a,
+.portafolio-detail-view .custom-pagination-item:focus:not(.disabled) a,
+.portafolio-detail-view .custom-pagination-item:hover:not(.disabled) .page-link,
+.portafolio-detail-view .custom-pagination-item:focus:not(.disabled) .page-link {
+  background-color: rgba(255, 165, 0, 0.2) !important;
+  border-color: rgba(255, 165, 0, 0.5) !important;
+  color: #ffa500 !important;
+  transform: translateY(-2px) !important;
+}
+
+.portafolio-detail-view .custom-pagination-item.active a,
+.portafolio-detail-view .custom-pagination-item.active .page-link {
+  background-color: rgba(255, 165, 0, 0.8) !important;
+  border-color: rgba(255, 165, 0, 0.8) !important;
+  color: #082b55 !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3) !important;
+}
+
+.portafolio-detail-view .custom-pagination-item.disabled a,
+.portafolio-detail-view .custom-pagination-item.disabled .page-link {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+.portafolio-detail-view .custom-pagination-item.disabled:hover a,
+.portafolio-detail-view .custom-pagination-item.disabled:hover .page-link {
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.5 !important;
+}

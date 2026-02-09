@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Pagination } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
@@ -9,6 +10,9 @@ export function Eventos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processingEventId, setProcessingEventId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const eventosPerPage = 4;
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -96,6 +100,35 @@ export function Eventos() {
       </>
     );
   };
+
+  // Paginación
+  const totalPages = Math.ceil(eventos.length / eventosPerPage);
+  const indexOfLastEvento = currentPage * eventosPerPage;
+  const indexOfFirstEvento = indexOfLastEvento - eventosPerPage;
+  const currentEventos = eventos.slice(indexOfFirstEvento, indexOfLastEvento);
+
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
+    }
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [eventos.length]);
 
   // Función para manejar la compra de tickets
   const handlePurchaseTicket = async (evento) => {
@@ -208,12 +241,12 @@ export function Eventos() {
 
   return (
     <FadeIn>
-      <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+      <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container eventos-root">
         <div className="col-12">
           <h2 className="mb-3 text-orange">Eventos:</h2>
           <div className="div-border-color my-4"></div>
         </div>
-        <div className="col-12 d-flex flex-column gap-4">
+        <div className="col-12 d-flex flex-column gap-4 eventos-content">
           {eventos.length === 0 ? (
             <div className="text-center my-5 d-flex flex-column align-items-center col-11">
               <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
@@ -224,7 +257,7 @@ export function Eventos() {
             </div>
           ) : (
             <div className="d-flex flex-column gap-4">
-              {eventos.map((evento) => (
+              {currentEventos.map((evento) => (
                 <div
                   key={evento._id || evento.eventId}
                   className="dashboard-item-build-eventos container d-flex flex-column flex-lg-row gap-4 align-items-start justify-content-around"
@@ -267,26 +300,26 @@ export function Eventos() {
                   </div>
                   
                   {/* Columna derecha: Datos del evento */}
-                  <div className="col-12 col-lg-8">
+                  {<div className="col-12 col-lg-8">
                     <h3 className="text-orange mb-3">{evento.title}</h3>
                     {evento.description && (
                       <h6 className="mb-3">{evento.description}</h6>
                     )}
                     <div className="event-details">
                       <p>
-                        <i className="bi bi-calendar3 me-2 text-orange"></i>
+                        <i className="bi bi-calendar3-fill me-2 text-orange"></i>
                         Fecha: <strong>{formatDate(evento.date)}</strong>
                       </p>
                       <p>
-                        <i className="bi bi-clock me-2 text-orange"></i>
+                        <i className="bi bi-clock-fill me-2 text-orange"></i>
                         Hora: <strong>{evento.hour || "No especificada"}</strong>
                       </p>
                       <p>
-                        <i className="bi bi-geo-alt me-2 text-orange"></i>
+                        <i className="bi bi-geo-alt-fill me-2 text-orange"></i>
                         Ubicación: <strong>{formatLocation(evento.location)}</strong>
                       </p>
                       <p>
-                        <i className="bi bi-person-badge me-2 text-orange"></i>
+                        <i className="bi bi-person-badge-fill me-2 text-orange"></i>
                         Orador: <strong>{formatSpeaker(evento.speaker)}</strong>
                       </p>
                       {evento.price > 0 && (
@@ -297,14 +330,60 @@ export function Eventos() {
                       )}
                       {evento.tickets && (
                         <p>
-                          <i className="bi bi-ticket-perforated me-2 text-orange"></i>
+                          <i className="bi bi-ticket-perforated-fill me-2 text-orange"></i>
                           Tickets disponibles: <strong>{evento.tickets.remainingTickets} / {evento.tickets.availableTickets}</strong>
                         </p>
                       )}
                     </div>
-                  </div>
+                  </div>}
                 </div>
               ))}
+              {/* Paginación */}
+              {eventos.length > 0 && (
+                <div className="d-flex flex-column align-items-center mt-4">
+                  <Pagination className="mb-0">
+                    <Pagination.First
+                      onClick={() => handlePageChange(1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Prev
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1 || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    {totalPages > 0 ? (
+                      getPageNumbers().map((number) => (
+                        <Pagination.Item
+                          key={number}
+                          active={number === currentPage}
+                          onClick={() => handlePageChange(number)}
+                          className="custom-pagination-item"
+                        >
+                          {number}
+                        </Pagination.Item>
+                      ))
+                    ) : (
+                      <Pagination.Item active disabled className="custom-pagination-item">
+                        1
+                      </Pagination.Item>
+                    )}
+                    <Pagination.Next
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                    <Pagination.Last
+                      onClick={() => handlePageChange(totalPages || 1)}
+                      disabled={currentPage === (totalPages || 1) || totalPages === 0}
+                      className="custom-pagination-item"
+                    />
+                  </Pagination>
+                  <div className="text-white mt-2">
+                    Página {currentPage} de {totalPages || 1} ({eventos.length} eventos)
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

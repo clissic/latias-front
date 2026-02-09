@@ -1,6 +1,7 @@
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { hasCategory } from "../../utils/userCategory";
 
 export function Navbar() {
     const { isAuthenticated, user } = useAuth();
@@ -8,7 +9,7 @@ export function Navbar() {
 
     // Función para manejar clicks en links para usuarios checkin
     const handleLinkClick = (e, path) => {
-        if (user?.category === "checkin" && path !== "/checkin") {
+        if (hasCategory(user, "checkin") && path !== "/checkin") {
             e.preventDefault();
             navigate("/checkin", { replace: true });
         }
@@ -19,12 +20,12 @@ export function Navbar() {
             <Link to="/" className="navbar-brand">
                 <img className="img-fluid logoHorizontal" src="/latias-horizontal.png" alt="logo Latias horizontal"/>
             </Link>              
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
             </button>
             <div className="collapse navbar-collapse justify-content-md-end" id="navbarNavAltMarkup">
                 <div className="navbar-nav">
-                    {user?.category !== "checkin" && (
+                    {!hasCategory(user, "checkin") && (
                         <>
                             <Link to="/cursos" className="nav-item nav-link">Cursos</Link>
                             <Link to="/instructores" className="nav-item nav-link">Instructores</Link>
@@ -32,7 +33,7 @@ export function Navbar() {
                         </>
                     )}
                     {isAuthenticated ? (
-                        user?.category === "checkin" ? (
+                        hasCategory(user, "checkin") ? (
                             <Link to="/checkin" className="nav-item nav-link btnPlataforma" onClick={(e) => handleLinkClick(e, "/checkin")}><strong>CHECK-IN</strong></Link>
                         ) : (
                             <Link to="/dashboard/general" className="nav-item nav-link btnPlataforma" onClick={(e) => handleLinkClick(e, "/dashboard/general")}><strong>MI LATIAS</strong></Link>

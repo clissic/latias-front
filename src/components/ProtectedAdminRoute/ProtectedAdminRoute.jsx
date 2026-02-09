@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { hasCategory } from "../../utils/userCategory";
 
 export function ProtectedAdminRoute({ children }) {
     const { isAuthenticated, user } = useAuth();
@@ -11,7 +12,7 @@ export function ProtectedAdminRoute({ children }) {
     }
 
     // Si está autenticado pero no es Administrador, redirigir al dashboard general
-    if (user?.category !== "Administrador") {
+    if (!hasCategory(user, "Administrador")) {
         return <Navigate to="/dashboard/general" replace />;
     }
 

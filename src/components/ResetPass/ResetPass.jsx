@@ -69,7 +69,7 @@ export function ResetPassword() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, newPassword, confirmPassword }),
+        body: JSON.stringify({ token, email, newPassword, confirmPassword }),
       });
 
       const data = await response.json();

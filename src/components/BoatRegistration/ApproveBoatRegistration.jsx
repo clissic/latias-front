@@ -154,7 +154,7 @@ export function ApproveBoatRegistration() {
                       <p><strong>Eslora:</strong> {boat.lengthOverall}m</p>
                       <p><strong>Manga:</strong> {boat.beam}m</p>
                       {boat.depth && <p><strong>Calado:</strong> {boat.depth}m</p>}
-                      {boat.displacement && <p><strong>Desplazamiento:</strong> {boat.displacement}t</p>}
+                      {boat.displacement && <p><strong>Desplazamiento:</strong> {boat.displacement} Tons.</p>}
                       {boat.image && (
                         <div className="mt-3">
                           <p><strong>Imagen del Barco:</strong></p>

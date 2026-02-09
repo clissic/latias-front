@@ -408,10 +408,11 @@ export function Portafolio({ user }) {
               <div className="text-white row g-2 mb-0 portafolio-detail-row">
                 <div className="col-12 col-md-6"><span className="text-white-50">Nombre:</span> {selectedClient.firstName || "—"}</div>
                 <div className="col-12 col-md-6"><span className="text-white-50">Apellido:</span> {selectedClient.lastName || "—"}</div>
-                <div className="col-12 col-md-6"><span className="text-white-50">País:</span> {countryClient ? <><TwemojiFlag emoji={countryClient.flag} className="me-1 portafolio-flag-char" size="16x16" />{countryClient.name}</> : (selectedClient.address?.country || "—")}</div>
+                <div className="col-12 col-md-6 d-flex align-items-center"><span className="text-white-50">País:</span> {countryClient ? <><TwemojiFlag emoji={countryClient.flag} className="mx-1 portafolio-flag-char align-items-center" size="16x16" />{countryClient.name}</> : (selectedClient.address?.country || "—")}</div>
                 <div className="col-12 col-md-6"><span className="text-white-50">Email:</span> {selectedClient.email || "—"}</div>
                 <div className="col-12 col-md-6"><span className="text-white-50">Teléfono:</span> {selectedClient.phone || "—"}</div>
               </div>
+              <div className="col-12"><div className="div-border-color my-4"></div></div>
             </div>
 
             <div className="portafolio-filters col-12">
@@ -493,8 +494,8 @@ export function Portafolio({ user }) {
                                 </div>
                                 <div className="col-6">
                                   <p className="mb-1">
-                                    <i className="bi bi-speedometer2 me-1 text-orange"></i>
-                                    <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement}t` : "—"}</small>
+                                    <i className="bi bi-speedometer me-1 text-orange"></i>
+                                    <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} Tons.` : "—"}</small>
                                   </p>
                                 </div>
                                 <div className="col-6">
@@ -767,7 +768,7 @@ export function Portafolio({ user }) {
                                   <td>
                                     <div className={`portafolio-actions-cell ${pendientesUpdatingId === req._id ? "portafolio-actions-disabled" : ""}`}>
                                       <a href="#" className="action-link" onClick={(e) => { e.preventDefault(); if (pendientesUpdatingId !== req._id) handlePendienteStatus(req, "En progreso"); }} title="En progreso"><i className="bi bi-play-circle-fill me-1"></i>En progreso</a>
-                                      <a href="#" className="action-link" onClick={(e) => { e.preventDefault(); if (pendientesUpdatingId !== req._id) handlePendienteStatus(req, "Completado"); }} title="Completado"><i className="bi bi-check-circle-fill me-1"></i>Completado</a>
+                                      <a href="#" className="action-link text-success" onClick={(e) => { e.preventDefault(); if (pendientesUpdatingId !== req._id) handlePendienteStatus(req, "Completado"); }} title="Completado"><i className="bi bi-check-circle-fill me-1"></i>Completado</a>
                                       <a href="#" className="action-link action-link-danger" onClick={(e) => { e.preventDefault(); if (pendientesUpdatingId !== req._id) handleRechazadoClick(req); }} title="Rechazado"><i className="bi bi-x-circle-fill me-1"></i>Rechazado</a>
                                     </div>
                                   </td>

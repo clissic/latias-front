@@ -18,6 +18,7 @@
   background-color: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(3px);
   padding: 2rem;
+  backdrop-filter: blur(3px);
 }
 
 .dashboard-item-build-cursos {

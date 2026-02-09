@@ -1142,7 +1142,6 @@ export function Flota() {
 
   const handleCertPageChange = (page) => {
     setCurrentCertPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (loading) {
@@ -1265,7 +1264,7 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <p className="mb-2">
                         <i className="bi bi-speedometer me-2 text-orange"></i>
-                        <strong className="text-orange">Desplazamiento:</strong> <span className="text-white">{selectedBoat.displacement}t</span>
+                        <strong className="text-orange">Desplazamiento:</strong> <span className="text-white">{selectedBoat.displacement} Tons.</span>
                       </p>
                     </div>
                   )}
@@ -1795,7 +1794,7 @@ export function Flota() {
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Desplazamiento (toneladas)</label>
+                      <label className="flota-form-label">Desplazamiento (Tons.)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1952,8 +1951,8 @@ export function Flota() {
                               )}
                               <div className="col-6">
                                 <p className="mb-1">
-                                  <i className="bi bi-speedometer2 me-1 text-orange"></i>
-                                  <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement}t` : "—"}</small>
+                                  <i className="bi bi-speedometer me-1 text-orange"></i>
+                                  <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} Tons.` : "—"}</small>
                                 </p>
                               </div>
                               <div className="col-6">

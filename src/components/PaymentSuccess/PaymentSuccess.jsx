@@ -238,7 +238,7 @@ export function PaymentSuccess() {
                     className="btn btn-success me-3" 
                     onClick={handleGoToDashboard}
                   >
-                    <i className="bi bi-speedometer2 me-2"></i>
+                    <i className="bi bi-speedometer me-2"></i>
                     Ir al Dashboard
                   </button>
                   <button 

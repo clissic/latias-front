@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
 import { SolicitarModificacionCurso } from "./SolicitarModificacionCurso";
@@ -10,6 +10,12 @@ export function GestionarMisCursos({ user, onBack }) {
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [instructor, setInstructor] = useState(null);
+  const [filterName, setFilterName] = useState("");
+  const [filterCourseId, setFilterCourseId] = useState("");
+  const [filterDifficulty, setFilterDifficulty] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterPriceMin, setFilterPriceMin] = useState("");
+  const [filterPriceMax, setFilterPriceMax] = useState("");
 
   useEffect(() => {
     const loadMyCourses = async () => {
@@ -150,6 +156,32 @@ export function GestionarMisCursos({ user, onBack }) {
     return `${symbol} ${price.toLocaleString()}`;
   };
 
+  const filteredCourses = courses.filter((course) => {
+    if (filterName && !(course.courseName || "").toLowerCase().includes(filterName.toLowerCase())) return false;
+    if (filterCourseId && !(String(course.courseId || "")).toLowerCase().includes(filterCourseId.toLowerCase())) return false;
+    if (filterDifficulty && (course.difficulty || "") !== filterDifficulty) return false;
+    if (filterCategory && !(course.category || "").toLowerCase().includes(filterCategory.toLowerCase())) return false;
+    const price = course.price != null && course.price !== "" ? Number(course.price) : null;
+    if (filterPriceMin.trim() !== "") {
+      const min = Number(filterPriceMin);
+      if (!Number.isFinite(min) || (price == null || price < min)) return false;
+    }
+    if (filterPriceMax.trim() !== "") {
+      const max = Number(filterPriceMax);
+      if (!Number.isFinite(max) || (price == null || price > max)) return false;
+    }
+    return true;
+  });
+
+  const clearFilters = () => {
+    setFilterName("");
+    setFilterCourseId("");
+    setFilterDifficulty("");
+    setFilterCategory("");
+    setFilterPriceMin("");
+    setFilterPriceMax("");
+  };
+
   if (loading) {
     return (
       <div className="text-center text-white py-5">
@@ -184,75 +216,117 @@ export function GestionarMisCursos({ user, onBack }) {
           <p className="mt-3">No tienes cursos asignados actualmente.</p>
         </div>
       ) : (
-        <div className="table-responsive">
-          <Table striped bordered hover variant="dark" className="table-dark">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre del curso</th>
-                <th>Dificultad</th>
-                <th>Categoría</th>
-                <th>Precio</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.map((course) => (
-                <tr key={course._id || course.courseId}>
-                  <td>
-                    {course.courseId ? (
-                      <div className="d-flex align-items-center gap-2">
-                        <i
-                          className="bi bi-clipboard-fill cursor-pointer text-orange"
-                          title={course.courseId}
-                          onClick={() => handleCopyCourseId(course.courseId)}
-                          style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                        ></i>
+        <>
+          <div className="portafolio-filters col-12 mb-4">
+            <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
+            <div className="row g-2 portafolio-modal-filters">
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Nombre</label>
+                <input type="text" className="form-control portafolio-input form-control-sm" value={filterName} onChange={(e) => setFilterName(e.target.value)} />
+              </div>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">ID curso</label>
+                <input type="text" className="form-control portafolio-input form-control-sm" value={filterCourseId} onChange={(e) => setFilterCourseId(e.target.value)} />
+              </div>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Dificultad</label>
+                <select className="form-select portafolio-input form-control-sm" value={filterDifficulty} onChange={(e) => setFilterDifficulty(e.target.value)}>
+                  <option value="">Todas</option>
+                  <option value="Principiante">Principiante</option>
+                  <option value="Intermedio">Intermedio</option>
+                  <option value="Avanzado">Avanzado</option>
+                </select>
+              </div>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Categoría</label>
+                <input type="text" className="form-control portafolio-input form-control-sm" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} />
+              </div>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Precio desde</label>
+                <input type="number" className="form-control portafolio-input form-control-sm" value={filterPriceMin} onChange={(e) => setFilterPriceMin(e.target.value)} min={0} step={1} placeholder="Mín" />
+              </div>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Precio hasta</label>
+                <input type="number" className="form-control portafolio-input form-control-sm" value={filterPriceMax} onChange={(e) => setFilterPriceMax(e.target.value)} min={0} step={1} placeholder="Máx" />
+              </div>
+            </div>
+            <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3">
+              <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearFilters}>
+                <i className="bi bi-funnel me-1"></i>Borrar filtros
+              </button>
+            </div>
+          </div>
+
+          {filteredCourses.length === 0 ? (
+            <div className="text-center text-white py-4 text-white-50">No hay cursos que coincidan con los filtros.</div>
+          ) : (
+            <div className="flota-certificates-cards">
+              {filteredCourses.map((course) => (
+                <div key={course._id || course.courseId} className="flota-certificate-card">
+                  <div className="flota-certificate-card-body">
+                    <div className="flota-certificate-card-main">
+                      <div className="flota-certificate-field">
+                        <span className="flota-certificate-label">ID</span>
+                        <span className="flota-certificate-value d-flex align-items-center gap-2">
+                          {course.courseId ? (
+                            <>
+                              <i
+                                className="bi bi-clipboard-fill text-orange"
+                                title={course.courseId}
+                                onClick={() => handleCopyCourseId(course.courseId)}
+                                style={{ cursor: "pointer", fontSize: "1.1rem" }}
+                              />
+                              <span>{course.courseId}</span>
+                            </>
+                          ) : (
+                            <span className="text-truncate" style={{ maxWidth: "120px" }}>{course._id}</span>
+                          )}
+                        </span>
                       </div>
-                    ) : (
-                      <span className="text-truncate d-inline-block" style={{ maxWidth: "100px" }}>
-                        {course._id}
+                      <div className="flota-certificate-field">
+                        <span className="flota-certificate-label">Nombre</span>
+                        <span className="flota-certificate-value">{course.courseName || "—"}</span>
+                      </div>
+                      <div className="flota-certificate-field">
+                        <span className="flota-certificate-label">Dificultad</span>
+                        <span className="flota-certificate-value">
+                          <span className={`badge ${
+                            course.difficulty === "Principiante" ? "bg-success" :
+                            course.difficulty === "Intermedio" ? "bg-warning" :
+                            course.difficulty === "Avanzado" ? "bg-danger" :
+                            "bg-secondary"
+                          }`}>
+                            {course.difficulty || "—"}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flota-certificate-field">
+                        <span className="flota-certificate-label">Categoría</span>
+                        <span className="flota-certificate-value">{course.category || "—"}</span>
+                      </div>
+                      <div className="flota-certificate-field">
+                        <span className="flota-certificate-label">Precio</span>
+                        <span className="flota-certificate-value fw-bold">
+                          {course.price != null ? formatPrice(course.price, course.currency || "UYU") : "—"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flota-certificate-card-actions">
+                      <span className="action-link" onClick={() => handleViewMetrics(course)} title="Métricas">
+                        <i className="bi bi-bar-chart-line-fill me-1"></i>
+                        Métricas
                       </span>
-                    )}
-                  </td>
-                  <td>{course.courseName || "N/A"}</td>
-                  <td>
-                    <span className={`badge ${
-                      course.difficulty === "Principiante" ? "bg-success" :
-                      course.difficulty === "Intermedio" ? "bg-warning" :
-                      course.difficulty === "Avanzado" ? "bg-danger" :
-                      "bg-secondary"
-                    }`}>
-                      {course.difficulty || "N/A"}
-                    </span>
-                  </td>
-                  <td>{course.category || "N/A"}</td>
-                  <td className="text-white fw-bold">
-                    {course.price ? formatPrice(course.price, course.currency || "UYU") : "N/A"}
-                  </td>
-                  <td>
-                    <div className="d-flex flex-column gap-1">
-                      <span
-                        className="action-link"
-                        onClick={() => handleViewMetrics(course)}
-                      >
-                        <i className="bi bi-graph-up me-1"></i>
-                        Ver métricas
-                      </span>
-                      <span
-                        className="action-link"
-                        onClick={() => handleModifyCourse(course)}
-                      >
-                        <i className="bi bi-pencil-square-fill me-1"></i>
-                        Modificar curso
+                      <span className="action-link" onClick={() => handleModifyCourse(course)} title="Modificar">
+                        <i className="bi bi-pencil-fill me-1"></i>
+                        Modificar
                       </span>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </Table>
-        </div>
+            </div>
+          )}
+        </>
       )}
       
       <div className="mt-4 d-flex justify-content-end">

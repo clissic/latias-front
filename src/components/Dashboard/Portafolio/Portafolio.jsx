@@ -363,6 +363,15 @@ export function Portafolio({ user }) {
     setBoatPage(1);
   }, [boatFilterName, boatFilterRegistro, boatFilterBandera, boatFilterPuerto, boatFilterTipo, boatFilterDisplacement]);
 
+  const clearBoatFilters = () => {
+    setBoatFilterName("");
+    setBoatFilterRegistro("");
+    setBoatFilterBandera("");
+    setBoatFilterPuerto("");
+    setBoatFilterTipo("");
+    setBoatFilterDisplacement("");
+  };
+
   useEffect(() => {
     if (selectedClient) setBoatPage(1);
   }, [selectedClient]);
@@ -390,6 +399,14 @@ export function Portafolio({ user }) {
   );
 
   const selectedCountry = filterCountry ? countries.find((c) => c.code === filterCountry) : null;
+
+  const clearClientFilters = () => {
+    setFilterCountry("");
+    setFilterFirstName("");
+    setFilterLastName("");
+    setShowCountryDropdown(false);
+    setCountrySearchInput("");
+  };
 
   if (!user) return null;
 
@@ -442,6 +459,11 @@ export function Portafolio({ user }) {
                   <label className="portafolio-modal-filter-label">Desplazamiento</label>
                   <input type="number" className="form-control portafolio-input form-control-sm" value={boatFilterDisplacement} onChange={(e) => setBoatFilterDisplacement(e.target.value)} min={0} step={1} />
                 </div>
+              </div>
+              <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3">
+                <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearBoatFilters}>
+                  <i className="bi bi-funnel me-1"></i>Limpiar filtros
+                </button>
               </div>
             </div>
 
@@ -933,18 +955,18 @@ export function Portafolio({ user }) {
         </div>
 
         <div className="portafolio-filters col-12">
-          <h4 className="text-orange mb-1"><i className="bi bi-funnel-fill me-2"></i>Filtros</h4>
-          <div className="row g-3">
-            <div className={`col-12 col-md-4 portafolio-country-wrap ${showCountryDropdown ? "portafolio-country-open" : ""}`} ref={countryDropdownRef}>
-              <label className="form-label text-white">País</label>
+          <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
+          <div className="row g-2 portafolio-modal-filters">
+            <div className={`col-12 col-sm-6 col-md-4 portafolio-modal-filter-item portafolio-country-wrap ${showCountryDropdown ? "portafolio-country-open" : ""}`} ref={countryDropdownRef}>
+              <label className="portafolio-modal-filter-label">País</label>
               <div className="position-relative">
                 <div
-                  className="form-control portafolio-select portafolio-country-trigger d-flex align-items-center"
+                  className="form-control form-control-sm portafolio-select portafolio-country-trigger d-flex align-items-center"
                   onClick={() => {
                     setShowCountryDropdown((v) => !v);
                     if (!showCountryDropdown) setCountrySearchInput("");
                   }}
-                  style={{ cursor: "pointer", minHeight: "38px" }}
+                  style={{ cursor: "pointer" }}
                 >
                   {selectedCountry ? (
                     <>
@@ -959,7 +981,7 @@ export function Portafolio({ user }) {
                   <div className="portafolio-country-dropdown">
                     <input
                       type="text"
-                      className="form-control portafolio-input portafolio-country-search"
+                      className="form-control form-control-sm portafolio-input portafolio-country-search"
                       placeholder="Buscar país..."
                       value={countrySearchInput}
                       onChange={(e) => setCountrySearchInput(e.target.value)}
@@ -1001,26 +1023,29 @@ export function Portafolio({ user }) {
                 )}
               </div>
             </div>
-            <div className="col-12 col-md-4">
-              <label className="form-label text-white">Nombre</label>
+            <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <label className="portafolio-modal-filter-label">Nombre</label>
               <input
                 type="text"
-                className="form-control portafolio-input"
-                placeholder="Filtrar por nombre..."
+                className="form-control portafolio-input form-control-sm"
                 value={filterFirstName}
                 onChange={(e) => setFilterFirstName(e.target.value)}
               />
             </div>
-            <div className="col-12 col-md-4">
-              <label className="form-label text-white">Apellido</label>
+            <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <label className="portafolio-modal-filter-label">Apellido</label>
               <input
                 type="text"
-                className="form-control portafolio-input"
-                placeholder="Filtrar por apellido..."
+                className="form-control portafolio-input form-control-sm"
                 value={filterLastName}
                 onChange={(e) => setFilterLastName(e.target.value)}
               />
             </div>
+          </div>
+          <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3">
+            <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearClientFilters}>
+              <i className="bi bi-funnel me-1"></i>Limpiar filtros
+            </button>
           </div>
         </div>
 

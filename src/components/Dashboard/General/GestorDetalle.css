@@ -49,6 +49,57 @@
   box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
 }
 
+/* Estilos de filtros alineados con Flota/Portafolio */
+.gestor-detalle-filters.portafolio-filters .portafolio-modal-filters {
+  border-radius: 0.5rem;
+  padding: 0.75rem 0;
+  font-size: 0.8rem;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.gestor-detalle-filters.portafolio-filters .portafolio-modal-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.gestor-detalle-filters.portafolio-filters .portafolio-modal-filter-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.gestor-detalle-filters.portafolio-filters .portafolio-input,
+.gestor-detalle-filters.portafolio-filters .form-select.portafolio-input {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.8rem;
+}
+
+.gestor-detalle-filters.portafolio-filters .portafolio-input:focus,
+.gestor-detalle-filters.portafolio-filters .form-select.portafolio-input:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.gestor-detalle-filters.portafolio-filters .btn-outline-orange {
+  border-color: #ffa500;
+  color: #ffa500;
+  background: transparent;
+}
+
+.gestor-detalle-filters.portafolio-filters .btn-outline-orange:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+  border-color: #ffa500;
+  color: #ffa500;
+}
+
 .gestor-detalle-table-wrap {
   border: #082b557c 1px solid;
   border-radius: 1rem;

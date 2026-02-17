@@ -1097,7 +1097,7 @@ export function CrearCurso() {
                   size="sm"
                   onClick={() => removeModule(moduleIndex)}
                 >
-                  <i className="bi bi-trash me-1"></i> Eliminar Módulo
+                  <i className="bi bi-trash-fill me-1"></i> Eliminar Módulo
                 </Button>
               )}
             </div>
@@ -1145,11 +1145,11 @@ export function CrearCurso() {
                     <span className="text-white">Lección {lessonIndex + 1}</span>
                     {module.lessons.length > 1 && (
                       <Button
-                        variant="outline-danger"
+                        variant="danger"
                         size="sm"
                         onClick={() => removeLesson(moduleIndex, lessonIndex)}
                       >
-                        <i className="bi bi-trash"></i>
+                        <i className="bi bi-trash-fill"></i>
                       </Button>
                     )}
                   </div>
@@ -1206,11 +1206,11 @@ export function CrearCurso() {
                     <span className="text-white mb-0">Pregunta {questionIndex + 1}</span>
                     {module.questionBank.length > 1 && (
                       <Button
-                        variant="outline-danger"
+                        variant="danger"
                         size="sm"
                         onClick={() => removeQuestion(moduleIndex, questionIndex)}
                       >
-                        <i className="bi bi-trash"></i> Eliminar
+                        <i className="bi bi-trash-fill"></i> Eliminar
                       </Button>
                     )}
                   </div>
@@ -1265,11 +1265,11 @@ export function CrearCurso() {
                           {question.options.length > 2 && (
                             <div className="col-12 col-md-auto">
                               <Button
-                                variant="outline-danger"
+                                variant="danger"
                                 size="sm"
                                 onClick={() => removeOption(moduleIndex, questionIndex, optionIndex)}
                               >
-                                <i className="bi bi-trash"></i>
+                                <i className="bi bi-trash-fill"></i>
                               </Button>
                             </div>
                           )}

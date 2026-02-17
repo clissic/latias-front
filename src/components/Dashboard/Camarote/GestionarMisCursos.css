@@ -5,3 +5,197 @@
 .gestionar-mis-cursos-container .btn {
   white-space: nowrap;
 }
+
+/* Filtros (mismo estilo que Portafolio) */
+.gestionar-mis-cursos-container .portafolio-filters {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.gestionar-mis-cursos-container .portafolio-filters h4 {
+  margin-bottom: 0.75rem;
+}
+
+.gestionar-mis-cursos-container .portafolio-filters .row {
+  flex-wrap: wrap;
+}
+
+.gestionar-mis-cursos-container .portafolio-filters .form-control,
+.gestionar-mis-cursos-container .portafolio-filters .form-select {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.gestionar-mis-cursos-container .portafolio-input,
+.gestionar-mis-cursos-container .portafolio-filters .form-select.portafolio-input {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.gestionar-mis-cursos-container .portafolio-input:focus,
+.gestionar-mis-cursos-container .portafolio-filters .form-select.portafolio-input:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.gestionar-mis-cursos-container .portafolio-filters .form-select.portafolio-input option {
+  background-color: #082b55;
+  color: #fff;
+}
+
+.gestionar-mis-cursos-container .portafolio-modal-filters {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  min-width: 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.gestionar-mis-cursos-container .portafolio-modal-filters .row {
+  flex-wrap: wrap;
+}
+
+.gestionar-mis-cursos-container .portafolio-modal-filters .form-control,
+.gestionar-mis-cursos-container .portafolio-modal-filters .form-select {
+  font-size: 0.8rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.gestionar-mis-cursos-container .portafolio-modal-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.gestionar-mis-cursos-container .portafolio-modal-filter-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* Cartas de cursos (mismo formato que Trabajos asignados en Mi gestor) */
+.gestionar-mis-cursos-container .flota-certificates-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .gestionar-mis-cursos-container .flota-certificates-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card {
+  width: 100%;
+  background-color: rgba(8, 43, 85, 0.5);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card:hover {
+  border-color: rgba(255, 165, 0, 0.6);
+  box-shadow: 0 4px 8px rgba(255, 165, 0, 0.2);
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card-body {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card-main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 165, 0, 0.9);
+  font-weight: 600;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-value {
+  color: #ffffff;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card-actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  flex-shrink: 0;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card-actions .action-link {
+  white-space: nowrap;
+  cursor: pointer;
+  color: rgba(255, 165, 0, 0.9);
+  text-decoration: none;
+}
+
+.gestionar-mis-cursos-container .flota-certificate-card-actions .action-link:hover {
+  color: #ffa500;
+  text-decoration: underline;
+}
+
+@media (max-width: 767.98px) {
+  .gestionar-mis-cursos-container .flota-certificate-card-body {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gestionar-mis-cursos-container .flota-certificate-card-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .gestionar-mis-cursos-container .flota-certificate-card-actions {
+    justify-content: flex-start;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.75rem;
+  }
+}

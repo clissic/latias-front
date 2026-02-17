@@ -216,6 +216,12 @@ export function GestorDetalle({ user: userProp }) {
     setCurrentRequestPage(1);
   }, [filterStatus, filterType, filterShip, filteredRequests.length]);
 
+  const clearRequestFilters = () => {
+    setFilterStatus("");
+    setFilterType("");
+    setFilterShip("");
+  };
+
   const totalRequestPages = Math.ceil(filteredRequests.length / requestsPerPage);
   const indexOfLastRequest = currentRequestPage * requestsPerPage;
   const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
@@ -479,39 +485,39 @@ export function GestorDetalle({ user: userProp }) {
           </div>
 
           {/* Filtros */}
-          <div className="gestor-detalle-filters col-12">
-            <h4><i className="bi bi-funnel-fill me-2"></i>Filtros</h4>
-            <div className="row g-2">
-              <div className="col-12 col-md-4">
-                <Form.Label>Estado</Form.Label>
+          <div className="gestor-detalle-filters col-12 portafolio-filters">
+            <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros</h4>
+            <div className="row g-2 portafolio-modal-filters">
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Estado</label>
                 <Form.Select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="form-select"
+                  className="form-select portafolio-input form-control-sm"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s || "all"} value={s}>{s || "Todos"}</option>
                   ))}
                 </Form.Select>
               </div>
-              <div className="col-12 col-md-4">
-                <Form.Label>Tipo</Form.Label>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Tipo</label>
                 <Form.Select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="form-select"
+                  className="form-select portafolio-input form-control-sm"
                 >
                   {TYPE_OPTIONS.map((t) => (
                     <option key={t || "all"} value={t}>{t || "Todos"}</option>
                   ))}
                 </Form.Select>
               </div>
-              <div className="col-12 col-md-4">
-                <Form.Label>Barco</Form.Label>
+              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Barco</label>
                 <Form.Select
                   value={filterShip}
                   onChange={(e) => setFilterShip(e.target.value)}
-                  className="form-select"
+                  className="form-select portafolio-input form-control-sm"
                 >
                   <option value="">Todos los barcos</option>
                   {fleet.map((fleetItem) => {
@@ -527,6 +533,11 @@ export function GestorDetalle({ user: userProp }) {
                   })}
                 </Form.Select>
               </div>
+            </div>
+            <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3">
+              <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearRequestFilters}>
+                <i className="bi bi-funnel me-1"></i>Limpiar filtros
+              </button>
             </div>
           </div>
 

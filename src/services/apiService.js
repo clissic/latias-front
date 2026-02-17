@@ -408,6 +408,14 @@ class ApiService {
     return response.json();
   }
 
+  // Obtener tipos de barco permitidos (enum del backend)
+  async getBoatTypes() {
+    const response = await fetch(`${this.baseURL}/boats/types`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
   // Obtener barcos por propietario (propio usuario o gestor viendo cliente)
   async getBoatsByOwner(ownerId) {
     const response = await this.request(`/boats/owner/${ownerId}`, {

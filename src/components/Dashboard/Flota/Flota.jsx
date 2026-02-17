@@ -143,6 +143,18 @@ export function Flota() {
   const [showCertificateForm, setShowCertificateForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const boatsPerPage = 4;
+  const [filterRegistro, setFilterRegistro] = useState("");
+  const [filterBandera, setFilterBandera] = useState("");
+  const [filterBanderaSearch, setFilterBanderaSearch] = useState("");
+  const [showBanderaFilterDropdown, setShowBanderaFilterDropdown] = useState(false);
+  const [filterPuertoReg, setFilterPuertoReg] = useState("");
+  const [filterUbicacion, setFilterUbicacion] = useState("");
+  const [filterTipo, setFilterTipo] = useState("");
+  const [filterEslora, setFilterEslora] = useState("");
+  const [filterManga, setFilterManga] = useState("");
+  const [filterPuntal, setFilterPuntal] = useState("");
+  const [filterDesplazamiento, setFilterDesplazamiento] = useState("");
+  const [boatTypes, setBoatTypes] = useState([]);
   const [currentCertPage, setCurrentCertPage] = useState(1);
   const certsPerPage = 2;
   const [submittingCertificate, setSubmittingCertificate] = useState(false);
@@ -178,6 +190,20 @@ export function Flota() {
 
   useEffect(() => {
     loadFleet();
+  }, []);
+
+  useEffect(() => {
+    const loadBoatTypes = async () => {
+      try {
+        const res = await apiService.getBoatTypes();
+        if (res.status === "success" && Array.isArray(res.payload)) {
+          setBoatTypes(res.payload);
+        }
+      } catch (err) {
+        console.error("Error al cargar tipos de barco:", err);
+      }
+    };
+    loadBoatTypes();
   }, []);
 
   // Inicializar tooltips de Bootstrap 5
@@ -237,6 +263,20 @@ export function Flota() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [showCountryDropdown]);
+
+  // Cerrar dropdown de filtro bandera al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showBanderaFilterDropdown && !event.target.closest('.flota-filter-bandera-wrap')) {
+        setShowBanderaFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showBanderaFilterDropdown]);
 
   const loadFleet = async () => {
     try {
@@ -442,6 +482,26 @@ export function Flota() {
     country.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
     country.code.toLowerCase().includes(countrySearch.toLowerCase())
   );
+
+  const filteredCountriesForBandera = countries.filter(country =>
+    country.name.toLowerCase().includes(filterBanderaSearch.toLowerCase()) ||
+    country.code.toLowerCase().includes(filterBanderaSearch.toLowerCase())
+  );
+
+  const handleFilterBanderaSelect = (country) => {
+    setFilterBandera(country.code);
+    setFilterBanderaSearch(`${country.flag} ${country.name} (${country.code})`);
+    setShowBanderaFilterDropdown(false);
+  };
+
+  const handleFilterBanderaSearch = (e) => {
+    const value = e.target.value;
+    setFilterBanderaSearch(value);
+    setShowBanderaFilterDropdown(true);
+    if (!value.trim()) {
+      setFilterBandera("");
+    }
+  };
 
   const handleSubmitBoatRequest = async (e) => {
     e.preventDefault();
@@ -1086,11 +1146,41 @@ export function Flota() {
     }
   };
 
+  // Filtrado de barcos
+  const filteredFleet = fleet.filter((fleetItem) => {
+    const boat = fleetItem.boatId;
+    if (!boat) return false;
+    if (filterRegistro && !(String(boat.registrationNumber || "")).toLowerCase().includes(filterRegistro.toLowerCase())) return false;
+    if (filterBandera && !(String(boat.registrationCountry || "")).toLowerCase().includes(filterBandera.toLowerCase())) return false;
+    if (filterPuertoReg && !(String(boat.registrationPort || "")).toLowerCase().includes(filterPuertoReg.toLowerCase())) return false;
+    if (filterUbicacion && !(String(boat.currentPort || "")).toLowerCase().includes(filterUbicacion.toLowerCase())) return false;
+    if (filterTipo && (String(boat.boatType || "") !== filterTipo)) return false;
+    if (filterEslora && !(String(boat.lengthOverall || "")).includes(filterEslora)) return false;
+    if (filterManga && !(String(boat.beam || "")).includes(filterManga)) return false;
+    if (filterPuntal && !(String(boat.depth || "")).includes(filterPuntal)) return false;
+    if (filterDesplazamiento && !(String(boat.displacement ?? "")).includes(filterDesplazamiento)) return false;
+    return true;
+  });
+
+  const clearFilters = () => {
+    setFilterRegistro("");
+    setFilterBandera("");
+    setFilterBanderaSearch("");
+    setShowBanderaFilterDropdown(false);
+    setFilterPuertoReg("");
+    setFilterUbicacion("");
+    setFilterTipo("");
+    setFilterEslora("");
+    setFilterManga("");
+    setFilterPuntal("");
+    setFilterDesplazamiento("");
+  };
+
   // Funciones de paginación
-  const totalPages = Math.ceil(fleet.length / boatsPerPage);
+  const totalPages = Math.ceil(filteredFleet.length / boatsPerPage);
   const indexOfLastBoat = currentPage * boatsPerPage;
   const indexOfFirstBoat = indexOfLastBoat - boatsPerPage;
-  const currentBoats = fleet.slice(indexOfFirstBoat, indexOfLastBoat);
+  const currentBoats = filteredFleet.slice(indexOfFirstBoat, indexOfLastBoat);
 
   const getPageNumbers = () => {
     const pageNumbers = [];
@@ -1113,10 +1203,10 @@ export function Flota() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Resetear página cuando cambia la flota
+  // Resetear página cuando cambia la flota o los filtros
   useEffect(() => {
     setCurrentPage(1);
-  }, [fleet.length]);
+  }, [fleet.length, filterRegistro, filterBandera, filterPuertoReg, filterUbicacion, filterTipo, filterEslora, filterManga, filterPuntal, filterDesplazamiento]);
 
   // Resetear página de certificados cuando cambia la lista
   useEffect(() => {
@@ -1727,7 +1817,6 @@ export function Flota() {
                         name="currentPort"
                         value={formData.currentPort}
                         onChange={handleInputChange}
-                        placeholder="Puerto donde se encuentra actualmente el barco"
                       />
                     </div>
                     <div className="col-12 col-md-6">
@@ -1740,19 +1829,9 @@ export function Flota() {
                         required
                       >
                         <option value="">-- Selecciona un tipo --</option>
-                        <option value="Yate monocasco">Yate monocasco</option>
-                        <option value="Yate catamarán">Yate catamarán</option>
-                        <option value="Lancha">Lancha</option>
-                        <option value="Velero monocasco">Velero monocasco</option>
-                        <option value="Velero catamarán">Velero catamarán</option>
-                        <option value="Moto náutica">Moto náutica</option>
-                        <option value="Jet sky">Jet sky</option>
-                        <option value="Kayak">Kayak</option>
-                        <option value="Canoa">Canoa</option>
-                        <option value="Bote">Bote</option>
-                        <option value="Semirígido">Semirígido</option>
-                        <option value="Neumático">Neumático</option>
-                        <option value="Otro">Otro</option>
+                        {boatTypes.map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="col-12 col-md-6">
@@ -1875,6 +1954,110 @@ export function Flota() {
               </div>
             ) : (
               <>
+                <div className="portafolio-filters col-12 mb-4">
+                  <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
+                  <div className="row g-2 portafolio-modal-filters">
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Registro</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterRegistro} onChange={(e) => setFilterRegistro(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Bandera</label>
+                      <div className="position-relative flota-filter-bandera-wrap">
+                        {filterBandera && filterBanderaSearch && !showBanderaFilterDropdown ? (
+                          <div
+                            className="form-control portafolio-input form-control-sm country-input-display"
+                            style={{ minHeight: "31px", cursor: "pointer" }}
+                            onClick={() => {
+                              setFilterBanderaSearch("");
+                              setShowBanderaFilterDropdown(true);
+                            }}
+                          >
+                            <TwemojiFlag emoji={filterBanderaSearch} />
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            className="form-control portafolio-input form-control-sm"
+                            value={filterBanderaSearch}
+                            onChange={handleFilterBanderaSearch}
+                            onFocus={() => setShowBanderaFilterDropdown(true)}
+                            placeholder="Buscar país..."
+                          />
+                        )}
+                        {showBanderaFilterDropdown && (
+                          <div className="country-dropdown">
+                            {filteredCountriesForBandera.length > 0 ? (
+                              filteredCountriesForBandera.map((country) => (
+                                <div
+                                  key={country.code}
+                                  className="country-option"
+                                  onClick={() => handleFilterBanderaSelect(country)}
+                                >
+                                  <span className="country-flag">
+                                    <TwemojiFlag emoji={country.flag} />
+                                  </span>
+                                  <span className="country-name">{country.name}</span>
+                                  <span className="country-code">{country.code}</span>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="country-option no-results">
+                                No se encontraron países
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Puerto Reg.</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterPuertoReg} onChange={(e) => setFilterPuertoReg(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Ubicación</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterUbicacion} onChange={(e) => setFilterUbicacion(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Tipo</label>
+                      <select
+                        className="form-select portafolio-input form-control-sm"
+                        value={filterTipo}
+                        onChange={(e) => setFilterTipo(e.target.value)}
+                      >
+                        <option value="">Todos</option>
+                        {boatTypes.map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Eslora</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterEslora} onChange={(e) => setFilterEslora(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Manga</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterManga} onChange={(e) => setFilterManga(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Puntal</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterPuntal} onChange={(e) => setFilterPuntal(e.target.value)} />
+                    </div>
+                    <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                      <label className="portafolio-modal-filter-label">Desplazamiento</label>
+                      <input type="text" className="form-control portafolio-input form-control-sm" value={filterDesplazamiento} onChange={(e) => setFilterDesplazamiento(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3 flota-filters-actions">
+                    <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearFilters}>
+                      <i className="bi bi-funnel me-1"></i>Limpiar filtros
+                    </button>
+                  </div>
+                </div>
+
+                {filteredFleet.length === 0 ? (
+                  <div className="text-center text-white py-4 text-white-50">No hay barcos que coincidan con los filtros.</div>
+                ) : (
                 <div className="row g-3">
                   {currentBoats.map((fleetItem, index) => {
                   const boat = fleetItem.boatId;
@@ -1985,7 +2168,8 @@ export function Flota() {
                   );
                   })}
                 </div>
-                
+                )}
+
                 {/* Paginación */}
                 <div className="d-flex flex-column align-items-center mt-4">
                   <Pagination className="mb-0">
@@ -2027,7 +2211,7 @@ export function Flota() {
                     />
                   </Pagination>
                   <div className="text-white mt-2">
-                    Página {currentPage} de {totalPages || 1} ({fleet.length} barcos)
+                    Página {currentPage} de {totalPages || 1} ({filteredFleet.length} barcos)
                   </div>
                 </div>
               </>

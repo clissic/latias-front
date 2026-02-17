@@ -84,7 +84,7 @@
   backdrop-filter: blur(3px);
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 1rem;
 }
 
@@ -136,6 +136,10 @@
 /* Desplegable de países con búsqueda */
 .portafolio-country-trigger {
   min-height: 38px;
+}
+
+.portafolio-modal-filters .portafolio-country-trigger {
+  min-height: 31px;
 }
 
 .portafolio-country-wrap {
@@ -472,8 +476,8 @@
   padding: 0.75rem 1rem;
   font-size: 0.8rem;
   min-width: 0;
-  overflow: hidden;
-  margin-bottom: 1rem;
+  overflow: visible;
+  margin-bottom: 0;
 }
 
 .portafolio-modal-filters .row {

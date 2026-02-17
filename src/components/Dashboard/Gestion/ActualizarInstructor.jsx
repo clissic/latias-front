@@ -491,11 +491,11 @@ export function ActualizarInstructor({ instructor }) {
               />
               {instructorData.certifications.length > 1 && (
                 <Button
-                  variant="outline-danger"
+                  variant="danger"
                   size="sm"
                   onClick={() => removeCertification(index)}
                 >
-                  <i className="bi bi-trash"></i>
+                  <i className="bi bi-trash-fill"></i>
                 </Button>
               )}
             </div>
@@ -524,11 +524,11 @@ export function ActualizarInstructor({ instructor }) {
               />
               {instructorData.achievements.length > 1 && (
                 <Button
-                  variant="outline-danger"
+                  variant="danger"
                   size="sm"
                   onClick={() => removeAchievement(index)}
                 >
-                  <i className="bi bi-trash"></i>
+                  <i className="bi bi-trash-fill"></i>
                 </Button>
               )}
             </div>

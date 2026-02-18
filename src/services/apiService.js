@@ -144,6 +144,18 @@ class ApiService {
     return response.json();
   }
 
+  /** Actualiza el progreso de una lección (marcar completada). Recalcula el progreso del curso. */
+  async updateUserLessonProgress(userId, courseId, moduleId, lessonId, completed) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${courseId}/module/${encodeURIComponent(moduleId)}/lesson/${encodeURIComponent(lessonId)}/progress`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ completed }),
+      }
+    );
+    return response.json();
+  }
+
   async purchaseCourse(userId, courseData) {
     const response = await this.request(`/courses/purchase/${userId}`, {
       method: 'POST',
@@ -165,6 +177,33 @@ class ApiService {
       method: 'GET',
       includeAuth: false, // Los métodos de pago son públicos
     });
+    return response.json();
+  }
+
+  /**
+   * [SOLO DESARROLLO] Simula una compra completada sin pasar por Mercado Pago.
+   * Asigna el curso al usuario y redirige a /payment/success?dev=1.
+   * En producción: no exponer este método desde la UI (el botón solo se muestra en import.meta.env.DEV).
+   */
+  async devCompletePurchase(courseId, userId) {
+    const response = await this.request('/mercadopago/dev-complete-purchase', {
+      method: 'POST',
+      body: JSON.stringify({ courseId, userId }),
+    });
+    return response.json();
+  }
+
+  /** Pagos procesados (solo Administrador). Params: page, limit, paymentId, courseId, courseName, userEmail, userId, paymentStatus, currency */
+  async getProcessedPayments(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const url = query ? `/mercadopago/processed-payments?${query}` : '/mercadopago/processed-payments';
+    const response = await this.request(url, { method: 'GET' });
+    return response.json();
+  }
+
+  /** Usuario actual (para startup y refresh). Fuente de verdad desde el backend. */
+  async getAuthMe() {
+    const response = await this.request('/auth/me', { method: 'GET' });
     return response.json();
   }
 

@@ -1,6 +1,7 @@
 .danger-zone {
   border: #dc3545 2px dashed;
   background-color: rgba(255, 0, 0, 0.05);
+  backdrop-filter: blur(3px);
   border-radius: 10px;
   padding: 30px;
 }

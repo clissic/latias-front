@@ -66,6 +66,28 @@ export const Ajustes = () => {
     country.toLowerCase().includes(countrySearch.toLowerCase())
   );
 
+  // Función para formatear fecha al formato YYYY-MM-DD requerido por input date.
+  // Usa componentes UTC para evitar que la zona horaria local reste un día (ej. 1990-05-15T00:00:00Z → 1990-05-14 en UTC-3).
+  const formatDateForInput = (dateValue) => {
+    if (!dateValue) return "";
+    try {
+      // Si ya está en formato YYYY-MM-DD, devolverlo tal cual
+      if (typeof dateValue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return dateValue;
+      }
+      const date = new Date(dateValue);
+      if (isNaN(date.getTime())) return "";
+      // Usar UTC para conservar el día calendario tal como viene del backend
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error("Error al formatear fecha:", error);
+      return "";
+    }
+  };
+
   // Actualizar userData cuando user cambie
   useEffect(() => {
     if (user) {
@@ -81,7 +103,8 @@ export const Ajustes = () => {
       };
       setUserData({
         ...user,
-        address: address
+        address: address,
+        birth: formatDateForInput(user.birth) // Formatear fecha de nacimiento
       });
       setCountrySearch(address.country || "");
     }
@@ -371,15 +394,12 @@ export const Ajustes = () => {
         </Form.Group>
         <Form.Group className="col-12 col-lg-3">
           <Form.Label>Fecha de nacimiento</Form.Label>
-          <Form.Control type="date" name="birth" value={userData.birth} onChange={handleChange} required />
+          <Form.Control type="date" name="birth" value={userData.birth || ""} onChange={handleChange} required />
         </Form.Group>
         <small className="text-muted form-text">Es importante que los datos sean correctos ya que se utilizarán para la generación de los certificados obtenidos.</small>
 
-        <Form.Group className="col-12">
-          <div className="div-border-color my-4"></div>
-        </Form.Group>
 
-        <h4 className="col-12 text-orange">Dirección:</h4>
+        <h4 className="col-12 text-orange mt-2">Dirección:</h4>
         {/* Primera línea: Calle, Esquina, Número, Apto/Solar */}
         <Form.Group className="col-12 address-form-group" style={{ width: "30%" }}>
             <Form.Label>Calle</Form.Label>
@@ -484,7 +504,8 @@ export const Ajustes = () => {
                 </div>
               )}
             </div>
-          </Form.Group>
+        </Form.Group>
+
         {/* Tercera línea: Botón Guardar */}
         <Form.Group className="mt-3 d-flex flex-column col-12 address-form-group justify-content-end" style={{ width: "30%" }}>
           <Form.Label></Form.Label>
@@ -573,7 +594,7 @@ export const Ajustes = () => {
         </Form.Group>
       </Form>
 
-      <div className="div-border-color my-4"></div>
+      <div className="div-border-color my-4 col-12"></div>
 
       {/* Botón de eliminación de cuenta */}
       <div className="d-flex flex-column col-12 danger-zone justify-content-center align-items-center">

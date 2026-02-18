@@ -1,8 +1,67 @@
+/* Card contenedor: en desktop más compacta, contenido en columna */
+.dashboard-item-build-cursos.cursos-card {
+  background: #0003;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #082b557c;
+  backdrop-filter: blur(3px);
+  padding: 0;
+}
+
+/* Imagen arriba, rectangular como en CartaCurso (sin redondear) */
+.cursos-card-image-wrap {
+  width: 100%;
+  height: 180px;
+  min-height: 180px;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.cursos-card-body {
+  padding: 1rem;
+}
+
+.cursos-card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cursos-card-modules {
+  flex-shrink: 0;
+}
+
+.cursos-card-actions {
+  margin-top: auto;
+}
+
+@media (min-width: 992px) {
+  .cursos-card-body {
+    padding: 0.75rem 1rem;
+  }
+
+  .cursos-card-title {
+    font-size: 1rem;
+  }
+
+  .cursos-card-image-wrap {
+    height: 180px;
+    min-height: 180px;
+  }
+}
+
 .modules-progress {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -53,4 +112,8 @@
 
 .module-dot.completed {
   background-color: orange;
+}
+
+.cursos-progreso-pagination {
+  padding-bottom: 1rem;
 }

@@ -20,33 +20,38 @@ import { hasCategory } from '../../utils/userCategory';
 import "./Dashboard.css";
 
 export function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, userLoading } = useAuth();
   const navigate = useNavigate();
 
   // Redirige a login si no está autenticado
   useEffect(() => {
-    if (isAuthenticated === false) {
+    if (isAuthenticated === false && !userLoading) {
       navigate('/login', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, userLoading, navigate]);
 
   // Redirige usuarios checkin a /checkin
   useEffect(() => {
-    if (hasCategory(user, "checkin")) {
+    if (user && hasCategory(user, "checkin")) {
       navigate('/checkin', { replace: true });
     }
   }, [user, navigate]);
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !userLoading) {
     return null;
   }
 
-  // Si el usuario es checkin, no mostrar nada (será redirigido)
-  if (hasCategory(user, "checkin")) {
-    return null;
-  }
-
-  if (!user) {
+  if (userLoading || !user) {
+    if (userLoading) {
+      return (
+        <div className="container mt-5 text-center">
+          <div className="spinner-border text-orange" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="text-white mt-3">Cargando tu perfil...</p>
+        </div>
+      );
+    }
     return (
       <div className="container mt-5 text-center">
         <div className="alert alert-danger" role="alert">
@@ -55,6 +60,11 @@ export function Dashboard() {
         </div>
       </div>
     );
+  }
+
+  // Si el usuario es checkin, no mostrar nada (será redirigido)
+  if (hasCategory(user, "checkin")) {
+    return null;
   }
 
   return (

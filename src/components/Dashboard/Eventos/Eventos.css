@@ -61,6 +61,7 @@
 .dashboard-item-build-eventos {
   overflow: hidden;
   min-width: 0;
+  backdrop-filter: blur(3px);
 }
 
 .dashboard-item-build-eventos .col-12 {

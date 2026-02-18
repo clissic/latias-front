@@ -7,11 +7,12 @@ export const FiltrosCursos = ({
   aplicarFiltros,
   limpiarFiltros,
   categories,
-  durations,
   difficulties,
   maxPrice = 1000,
+  maxDuration = 100,
 }) => {
   const [precios, setPrecios] = useState({ min: 0, max: maxPrice });
+  const [duraciones, setDuraciones] = useState({ min: 0, max: maxDuration });
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -55,6 +56,35 @@ export const FiltrosCursos = ({
     }));
   }, [precios, setFiltros]);
   
+  const handleDurationChange = (e) => {
+    const { name, value } = e.target;
+    const numValue = Number(value);
+    const newDuraciones = {
+      ...duraciones,
+      [name]: numValue,
+    };
+    if (name === "min" && numValue > duraciones.max) {
+      newDuraciones.max = numValue;
+    } else if (name === "max" && numValue < duraciones.min) {
+      newDuraciones.min = numValue;
+    }
+    setDuraciones(newDuraciones);
+    setFiltros((prevFiltros) => ({
+      ...prevFiltros,
+      duracionMin: newDuraciones.min,
+      duracionMax: newDuraciones.max,
+    }));
+  };
+
+  // Sincronizar duraciones con filtros
+  useEffect(() => {
+    setFiltros((prevFiltros) => ({
+      ...prevFiltros,
+      duracionMin: duraciones.min,
+      duracionMax: duraciones.max,
+    }));
+  }, [duraciones, setFiltros]);
+
   // Actualizar precios cuando cambia maxPrice
   useEffect(() => {
     if (maxPrice && precios.max > maxPrice) {
@@ -62,10 +92,17 @@ export const FiltrosCursos = ({
     }
   }, [maxPrice]);
 
+  // Actualizar duraciones cuando cambia maxDuration
+  useEffect(() => {
+    if (maxDuration != null && duraciones.max > maxDuration) {
+      setDuraciones(prev => ({ ...prev, max: maxDuration }));
+    }
+  }, [maxDuration]);
+
   return (
-    <div className="filtro-column col-12 col-lg-3">
+    <div className="filtro-column col-12 col-md-4 col-lg-3">
       <FadeIn>
-        <aside>
+        <aside className="w-100">
           <h2 className="mb-4">Filtros</h2>
           <div className="mb-3">
             <label className="text-orange" htmlFor="keywords">
@@ -116,28 +153,66 @@ export const FiltrosCursos = ({
             </select>
           </div>
           <div className="mb-3">
-            <label className="text-orange" htmlFor="dificultad">
-              Duración:
-            </label>
-            <select
-              name="duracion"
-              id="duracion"
-              className="form-select"
-              onChange={handleFilterChange}
-            >
-              <option value="">Todas</option>
-              {durations.map((duration, index) => (
-                <option key={index} value={duration}>
-                  {duration}
-                </option>
-              ))}
-            </select>
+            <label className="text-orange mb-2 d-block">Duración:</label>
+            <div className="d-flex gap-2 align-items-center mb-2">
+              <div className="flex-grow-1">
+                <label htmlFor="duracionMin" className="text-white-50 small">Mínimo:</label>
+                <input
+                  type="number"
+                  name="min"
+                  id="duracionMin"
+                  min="0"
+                  max={maxDuration}
+                  step="1"
+                  value={duraciones.min}
+                  className="form-control form-control-sm"
+                  onChange={handleDurationChange}
+                />
+              </div>
+              <div className="flex-grow-1">
+                <label htmlFor="duracionMax" className="text-white-50 small">Máximo:</label>
+                <input
+                  type="number"
+                  name="max"
+                  id="duracionMax"
+                  min="0"
+                  max={maxDuration}
+                  step="1"
+                  value={duraciones.max}
+                  className="form-control form-control-sm"
+                  onChange={handleDurationChange}
+                />
+              </div>
+            </div>
+            <div className="d-flex gap-2 mb-2">
+              <input
+                type="range"
+                name="min"
+                min="0"
+                max={maxDuration}
+                step="1"
+                value={duraciones.min}
+                className="form-range flex-grow-1"
+                onChange={handleDurationChange}
+              />
+              <input
+                type="range"
+                name="max"
+                min="0"
+                max={maxDuration}
+                step="1"
+                value={duraciones.max}
+                className="form-range flex-grow-1"
+                onChange={handleDurationChange}
+              />
+            </div>
+            <span className="text-white-50 small">{`Rango: ${duraciones.min} - ${duraciones.max} (horas)`}</span>
           </div>
           <div className="mb-3">
             <label className="text-orange mb-2 d-block">Precio:</label>
             <div className="d-flex gap-2 align-items-center mb-2">
               <div className="flex-grow-1">
-                <label htmlFor="precioMin" className="text-white-50 small">Mínimo:</label>
+                <label htmlFor="precioMin" className="text-white-50 small">Mínimo:</label>    
                 <input
                   type="number"
                   name="min"
@@ -187,7 +262,7 @@ export const FiltrosCursos = ({
                 onChange={handlePriceChange}
               />
             </div>
-            <span className="text-white-50 small">{`Rango: U$D ${precios.min} - U$D ${precios.max}`}</span>
+            <span className="text-white-50 small">{`Rango: ${precios.min} - ${precios.max} (UYU)`}</span>
           </div>
           <div className="mb-3 d-grid gap-3">
             <button className="btn btn-warning w-100" onClick={aplicarFiltros}>
@@ -197,6 +272,7 @@ export const FiltrosCursos = ({
               className="btn btn-secondary w-100"
               onClick={() => {
                 setPrecios({ min: 0, max: maxPrice });
+                setDuraciones({ min: 0, max: maxDuration });
                 limpiarFiltros();
               }}
             >

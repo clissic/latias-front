@@ -131,8 +131,6 @@ export function useUserProfile() {
       if (data.status === 'success') {
         setUser(data.payload.user);
         forceLogin(data.payload.user);
-        // Actualizar también el localStorage
-        localStorage.setItem('user', JSON.stringify(data.payload.user));
         console.log("User profile set successfully:", data.payload.user);
       } else {
         setError(data.msg || 'Error al cargar perfil');

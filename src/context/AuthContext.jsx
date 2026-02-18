@@ -1,183 +1,181 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { apiService } from "../services/apiService";
 
 const AuthContext = createContext();
 
-// Función para inicializar el estado desde localStorage de forma síncrona
-function getInitialAuthState() {
-    const storedUser = localStorage.getItem("user");
-    const storedAccessToken = localStorage.getItem("accessToken");
-    const storedRefreshToken = localStorage.getItem("refreshToken");
-    
-    if (storedUser && storedAccessToken) {
-        try {
-            return {
-                isAuthenticated: true,
-                user: JSON.parse(storedUser),
-                accessToken: storedAccessToken,
-                refreshToken: storedRefreshToken || null
-            };
-        } catch (error) {
-            console.error("Error parsing stored user:", error);
-            return {
-                isAuthenticated: false,
-                user: null,
-                accessToken: null,
-                refreshToken: null
-            };
-        }
-    }
-    
-    return {
-        isAuthenticated: false,
-        user: null,
-        accessToken: null,
-        refreshToken: null
-    };
+const STORAGE_ACCESS_TOKEN = "accessToken";
+const STORAGE_REFRESH_TOKEN = "refreshToken";
+
+/** Normaliza el usuario del backend (id) para compatibilidad con código que usa _id */
+function normalizeUser(payloadUser) {
+  if (!payloadUser) return null;
+  return {
+    ...payloadUser,
+    _id: payloadUser._id ?? payloadUser.id,
+    id: payloadUser.id ?? payloadUser._id,
+  };
+}
+
+function getStoredToken() {
+  return typeof localStorage !== "undefined" ? localStorage.getItem(STORAGE_ACCESS_TOKEN) : null;
 }
 
 export function AuthProvider({ children }) {
-    const initialState = getInitialAuthState();
-    const [isAuthenticated, setIsAuthenticated] = useState(initialState.isAuthenticated);
-    const [user, setUser] = useState(initialState.user);
-    const [accessToken, setAccessToken] = useState(initialState.accessToken);
-    const [refreshToken, setRefreshToken] = useState(initialState.refreshToken);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(getStoredToken()));
+  const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(() => getStoredToken());
+  const [refreshToken, setRefreshToken] = useState(() => localStorage.getItem(STORAGE_REFRESH_TOKEN));
+  const [userLoading, setUserLoading] = useState(() => Boolean(getStoredToken()));
 
-    useEffect(() => {
-        // Sincronizar con localStorage en caso de cambios externos
-        const storedUser = localStorage.getItem("user");
-        const storedAccessToken = localStorage.getItem("accessToken");
-        const storedRefreshToken = localStorage.getItem("refreshToken");
-        
-        if (storedUser && storedAccessToken) {
-            try {
-                const parsedUser = JSON.parse(storedUser);
-                setIsAuthenticated(true);
-                setUser(parsedUser);
-                setAccessToken(storedAccessToken);
-                if (storedRefreshToken) {
-                    setRefreshToken(storedRefreshToken);
-                }
-            } catch (error) {
-                console.error("Error parsing stored user:", error);
-            }
-        } else {
-            setIsAuthenticated(false);
-            setUser(null);
-            setAccessToken(null);
-            setRefreshToken(null);
-        }
-    }, []);
-    
-    // Sincronizar isAuthenticated si el usuario cambia y está definido
-    useEffect(() => {
-        if (user) {
-            setIsAuthenticated(true);
-        }
-    }, [user]);
+  const clearTokens = useCallback(() => {
+    localStorage.removeItem(STORAGE_ACCESS_TOKEN);
+    localStorage.removeItem(STORAGE_REFRESH_TOKEN);
+    setAccessToken(null);
+    setRefreshToken(null);
+    setUser(null);
+    setIsAuthenticated(false);
+  }, []);
 
-    const login = (loginData) => {
-        const { user: userData, tokens } = loginData.payload;
-        
-        // Limpiar datos anteriores antes de guardar los nuevos
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        
+  /** Obtiene el usuario actual desde el backend (GET /auth/me). Actualiza solo el estado en memoria. */
+  const fetchCurrentUser = useCallback(async () => {
+    const token = localStorage.getItem(STORAGE_ACCESS_TOKEN);
+    if (!token) {
+      setUserLoading(false);
+      return;
+    }
+    try {
+      const res = await apiService.getAuthMe();
+      if (res.status === "success" && res.payload?.user) {
+        setUser(normalizeUser(res.payload.user));
         setIsAuthenticated(true);
-        setUser(userData);
-        setAccessToken(tokens.accessToken);
-        setRefreshToken(tokens.refreshToken);
-        
-        // Guardar en localStorage
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("accessToken", tokens.accessToken);
-        localStorage.setItem("refreshToken", tokens.refreshToken);
+      } else {
+        clearTokens();
+      }
+    } catch (e) {
+      if (e?.message?.includes("401") || e?.status === 401) {
+        clearTokens();
+      }
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setUserLoading(false);
+    }
+  }, [clearTokens]);
+
+  // Al montar: si hay token, hidratar estado y obtener usuario desde el backend (única fuente de verdad)
+  useEffect(() => {
+    localStorage.removeItem("user"); // Limpieza: ya no usamos user en localStorage
+    const token = localStorage.getItem(STORAGE_ACCESS_TOKEN);
+    const storedRefresh = localStorage.getItem(STORAGE_REFRESH_TOKEN);
+    if (!token) {
+      setUserLoading(false);
+      return;
+    }
+    setAccessToken(token);
+    setRefreshToken(storedRefresh);
+    setIsAuthenticated(true);
+    fetchCurrentUser();
+  }, [fetchCurrentUser]);
+
+  const login = (loginData) => {
+    const { user: userData, tokens } = loginData.payload;
+    if (!tokens?.accessToken) return;
+
+    localStorage.setItem(STORAGE_ACCESS_TOKEN, tokens.accessToken);
+    if (tokens.refreshToken) {
+      localStorage.setItem(STORAGE_REFRESH_TOKEN, tokens.refreshToken);
+    }
+    setAccessToken(tokens.accessToken);
+    setRefreshToken(tokens.refreshToken ?? null);
+    setUser(normalizeUser(userData));
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    clearTokens();
+  };
+
+  const refreshAccessToken = async () => {
+    const stored = localStorage.getItem(STORAGE_REFRESH_TOKEN);
+    if (!stored) {
+      clearTokens();
+      return false;
+    }
+    try {
+      const response = await fetch("/api/users/refresh-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken: stored }),
+      });
+      if (!response.ok) {
+        clearTokens();
+        return false;
+      }
+      const data = await response.json();
+      const newAccessToken = data.payload?.accessToken;
+      if (newAccessToken) {
+        localStorage.setItem(STORAGE_ACCESS_TOKEN, newAccessToken);
+        setAccessToken(newAccessToken);
+        return true;
+      }
+      clearTokens();
+      return false;
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+      clearTokens();
+      return false;
+    }
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem(STORAGE_ACCESS_TOKEN) || accessToken;
+    if (!token) {
+      return { "Content-Type": "application/json" };
+    }
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
+  };
 
-    const logout = () => {
-        setIsAuthenticated(false);
-        setUser(null);
-        setAccessToken(null);
-        setRefreshToken(null);
-        
-        // Limpiar localStorage
-        localStorage.removeItem("user");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-    };
+  /** Actualiza el estado del usuario con el objeto pasado (ej. tras compra o progreso). No toca localStorage. */
+  const setUserFromPayload = (userData) => {
+    setUser(normalizeUser(userData));
+  };
 
-    const refreshAccessToken = async () => {
-        if (!refreshToken) {
-            logout();
-            return false;
-        }
+  /** Vuelve a pedir el usuario al backend y actualiza el estado. Usar tras compra, progreso, etc. */
+  const refreshUser = useCallback(async () => {
+    await fetchCurrentUser();
+  }, [fetchCurrentUser]);
 
-        try {
-            const response = await fetch("/api/users/refresh-token", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ refreshToken }),
-            });
+  /** Compatibilidad: mismo efecto que setUserFromPayload (actualizar user en memoria). */
+  const forceLogin = (userData) => {
+    setUser(normalizeUser(userData));
+    setIsAuthenticated(true);
+  };
 
-            if (response.ok) {
-                const data = await response.json();
-                const newAccessToken = data.payload.accessToken;
-                
-                setAccessToken(newAccessToken);
-                localStorage.setItem("accessToken", newAccessToken);
-                
-                return true;
-            } else {
-                logout();
-                return false;
-            }
-        } catch (error) {
-            console.error("Error refreshing token:", error);
-            logout();
-            return false;
-        }
-    };
-
-    const getAuthHeaders = () => {
-        // Leer siempre de localStorage para asegurar que tenemos el token más actualizado
-        const token = localStorage.getItem("accessToken") || accessToken;
-        if (!token) {
-            console.warn("No hay token de acceso disponible");
-            return {
-                "Content-Type": "application/json",
-            };
-        }
-        return {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        };
-    };
-
-    const forceLogin = (userData) => {
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem("user", JSON.stringify(userData));
-    };
-
-    return (
-        <AuthContext.Provider value={{ 
-            isAuthenticated, 
-            user, 
-            accessToken,
-            refreshToken,
-            login, 
-            logout, 
-            refreshAccessToken,
-            getAuthHeaders: getAuthHeaders,
-            forceLogin
-        }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        userLoading,
+        accessToken,
+        refreshToken,
+        login,
+        logout,
+        refreshAccessToken,
+        getAuthHeaders,
+        forceLogin,
+        refreshUser,
+        setUserFromPayload,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 }

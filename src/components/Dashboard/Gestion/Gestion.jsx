@@ -13,6 +13,7 @@ import { CrearEvento } from "./CrearEvento";
 import { BuscarEvento } from "./BuscarEvento";
 import { ActualizarEvento } from "./ActualizarEvento";
 import { VerLogsCheckin } from "./VerLogsCheckin";
+import { GestionPagos } from "./GestionPagos";
 import { apiService } from "../../../services/apiService";
 import "./Gestion.css";
 
@@ -32,6 +33,7 @@ export function Gestion({ user }) {
   const [eventsCount, setEventsCount] = useState(0);
   const [certificatesCount, setCertificatesCount] = useState(0);
   const [shipsCount, setShipsCount] = useState(0);
+  const [paymentsCount, setPaymentsCount] = useState(0);
 
   // Cargar contadores al montar el componente
   useEffect(() => {
@@ -66,13 +68,23 @@ export function Gestion({ user }) {
 
         // Contador de buques (placeholder - ajustar cuando haya endpoint)
         setShipsCount(0);
+
+        // Contador de pagos procesados (solo si es admin)
+        if (user?.category?.includes?.("Administrador")) {
+          try {
+            const paymentsRes = await apiService.getProcessedPayments({ limit: 1, page: 1 });
+            if (paymentsRes.status === "success" && paymentsRes.payload?.totalDocs != null) {
+              setPaymentsCount(paymentsRes.payload.totalDocs);
+            }
+          } catch (_) {}
+        }
       } catch (error) {
         console.error("Error al cargar contadores:", error);
       }
     };
 
     loadCounts();
-  }, []);
+  }, [user?.id, user?.category]);
 
   if (!user) return null;
 
@@ -202,6 +214,23 @@ export function Gestion({ user }) {
           </div>
         </div>
       </div>
+      {user?.category?.includes?.("Administrador") && (
+        <div className="col-12 col-md-6 col-lg-4">
+          <div 
+            className={`gestion-card h-100 ${isTransitioning ? 'gestion-card-fade-out' : ''}`}
+            onClick={() => handleCardClick('payments')}
+          >
+            <div className="gestion-card-content">
+              <i className="bi bi-credit-card-2-front-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
+              <h4 className="text-white mb-3">Gestión de pagos</h4>
+              <div className="d-flex align-items-center justify-content-center gap-2">
+                <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+                <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{paymentsCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -425,6 +454,19 @@ export function Gestion({ user }) {
     </div>
   );
 
+  // Renderizar sección de pagos (solo Administrador)
+  const renderPaymentsSection = () => (
+    <div className={`gestion-section ${activeSection === 'payments' ? 'gestion-section-active' : ''}`}>
+      <GestionPagos />
+      <div className="mt-4 d-flex justify-content-end">
+        <button className="btn btn-outline-orange" onClick={handleBackClick}>
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
+          Volver
+        </button>
+      </div>
+    </div>
+  );
+
   // Renderizar sección de buques
   const renderShipsSection = () => (
     <div className={`gestion-section ${activeSection === 'ships' ? 'gestion-section-active' : ''}`}>
@@ -467,6 +509,7 @@ export function Gestion({ user }) {
         {activeSection === 'events' && renderEventsSection()}
         {activeSection === 'certificates' && renderCertificatesSection()}
         {activeSection === 'ships' && renderShipsSection()}
+        {activeSection === 'payments' && renderPaymentsSection()}
       </div>
     </div>
   );

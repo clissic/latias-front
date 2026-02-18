@@ -8,6 +8,7 @@
 }
 
 .camarote-card {
+  backdrop-filter: blur(3px);
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid #082b557c;
   border-radius: 10px;

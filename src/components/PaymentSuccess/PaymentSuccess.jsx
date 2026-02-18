@@ -1,21 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FadeIn } from '../FadeIn/FadeIn';
 import { apiService } from '../../services/apiService';
+import { useAuth } from '../../context/AuthContext';
 import './PaymentSuccess.css';
 
+/**
+ * Página de resultado tras el pago (Checkout Pro).
+ * - Con payment_id/collection_id: verifica estado en MP y llama a process-successful-payment.
+ * - Con dev=1 (solo desarrollo): muestra éxito sin llamar a MP; el curso ya fue asignado por dev-complete-purchase.
+ * - Cuando el pago queda "approved", se actualiza el user en contexto y localStorage (purchasedCourses) para que el front refleje el curso comprado.
+ */
 export function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { forceLogin } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
 
+  /** Actualiza el user en contexto y localStorage con los datos del perfil (incl. purchasedCourses) para que "En tu bitácora" y la lista de cursos se vean bien. */
+  const refreshUserFromProfile = useCallback(async () => {
+    try {
+      const profileRes = await apiService.getUserProfile();
+      if (profileRes.status === 'success' && profileRes.payload?.user) {
+        forceLogin(profileRes.payload.user);
+      }
+    } catch (e) {
+      console.error('Error al actualizar perfil tras pago:', e);
+    }
+  }, [forceLogin]);
+
   // Parámetros de retorno de Checkout Pro (back_urls): payment_id, collection_id, status, etc.
   const paymentId = searchParams.get('payment_id');
   const collectionId = searchParams.get('collection_id');
+  /** Solo desarrollo: dev=1 indica que la compra se simuló con el botón "Comprar (Dev mode)" sin MP */
+  const isDevSimulation = searchParams.get('dev') === '1';
 
   useEffect(() => {
+    // Modo desarrollo: simulación de retorno sin pago real (curso ya asignado por dev-complete-purchase)
+    if (isDevSimulation) {
+      setPaymentInfo({
+        status: 'approved',
+        paymentId: 'DEV (simulación)',
+        devMode: true,
+      });
+      setLoading(false);
+      refreshUserFromProfile();
+      return;
+    }
+
     // Obtener el ID del pago (puede venir como payment_id o collection_id)
     const finalPaymentId = paymentId || collectionId;
 
@@ -69,14 +103,15 @@ export function PaymentSuccess() {
             externalReference: checkData.payload.externalReference,
             ...processData.payload
           });
+          await refreshUserFromProfile();
         } else if (checkData.payload.status === 'pending') {
-          // Si el pago está pendiente, mostrar mensaje informativo
+          // Si el pago está pendiente, mostrar mensaje y activar polling por si se aprueba después
+          // (en local el webhook no llega, así que procesamos cuando el usuario sigue en la página)
           setPaymentInfo({
             paymentId: finalPaymentId,
             status: checkData.payload.status,
             statusDetail: checkData.payload.statusDetail,
           });
-          // No es un error, solo informativo - el webhook procesará cuando se apruebe
         } else if (checkData.payload.status === 'rejected' || checkData.payload.status === 'cancelled') {
           // Si el pago fue rechazado o cancelado
           setPaymentInfo({
@@ -104,7 +139,48 @@ export function PaymentSuccess() {
     };
 
     verifyAndProcessPayment();
-  }, [paymentId, collectionId]);
+  }, [paymentId, collectionId, isDevSimulation, refreshUserFromProfile]);
+
+  // Cuando el pago está "pending", hacer polling por si pasa a "approved" (en local el webhook no llega)
+  useEffect(() => {
+    const finalPaymentId = paymentId || collectionId;
+    if (!finalPaymentId || paymentInfo?.status !== 'pending') return;
+
+    const maxAttempts = 24; // 24 * 5s = 2 min
+    let attempts = 0;
+
+    const interval = setInterval(async () => {
+      attempts += 1;
+      if (attempts > maxAttempts) return;
+      try {
+        const checkResponse = await apiService.request(`/mercadopago/payment-status/${finalPaymentId}`, { method: 'GET' });
+        if (!checkResponse.ok) return;
+        const checkData = await checkResponse.json();
+        if (checkData.status !== 'success' || checkData.payload?.status !== 'approved') return;
+
+        const processResponse = await apiService.request('/mercadopago/process-successful-payment', {
+          method: 'POST',
+          body: JSON.stringify({ paymentId: finalPaymentId }),
+        });
+        if (!processResponse.ok) return;
+        const processData = await processResponse.json();
+        if (processData.status !== 'success') return;
+
+        setPaymentInfo((prev) => ({
+          ...prev,
+          paymentId: finalPaymentId,
+          status: 'approved',
+          externalReference: checkData.payload?.externalReference,
+          ...processData.payload,
+        }));
+        refreshUserFromProfile();
+      } catch {
+        // ignorar errores de polling
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [paymentId, collectionId, paymentInfo?.status]);
 
   const handleGoToDashboard = () => {
     navigate('/dashboard/cursos');
@@ -167,8 +243,8 @@ export function PaymentSuccess() {
   return (
     <div className="container">
       <FadeIn>
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-8 col-lg-6">
+        <div className="row justify-content-center col-12 col-md-10 col-lg-8 col-xl-7">
+          <div className="col-12">
             <div className="payment-result-container success">
               <div className="text-center">
                 {paymentInfo?.status === 'pending' ? (
@@ -185,13 +261,18 @@ export function PaymentSuccess() {
                 ) : (
                   <>
                     <i className="bi bi-check-circle-fill text-success display-1"></i>
+                    {paymentInfo?.devMode && (
+                      <div className="mt-2">
+                        <span className="badge bg-info">Modo desarrollo (simulación)</span>
+                      </div>
+                    )}
                     <h2 className="text-success mt-3">¡Pago Exitoso!</h2>
                     <p className="text-white mb-4">
                       Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.
                     </p>
                   </>
                 )}
-                
+
                 <div className="success-details">
                   {paymentInfo?.paymentId && (
                     <div className="d-flex justify-content-between mb-2">
@@ -239,14 +320,14 @@ export function PaymentSuccess() {
                     onClick={handleGoToDashboard}
                   >
                     <i className="bi bi-speedometer me-2"></i>
-                    Ir al Dashboard
+                    Ir a Mi Latias
                   </button>
                   <button 
                     className="btn btn-light" 
                     onClick={handleGoToCourses}
                   >
-                    <i className="bi bi-book me-2"></i>
-                    Ver Más Cursos
+                    <i className="bi bi-book-half me-2"></i>
+                    Ver más cursos
                   </button>
                 </div>
               </div>

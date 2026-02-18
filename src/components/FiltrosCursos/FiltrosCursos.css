@@ -15,6 +15,7 @@
 
 .filtro-column select,
 .filtro-column input[type="text"],
+.filtro-column input[type="number"],
 .filtro-column input[type="range"] {
     width: 100%;
     background: transparent;
@@ -36,7 +37,8 @@
 }
 
 .filtro-column select,
-.filtro-column input[type="text"] {
+.filtro-column input[type="text"],
+.filtro-column input[type="number"] {
     background-color: rgba(0, 0, 0, 0.5);
 }
 

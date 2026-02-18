@@ -1,40 +1,64 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { Pagination } from "react-bootstrap";
 import { CartaCurso } from "../CartaCurso/CartaCurso";
 import { FiltrosCursos } from "../FiltrosCursos/FiltrosCursos";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { useCourses } from "../../hooks/useApi";
+import { useAuth } from "../../context/AuthContext";
 import "../Dashboard/Gestion/Gestion.css";
 
 export function Cursos() {
+  const { user } = useAuth();
   const { courses: allCourses, loading, error } = useCourses();
+
+  /** Set de courseId de cursos ya comprados por el usuario (para mostrar "En tu bitácora" / "Ir al curso") */
+  const purchasedCourseIds = useMemo(() => {
+    const list = Array.isArray(user?.purchasedCourses) ? user.purchasedCourses : [];
+    return new Set(list.map((c) => c.courseId || c._id).filter(Boolean));
+  }, [user?.purchasedCourses]);
   const [courses, setCourses] = useState([]);
   // Calcular precio máximo inicial
   const initialMaxPrice = allCourses.length > 0 
     ? Math.ceil(Math.max(...allCourses.map(c => Number(c.price) || 0)) * 1.1)
     : 1000;
 
+  const initialMaxDuration = allCourses.length > 0
+    ? Math.ceil(Math.max(...allCourses.map(c => Number(c.duration) || 0)) * 1.1)
+    : 100;
+
   const [filtros, setFiltros] = useState({
     keywords: "",
     categoria: "",
     dificultad: "",
-    duracion: "",
+    duracionMin: 0,
+    duracionMax: initialMaxDuration,
     precioMin: 0,
     precioMax: initialMaxPrice,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9;
   const coursesHeaderRef = useRef(null);
 
-  // Calcular precio máximo de los cursos
+  // Calcular precio máximo y duración máxima de los cursos
   const maxPrice = allCourses.length > 0 
     ? Math.ceil(Math.max(...allCourses.map(c => Number(c.price) || 0)) * 1.1) // 10% más para tener margen
     : 1000;
+  const maxDuration = allCourses.length > 0
+    ? Math.ceil(Math.max(...allCourses.map(c => Number(c.duration) || 0)) * 1.1)
+    : 100;
 
-  // Actualizar cursos cuando se cargan desde la API
+  const filtrosInicializadosRef = useRef(false);
+
+  // Actualizar cursos y rangos máximos de filtros cuando se cargan desde la API (solo la primera vez)
   useEffect(() => {
     if (allCourses.length > 0) {
       setCourses(allCourses);
+      if (!filtrosInicializadosRef.current) {
+        filtrosInicializadosRef.current = true;
+        const maxP = Math.ceil(Math.max(...allCourses.map(c => Number(c.price) || 0)) * 1.1);
+        const maxD = Math.ceil(Math.max(...allCourses.map(c => Number(c.duration) || 0)) * 1.1);
+        setFiltros((prev) => ({ ...prev, precioMax: maxP, duracionMax: maxD }));
+      }
     }
   }, [allCourses]);
 
@@ -74,7 +98,7 @@ export function Cursos() {
   };
 
   const aplicarFiltros = () => {
-    const { keywords, categoria, dificultad, duracion, precioMin, precioMax } = filtros;
+    const { keywords, categoria, dificultad, duracionMin, duracionMax, precioMin, precioMax } = filtros;
 
     const cursosFiltrados = allCourses.filter((course) => {
       const matchKeywords =
@@ -87,9 +111,13 @@ export function Cursos() {
         categoria === "" || (course.category || "") === categoria;
       const matchDificultad =
         dificultad === "" || (course.difficulty || "") === dificultad;
-      const matchDuration = 
-        duracion === "" || (course.duration || "") === duracion;
-      
+
+      // Filtro de duración: rango mínimo-máximo (horas)
+      const courseDuration = Number(course.duration) || 0;
+      const minDuration = Number(duracionMin) || 0;
+      const maxDurationVal = Number(duracionMax) ?? 100;
+      const matchDuration = courseDuration >= minDuration && courseDuration <= maxDurationVal;
+
       // Filtro de precio: convertir a número y comparar
       const coursePrice = Number(course.price) || 0;
       const minPrice = Number(precioMin) || 0;
@@ -107,7 +135,8 @@ export function Cursos() {
       keywords: "",
       categoria: "",
       dificultad: "",
-      duracion: "",
+      duracionMin: 0,
+      duracionMax: maxDuration,
       precioMin: 0,
       precioMax: maxPrice,
     });
@@ -151,26 +180,26 @@ export function Cursos() {
             limpiarFiltros={limpiarFiltros}
             categories={[...new Set(allCourses.map((c) => c.category))]}
             difficulties={[...new Set(allCourses.map((c) => c.difficulty))]}
-            durations={[...new Set(allCourses.map((c) => c.duration))]}
             maxPrice={maxPrice}
+            maxDuration={maxDuration}
           />
-        <section className="col-12 col-lg-9">
+        <section className="col-12 col-md-8 col-lg-9">
           <div className="containerCursos row g-4" ref={coursesHeaderRef}>
             {currentCourses.map((course) => (
               <div
                 key={course._id || course.id}
-                className="col-12 col-sm-6 col-md-6 col-lg-6"
+                className="col-12 col-md-6 col-lg-4"
               >
                 <CartaCurso
                   courseId={course.courseId || course._id || course.id}
                   name={course.courseName || course.name}
-                  currency={course.currency}
-                  price={course.price}
                   category={course.category}
                   image={course.image}
                   shortDescription={course.shortDescription}
-                  duration={course.duration}
+                  price={course.price}
+                  currency={course.currency}
                   difficulty={course.difficulty}
+                  isPurchased={purchasedCourseIds.has(course.courseId || course._id || course.id)}
                 />
               </div>
             ))}

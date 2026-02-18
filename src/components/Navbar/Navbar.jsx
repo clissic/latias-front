@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { hasCategory } from "../../utils/userCategory";
 
 export function Navbar() {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, refreshUser } = useAuth();
     const navigate = useNavigate();
 
     // Función para manejar clicks en links para usuarios checkin
@@ -13,6 +13,13 @@ export function Navbar() {
             e.preventDefault();
             navigate("/checkin", { replace: true });
         }
+    };
+
+    // Al hacer clic en Cursos: actualizar user (purchasedCourses) y luego navegar
+    const handleCursosClick = (e) => {
+        if (!isAuthenticated) return;
+        e.preventDefault();
+        refreshUser().catch(() => {}).finally(() => navigate("/cursos"));
     };
 
     return (
@@ -27,7 +34,7 @@ export function Navbar() {
                 <div className="navbar-nav">
                     {!hasCategory(user, "checkin") && (
                         <>
-                            <Link to="/cursos" className="nav-item nav-link">Cursos</Link>
+                            <Link to="/cursos" className="nav-item nav-link" onClick={isAuthenticated ? handleCursosClick : undefined}>Cursos</Link>
                             <Link to="/instructores" className="nav-item nav-link">Instructores</Link>
                             <Link to="/gestoria" className="nav-item nav-link">Gestoría</Link>
                         </>

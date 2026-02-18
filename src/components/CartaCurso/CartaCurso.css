@@ -2,18 +2,136 @@
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(3px);
     color: white;
-    transition: all .5s ease;
+    transition: all 0.3s ease;
     border: #082b557c 1px solid;
+    cursor: pointer;
 }
 
 .cartaCurso:hover {
-    transition: all .5s ease;
-    transform: translatey(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, .4);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.cartaCurso hr {
-    border: 1px solid #082b55;
+/* Contenedor con background-image: dimensiones fijas, no altera el ancho de la carta */
+.cartaCurso-image-wrap {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    min-height: 180px;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Badge categoría: esquina superior derecha sobre la imagen */
+.cartaCurso-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    z-index: 1;
+}
+
+.cartaCurso .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.cartaCurso-title {
+    font-size: 1.1rem;
+    margin-bottom: 0rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cartaCurso-desc {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.cartaCurso-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 1199.98px) {
+    .cartaCurso-price-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .cartaCurso-price-row {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.cartaCurso-price {
+    font-size: 1rem;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.cartaCurso-difficulty-badge {
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.cartaCurso-difficulty-Princiante {
+    background-color: #198754;
+    color: white;
+}
+
+.cartaCurso-difficulty-Intermedio {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.cartaCurso-difficulty-Avanzado {
+    background-color: #dc3545;
+    color: white;
+}
+
+.cartaCurso-price-symbol {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #198754;
+}
+
+.cartaCurso-price-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.cartaCurso-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.cartaCurso-actions .btn {
+    flex-shrink: 0;
 }
 
 .Costera-bg {

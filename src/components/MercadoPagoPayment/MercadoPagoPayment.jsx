@@ -47,6 +47,9 @@ export function MercadoPagoPayment() {
   const [preferenceId, setPreferenceId] = useState(null);
   const [creatingPreference, setCreatingPreference] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('mercadopago');
+  /** Solo desarrollo: estado para el botón "Comprar (Dev mode)" que simula el retorno sin MP */
+  const [devPurchaseLoading, setDevPurchaseLoading] = useState(false);
+  const [devPurchaseError, setDevPurchaseError] = useState(null);
 
   // Función para obtener el símbolo de moneda según el código
   const getCurrencySymbol = (currencyCode) => {
@@ -330,6 +333,50 @@ export function MercadoPagoPayment() {
                   <div className="mb-4">
                     {/* Wallet Brick: redirige a Checkout Pro con la preferencia creada en el backend */}
                     <Wallet initialization={{ preferenceId }} />
+                    {/* SOLO DESARROLLO: simula compra y retorno a la app sin pasar por MP (sandbox no redirige a localhost).
+                        Se muestra si npm run dev (import.meta.env.DEV) o si en .env está VITE_DEV_PAYMENT=true.
+                        En producción: no definir VITE_DEV_PAYMENT y el build tendrá DEV=false. */}
+                    {(import.meta.env.DEV || import.meta.env.VITE_DEV_PAYMENT === 'true') && course && user && (
+                      <div className="mt-3 text-center">
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          disabled={devPurchaseLoading}
+                          onClick={async () => {
+                            setDevPurchaseError(null);
+                            setDevPurchaseLoading(true);
+                            try {
+                              const id = course.courseId || course._id;
+                              const res = await apiService.devCompletePurchase(id, user.id);
+                              if (res.status === 'success') {
+                                navigate('/payment/success?dev=1');
+                                return;
+                              }
+                              setDevPurchaseError(res.msg || 'Error al simular la compra');
+                            } catch (err) {
+                              setDevPurchaseError(err.message || 'Error de conexión');
+                            } finally {
+                              setDevPurchaseLoading(false);
+                            }
+                          }}
+                        >
+                          {devPurchaseLoading ? (
+                            <>
+                              <span className="spinner-border me-2" style={{ width: '1em', height: '1em', borderWidth: '0.15em' }} aria-hidden="true" />
+                              Simulando...
+                            </>
+                          ) : (
+                            <>Comprar (Dev mode)</>
+                          )}
+                        </button>
+                        <p className="small text-muted mt-2 mb-0">
+                          Solo para pruebas: asigna el curso al usuario y redirige a la página de éxito sin usar Mercado Pago.
+                        </p>
+                        {devPurchaseError && (
+                          <p className="small text-danger mt-1 mb-0">{devPurchaseError}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="alert alert-info">

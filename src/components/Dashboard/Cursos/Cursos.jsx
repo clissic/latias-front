@@ -9,20 +9,102 @@ import "./Cursos.css";
 const ITEMS_PER_PAGE = 6;
 const MAX_PAGES_TO_SHOW = 5;
 
+const DIFFICULTY_OPTIONS = ["", "Principiante", "Intermedio", "Avanzado"];
+
+const defaultFilters = {
+  keywords: "",
+  progressMin: 0,
+  progressMax: 100,
+  estadoProgreso: "", // "" | "finalizados" | "en_progreso"
+  dificultad: "",
+  categoria: "",
+  dateFrom: "",
+  dateTo: "",
+};
+
 export function Cursos({ user }) {
   const userId = user?._id || user?.id;
   const { courses: cursosFromApi, loading } = useUserCourses(userId);
   const cursos = Array.isArray(cursosFromApi) ? cursosFromApi : [];
   const [currentPage, setCurrentPage] = useState(1);
+  const [filtros, setFiltros] = useState(defaultFilters);
 
-  const totalPages = Math.max(1, Math.ceil(cursos.length / ITEMS_PER_PAGE));
+  const calculateProgress = (course) => {
+    const modules = Array.isArray(course.modulesCompleted) ? course.modulesCompleted : [];
+    const totalLessons = modules.reduce(
+      (acc, module) => acc + (Array.isArray(module.lessons) ? module.lessons.length : 0),
+      0
+    );
+    const completedLessons = modules.reduce((acc, module) => {
+      if (!Array.isArray(module.lessons)) return acc;
+      return acc + module.lessons.filter((lesson) => lesson.completed).length;
+    }, 0);
+    return totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  };
+
+  const categoriasUnicas = useMemo(
+    () => [...new Set(cursos.map((c) => c.category).filter(Boolean))].sort(),
+    [cursos]
+  );
+
+  const cursosFiltered = useMemo(() => {
+    const { keywords, progressMin, progressMax, estadoProgreso, dificultad, categoria, dateFrom, dateTo } = filtros;
+    return cursos.filter((curso) => {
+      const progress = calculateProgress(curso);
+      const nameMatch =
+        !keywords.trim() ||
+        (curso.courseName || "")
+          .toLowerCase()
+          .includes(keywords.trim().toLowerCase());
+      const progressMatch = progress >= (Number(progressMin) || 0) && progress <= (Number(progressMax) ?? 100);
+      const estadoMatch =
+        !estadoProgreso ||
+        (estadoProgreso === "finalizados" && progress >= 100) ||
+        (estadoProgreso === "en_progreso" && progress < 100);
+      const difficultyMatch =
+        !dificultad.trim() ||
+        (String(curso.difficulty || "").toLowerCase() === dificultad.trim().toLowerCase());
+      const categoryMatch =
+        !categoria.trim() ||
+        (String(curso.category || "").trim().toLowerCase() === categoria.trim().toLowerCase());
+      const enrolled = curso.dateEnrolled ? new Date(curso.dateEnrolled) : null;
+      const fromOk = !dateFrom || (enrolled && enrolled >= new Date(dateFrom + "T00:00:00"));
+      const toOk = !dateTo || (enrolled && enrolled <= new Date(dateTo + "T23:59:59.999"));
+      return nameMatch && progressMatch && estadoMatch && difficultyMatch && categoryMatch && fromOk && toOk;
+    });
+  }, [cursos, filtros]);
+
+  const totalPages = Math.max(1, Math.ceil(cursosFiltered.length / ITEMS_PER_PAGE));
   const effectivePage = Math.min(currentPage, totalPages);
   const indexOfLast = effectivePage * ITEMS_PER_PAGE;
   const indexOfFirst = indexOfLast - ITEMS_PER_PAGE;
   const currentCursos = useMemo(
-    () => cursos.slice(indexOfFirst, indexOfLast),
-    [cursos, indexOfFirst, indexOfLast]
+    () => cursosFiltered.slice(indexOfFirst, indexOfLast),
+    [cursosFiltered, indexOfFirst, indexOfLast]
   );
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFiltros((prev) => ({ ...prev, [name]: value }));
+    setCurrentPage(1);
+  };
+
+  const handleProgressRange = (e) => {
+    const { name, value } = e.target;
+    const num = Number(value);
+    setFiltros((prev) => {
+      const next = { ...prev, [name]: num };
+      if (name === "progressMin" && num > (Number(prev.progressMax) ?? 100)) next.progressMax = num;
+      if (name === "progressMax" && num < (Number(prev.progressMin) || 0)) next.progressMin = num;
+      return next;
+    });
+    setCurrentPage(1);
+  };
+
+  const limpiarFiltros = () => {
+    setFiltros(defaultFilters);
+    setCurrentPage(1);
+  };
 
   const getPageNumbers = () => {
     const pages = [];
@@ -36,22 +118,6 @@ export function Cursos({ user }) {
   };
 
   const handlePageChange = (page) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-
-  const calculateProgress = (course) => {
-    const modules = Array.isArray(course.modulesCompleted) ? course.modulesCompleted : [];
-
-    const totalLessons = modules.reduce(
-      (acc, module) => acc + (Array.isArray(module.lessons) ? module.lessons.length : 0),
-      0
-    );
-
-    const completedLessons = modules.reduce((acc, module) => {
-      if (!Array.isArray(module.lessons)) return acc;
-      return acc + module.lessons.filter((lesson) => lesson.completed).length;
-    }, 0);
-
-    return totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-  };
 
   return (
     <FadeIn>
@@ -81,6 +147,133 @@ export function Cursos({ user }) {
           </div>
         ) : (
           <>
+          <div className="row mb-4">
+            <div className="portafolio-filters col-12 mb-4">
+              <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
+              <div className="row g-2 portafolio-modal-filters">
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label" htmlFor="keywords-progreso">Palabras clave</label>
+                  <input
+                    type="text"
+                    name="keywords"
+                    id="keywords-progreso"
+                    className="form-control portafolio-input form-control-sm"
+                    value={filtros.keywords}
+                    onChange={handleFilterChange}
+                    placeholder="Nombre del curso"
+                  />
+                </div>
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label" htmlFor="estadoProgreso">Estado</label>
+                  <select
+                    name="estadoProgreso"
+                    id="estadoProgreso"
+                    className="form-select portafolio-input form-control-sm"
+                    value={filtros.estadoProgreso}
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">Todos</option>
+                    <option value="en_progreso">En progreso (&lt;100%)</option>
+                    <option value="finalizados">Finalizados (100%)</option>
+                  </select>
+                </div>
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label">Progreso (%)</label>
+                  <div className="d-flex gap-2 align-items-center">
+                    <div className="flex-grow-1">
+                      <input
+                        type="number"
+                        name="progressMin"
+                        id="progressMin"
+                        min="0"
+                        max="100"
+                        value={filtros.progressMin}
+                        className="form-control portafolio-input form-control-sm"
+                        onChange={handleProgressRange}
+                        placeholder="Mín"
+                      />
+                    </div>
+                    <div className="flex-grow-1">
+                      <input
+                        type="number"
+                        name="progressMax"
+                        id="progressMax"
+                        min="0"
+                        max="100"
+                        value={filtros.progressMax}
+                        className="form-control portafolio-input form-control-sm"
+                        onChange={handleProgressRange}
+                        placeholder="Máx"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label" htmlFor="dificultad">Dificultad</label>
+                  <select
+                    name="dificultad"
+                    id="dificultad"
+                    className="form-select portafolio-input form-control-sm"
+                    value={filtros.dificultad}
+                    onChange={handleFilterChange}
+                  >
+                    {DIFFICULTY_OPTIONS.map((opt) => (
+                      <option key={opt || "todos"} value={opt}>{opt || "Todos"}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label" htmlFor="categoria">Categoría</label>
+                  <select
+                    name="categoria"
+                    id="categoria"
+                    className="form-select portafolio-input form-control-sm"
+                    value={filtros.categoria}
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">Todos</option>
+                    {categoriasUnicas.map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                  <label className="portafolio-modal-filter-label">Fecha de inscripción</label>
+                  <div className="d-flex gap-2 align-items-center">
+                    <div className="flex-grow-1">
+                      <input
+                        type="date"
+                        name="dateFrom"
+                        id="dateFrom"
+                        className="form-control portafolio-input form-control-sm"
+                        value={filtros.dateFrom}
+                        onChange={handleFilterChange}
+                        placeholder="Desde"
+                        title="Desde"
+                      />
+                    </div>
+                    <div className="flex-grow-1">
+                      <input
+                        type="date"
+                        name="dateTo"
+                        id="dateTo"
+                        className="form-control portafolio-input form-control-sm"
+                        value={filtros.dateTo}
+                        onChange={handleFilterChange}
+                        placeholder="Hasta"
+                        title="Hasta"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3 flota-filters-actions">
+                <button type="button" className="btn btn-outline-orange btn-sm" onClick={limpiarFiltros}>
+                  <i className="bi bi-funnel me-1"></i>Limpiar filtros
+                </button>
+              </div>
+            </div>
+          </div>
           <div className="row g-4">
             {currentCursos.map((curso, index) => {
               const progress = calculateProgress(curso);
@@ -138,7 +331,7 @@ export function Cursos({ user }) {
 
                       <div className="cursos-card-actions d-flex flex-column gap-2 mt-3">
                         <Link
-                          to={`/course/${curso.courseId}`}
+                          to={`/course/${curso.courseId}/learn`}
                           className="btn btn-warning btn-sm"
                         >
                           Ir al curso
@@ -151,7 +344,7 @@ export function Cursos({ user }) {
             })}
           </div>
 
-          <div className="d-flex justify-content-center align-items-center mt-4 cursos-progreso-pagination">
+          <div className="d-flex justify-content-center align-items-center mt-4 cursos-progreso-pagination mb-4">
             <Pagination className="mb-0">
               <Pagination.First
                 onClick={() => handlePageChange(1)}
@@ -191,7 +384,7 @@ export function Cursos({ user }) {
               />
             </Pagination>
             <span className="text-white-50 small ms-3">
-              Página {effectivePage} de {totalPages} ({cursos.length} cursos)
+              Página {effectivePage} de {totalPages} ({cursosFiltered.length} cursos)
             </span>
           </div>
           </>

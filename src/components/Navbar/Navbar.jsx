@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -6,6 +7,7 @@ import { hasCategory } from "../../utils/userCategory";
 export function Navbar() {
     const { isAuthenticated, user, refreshUser } = useAuth();
     const navigate = useNavigate();
+    const [cursosLoading, setCursosLoading] = useState(false);
 
     // Función para manejar clicks en links para usuarios checkin
     const handleLinkClick = (e, path) => {
@@ -19,10 +21,27 @@ export function Navbar() {
     const handleCursosClick = (e) => {
         if (!isAuthenticated) return;
         e.preventDefault();
-        refreshUser().catch(() => {}).finally(() => navigate("/cursos"));
+        setCursosLoading(true);
+        refreshUser()
+            .catch(() => {})
+            .finally(() => {
+                setCursosLoading(false);
+                navigate("/cursos");
+            });
     };
 
     return (
+        <>
+        {cursosLoading && (
+            <div
+                className="cursos-navbar-overlay"
+                aria-hidden="true"
+            >
+                <div className="spinner-border text-warning" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        )}
         <nav id="goToTop" className="navbar navbar-expand-lg navbar-dark bg-none d-flex justify-content-between">
             <Link to="/" className="navbar-brand">
                 <img className="img-fluid logoHorizontal" src="/latias-horizontal.png" alt="logo Latias horizontal"/>
@@ -51,5 +70,6 @@ export function Navbar() {
                 </div>
             </div>
         </nav>
+        </>
     );
 }

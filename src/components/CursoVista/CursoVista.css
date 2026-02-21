@@ -1,0 +1,655 @@
+.curso-vista-container {
+  min-height: 60vh;
+  padding: 2rem 0;
+}
+
+.curso-vista-no-comprado {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: rgba(40, 0, 0, 0.3);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.curso-vista-no-comprado .btn {
+  min-width: 180px;
+}
+
+.curso-vista-placeholder {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+/* Naranja más oscuro para la línea */
+.curso-vista-line-color {
+  background-color: #cc8400;
+}
+
+/* Layout */
+.curso-vista-layout {
+  min-height: 70vh;
+}
+
+/* Banner sobre sidebar y contenido: imagen como en detalles del curso, 50% opacidad, nombre centrado */
+.curso-vista-banner {
+  position: relative;
+  width: 100%;
+  min-height: 30vh;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.curso-vista-banner-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.5);
+  pointer-events: none;
+}
+
+.curso-vista-banner-text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.curso-vista-banner-title {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.curso-vista-banner-instructor-wrap {
+  margin-top: 0.35rem;
+}
+
+.curso-vista-banner-instructor {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 400;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.curso-vista-banner-instructor-profession {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* ----- Sidebar desktop (oculto en mobile, ancho 30% menor que col-md-2) ----- */
+.curso-vista-sidebar {
+  height: fit-content;
+  min-height: 75vh;
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  padding: 2rem;
+}
+
+@media (min-width: 768px) {
+  .curso-vista-row {
+    flex-wrap: nowrap;
+    gap: 3rem;
+  }
+
+  .curso-vista-sidebar {
+    flex: 0 0 11.67%;
+    max-width: 11.67%;
+  }
+
+  .curso-vista-main {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+.curso-vista-sidebar-content {
+  flex: 1;
+}
+
+.curso-vista-progress-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Línea vertical (desktop) - naranja oscuro */
+.curso-vista-line-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #cc8400;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  z-index: 0;
+}
+
+.curso-vista-module-block {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.curso-vista-module-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #606060;
+  flex-shrink: 0;
+  transition: background-color 0.3s;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.curso-vista-module-dot:hover {
+  filter: brightness(1.1);
+}
+
+.curso-vista-module-dot.completed {
+  background-color: #ffa500;
+}
+
+.curso-vista-module-dot.expanded {
+  box-shadow: 0 0 0 2px #cc8400;
+}
+
+.curso-vista-module-dot.disabled,
+.curso-vista-module-dot:disabled {
+  background-color: #2d2d2d;
+  cursor: not-allowed;
+  filter: none;
+}
+
+.curso-vista-lesson-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+  padding-top: 0;
+}
+
+.curso-vista-lesson-dots.expanded {
+  max-height: 500px;
+  opacity: 1;
+  padding-top: 0.35rem;
+}
+
+.curso-vista-lesson-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #808080;
+  flex-shrink: 0;
+  transition: background-color 0.3s;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.curso-vista-lesson-dot.completed {
+  background-color: #ffa500;
+}
+
+.curso-vista-lesson-dot.disabled,
+.curso-vista-lesson-dot:disabled {
+  background-color: #3d3d3d;
+  cursor: not-allowed;
+}
+
+.curso-vista-sidebar-logo {
+  padding-top: 1.5rem;
+  margin-top: auto;
+}
+
+.curso-vista-logo-img {
+  max-width: 50%;
+  width: auto;
+  height: auto;
+  filter: opacity(0.75);
+  transition: filter 0.2s;
+}
+
+.curso-vista-logo-img:hover {
+  filter: opacity(1);
+}
+
+.curso-vista-main {
+  min-width: 0;
+  padding-left: 0;
+}
+
+/* Contenido: nombre del módulo + acordeón de lecciones */
+.curso-vista-module-content {
+  padding: 0;
+}
+
+@keyframes curso-vista-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes curso-vista-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.curso-vista-module-fade-out {
+  animation: curso-vista-fade-out 0.2s ease-out forwards;
+}
+
+.curso-vista-module-fade-in {
+  animation: curso-vista-fade-in 0.25s ease-out;
+}
+
+.curso-vista-module-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.curso-vista-module-description {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+  .curso-vista-module-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+.curso-vista-lessons-accordion .accordion-item {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: #082b557c;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.curso-vista-lessons-accordion .accordion-item:last-child {
+  margin-bottom: 0;
+}
+
+.curso-vista-lessons-accordion .accordion-button {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  border: none;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.curso-vista-lessons-accordion .accordion-button:not(.collapsed) {
+  background-color: rgba(204, 132, 0, 0.2);
+  color: #ffa500;
+}
+
+.curso-vista-lessons-accordion .accordion-button::after {
+  filter: invert(1);
+}
+
+.curso-vista-lessons-accordion .accordion-button:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.curso-vista-lessons-accordion .accordion-body {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  border-top: 1px solid #082b557c;
+}
+
+.curso-vista-lesson-disabled .accordion-button {
+  color: rgba(255, 255, 255, 0.45);
+  cursor: not-allowed;
+}
+
+.curso-vista-lesson-check {
+  font-size: 1rem;
+}
+
+.curso-vista-module-nav-wrap {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.curso-vista-module-nav-left {
+  flex-shrink: 0;
+}
+
+.curso-vista-module-nav-right {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.curso-vista-btn-prev-module,
+.curso-vista-btn-next-module {
+  white-space: nowrap;
+}
+
+.curso-vista-btn-next-module:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (max-width: 767.98px) {
+  .curso-vista-module-nav-wrap {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* Cuerpo de la lección: video (izq) + descripción 25% (der) */
+.curso-vista-lesson-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.curso-vista-lesson-video {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 200px;
+}
+
+.curso-vista-lesson-video .ratio {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.curso-vista-lesson-video iframe {
+  border: none;
+}
+
+.curso-vista-lesson-video-placeholder {
+  aspect-ratio: 16 / 9;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.curso-vista-lesson-video-placeholder .bi {
+  font-size: 2.5rem;
+}
+
+.curso-vista-lesson-sidebar {
+  flex: 0 0 25%;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.curso-vista-lesson-description {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+.curso-vista-btn-completed {
+  margin-top: auto;
+}
+
+.curso-vista-btn-completed .spinner-border {
+  width: 1em;
+  height: 1em;
+  border-width: 0.15em;
+  vertical-align: middle;
+}
+
+/* Ayudas al navegante (archivos de la lección) */
+.curso-vista-ayudas {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(8, 43, 85, 0.5);
+}
+
+.curso-vista-ayudas-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.75rem;
+}
+
+.curso-vista-ayudas-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.curso-vista-ayudas-link {
+  color: #ffa500;
+  text-decoration: none;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.curso-vista-ayudas-link:hover {
+  color: #cc8400;
+  text-decoration: underline;
+}
+
+.curso-vista-ayudas-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Tablet y mobile: contenido del acordeón apilado (video arriba, descripción abajo) */
+@media (max-width: 991.98px) {
+  .curso-vista-lesson-sidebar {
+    flex: 0 0 100%;
+    min-width: 100%;
+  }
+}
+
+/* ----- Vista mobile: horizontal, 2 filas ----- */
+.curso-vista-mobile-progress {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  backdrop-filter: blur(3px);
+}
+
+.curso-vista-mobile-track {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.curso-vista-mobile-row {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 28px;
+}
+
+/* Línea horizontal (mobile) - naranja oscuro */
+.curso-vista-mobile-line-h {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  background-color: #cc8400;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.curso-vista-mobile-modules .curso-vista-module-dot {
+  width: 18px;
+  height: 18px;
+}
+
+.curso-vista-mobile-modules .curso-vista-module-dot,
+.curso-vista-mobile-lessons .curso-vista-lesson-dot {
+  position: relative;
+  z-index: 1;
+}
+
+.curso-vista-mobile-lessons .curso-vista-lesson-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* Popovers Bootstrap: tema oscuro */
+.curso-vista-popover .popover-body {
+  background-color: #082b55;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.curso-vista-popover.bs-popover-top > .popover-arrow::before,
+.curso-vista-popover.bs-popover-right > .popover-arrow::before,
+.curso-vista-popover.bs-popover-bottom > .popover-arrow::before,
+.curso-vista-popover.bs-popover-left > .popover-arrow::before {
+  border-top-color: #082b55;
+  border-right-color: #082b55;
+  border-bottom-color: #082b55;
+  border-left-color: #082b55;
+}
+
+@media (max-width: 767.98px) {
+  .curso-vista-sidebar {
+    min-height: auto;
+  }
+}
+
+/* Prueba parcial: modales */
+.curso-vista-quiz-modal .modal-content {
+  border-radius: 0.5rem;
+}
+.curso-vista-quiz-modal .cursor-pointer {
+  cursor: pointer;
+}
+.curso-vista-quiz-modal label:has(input[type="radio"]) {
+  cursor: pointer;
+}
+
+.curso-vista-quiz-rules-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+.curso-vista-quiz-intro .curso-vista-quiz-rules {
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+.curso-vista-quiz-intro .curso-vista-quiz-rules li {
+  margin-bottom: 0.35rem;
+}
+
+/* Encabezado del acordeón de prueba parcial: contador a la derecha */
+.curso-vista-quiz-accordion-header .accordion-button {
+  padding-right: 1rem;
+}
+.curso-vista-quiz-header-timer {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Prueba inline (todas las preguntas en el acordeón) */
+.curso-vista-quiz-inline {
+  padding: 0.25rem 0;
+}
+.curso-vista-quiz-question-block {
+  border-left: 3px solid rgba(255, 165, 0, 0.5);
+  padding-left: 0.75rem;
+}
+.curso-vista-quiz-inline label {
+  cursor: pointer;
+}
+
+/* Modal de resumen del curso */
+.curso-vista-summary-modal .modal-content,
+.curso-vista-summary-modal-content {
+  background: linear-gradient(180deg, #0a1628 0%, #082b55 100%);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 0.5rem;
+  color: #fff;
+}
+.curso-vista-summary-modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1rem 1.25rem;
+}
+.curso-vista-summary-modal-header .btn-close {
+  filter: invert(1);
+}
+.curso-vista-summary-modal-body {
+  padding: 1.25rem 1.5rem;
+}
+.curso-vista-summary-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.curso-vista-summary-list li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.curso-vista-summary-list li:last-child {
+  border-bottom: none;
+}
+.curso-vista-summary-verdict.passed {
+  padding: 0.75rem;
+  background: rgba(25, 135, 84, 0.15);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(25, 135, 84, 0.4);
+}
+.curso-vista-summary-verdict.failed {
+  padding: 0.75rem;
+  background: rgba(220, 53, 69, 0.12);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+}

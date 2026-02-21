@@ -55,6 +55,27 @@
   border-top-color: rgba(255, 165, 0, 0.3);
 }
 
+/* Inputs y textareas en modales: mismo color de fondo en ambos modales de desvincular */
+.general-modal-content .form-control,
+.general-modal-dark .modal-content .form-control {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.general-modal-content .form-control:focus,
+.general-modal-dark .modal-content .form-control:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: white;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.general-modal-content .form-control::placeholder,
+.general-modal-dark .modal-content .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .general-form-select {
   background-color: rgba(8, 43, 85, 0.8);
   color: #fff;

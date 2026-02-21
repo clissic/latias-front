@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Table, Pagination } from "react-bootstrap";
+import { Table, Pagination, Modal, Button, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
 import { countries, getCountry } from "../../../utils/countries";
 import "../Gestion/Gestion.css";
+import "../General/General.css";
 import "./Portafolio.css";
 
 const TwemojiFlag = ({ emoji, className = "", size = "22x22" }) => {
@@ -104,6 +105,9 @@ export function Portafolio({ user }) {
   const [historialFilterCierreDesde, setHistorialFilterCierreDesde] = useState("");
   const [historialFilterCierreHasta, setHistorialFilterCierreHasta] = useState("");
   const [boatPage, setBoatPage] = useState(1);
+  const [showDesvincularModal, setShowDesvincularModal] = useState(false);
+  const [desvincularReason, setDesvincularReason] = useState("");
+  const [desvincularSubmitting, setDesvincularSubmitting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -311,6 +315,89 @@ export function Portafolio({ user }) {
   const closeHistorialModal = () => {
     setHistorialModal({ open: false, boatId: null, boatName: "" });
     setHistorialList([]);
+  };
+
+  const openDesvincularModal = () => {
+    setDesvincularReason("");
+    setShowDesvincularModal(true);
+  };
+
+  const closeDesvincularModal = () => {
+    if (!desvincularSubmitting) {
+      setShowDesvincularModal(false);
+      setDesvincularReason("");
+    }
+  };
+
+  const handleConfirmDesvincular = async () => {
+    const reasonTrim = desvincularReason.trim();
+    if (!reasonTrim) {
+      Swal.fire({
+        title: "Motivos obligatorios",
+        text: "Debes indicar los motivos de desvinculación (máximo 250 caracteres).",
+        icon: "warning",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (reasonTrim.length > 250) {
+      Swal.fire({
+        title: "Máximo 250 caracteres",
+        text: "Los motivos no pueden superar 250 caracteres.",
+        icon: "warning",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (!selectedClient?._id) return;
+    setDesvincularSubmitting(true);
+    try {
+      const res = await apiService.unlinkClientAsGestor(selectedClient._id, reasonTrim);
+      if (res.status === "success") {
+        setShowDesvincularModal(false);
+        setDesvincularReason("");
+        setClients((prev) => prev.filter((c) => c._id !== selectedClient._id));
+        setSelectedClient(null);
+        setBoatFilterName("");
+        setBoatFilterRegistro("");
+        setBoatFilterBandera("");
+        setBoatFilterPuerto("");
+        setBoatFilterTipo("");
+        setBoatFilterDisplacement("");
+        Swal.fire({
+          title: "Cliente desvinculado",
+          text: "Se ha enviado un email al cliente informando la desvinculación y los motivos.",
+          icon: "success",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: res.msg || "No se pudo desvincular al cliente",
+          icon: "error",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Error",
+        text: e?.message || "Error al desvincular al cliente",
+        icon: "error",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } finally {
+      setDesvincularSubmitting(false);
+    }
   };
 
   const badgeClassForStatus = (status) => {
@@ -776,6 +863,11 @@ export function Portafolio({ user }) {
                               <input type="date" className="form-control form-control-sm portafolio-input" value={pendientesFilterFechaHasta} onChange={(e) => { setPendientesFilterFechaHasta(e.target.value); setPendientesPage(1); }} />
                             </div>
                           </div>
+                          <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3">
+                            <button type="button" className="btn btn-outline-orange btn-sm" onClick={() => { setPendientesFilterEstado(""); setPendientesFilterTipos(""); setPendientesFilterNotas(""); setPendientesFilterFechaDesde(""); setPendientesFilterFechaHasta(""); setPendientesPage(1); }}>
+                              <i className="bi bi-funnel me-1" /> Limpiar filtros
+                            </button>
+                          </div>
                         </div>
                         <div className="table-responsive portafolio-table-wrap">
                           <Table striped bordered hover variant="dark" className="table-dark table-sm">
@@ -890,6 +982,11 @@ export function Portafolio({ user }) {
                               <input type="date" className="form-control form-control-sm portafolio-input" value={historialFilterCierreHasta} onChange={(e) => { setHistorialFilterCierreHasta(e.target.value); setHistorialPage(1); }} />
                             </div>
                           </div>
+                          <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3">
+                            <button type="button" className="btn btn-outline-orange btn-sm" onClick={() => { setHistorialFilterEstado(""); setHistorialFilterTipos(""); setHistorialFilterNotas(""); setHistorialFilterMotivo(""); setHistorialFilterSolicitadoDesde(""); setHistorialFilterSolicitadoHasta(""); setHistorialFilterCierreDesde(""); setHistorialFilterCierreHasta(""); setHistorialPage(1); }}>
+                              <i className="bi bi-funnel me-1" /> Limpiar filtros
+                            </button>
+                          </div>
                         </div>
                         <div className="table-responsive portafolio-table-wrap">
                           <Table striped bordered hover variant="dark" className="table-dark table-sm">
@@ -923,7 +1020,16 @@ export function Portafolio({ user }) {
             </div>
           )}
 
-          <div className="col-12 mt-3 mb-3 d-flex justify-content-end">
+          <div className="col-12 mt-3 mb-3 d-flex justify-content-end gap-2 flex-wrap">
+            <button
+              type="button"
+              className="btn btn-outline-danger"
+              onClick={openDesvincularModal}
+              disabled={desvincularSubmitting}
+            >
+              <i className="bi bi-person-x me-2"></i>
+              Desvincular
+            </button>
             <button
               type="button"
               className="btn btn-outline-orange"
@@ -937,10 +1043,48 @@ export function Portafolio({ user }) {
                 setBoatFilterDisplacement("");
               }}
             >
-              <i className="bi bi-arrow-left-circle-fill me-2"></i>
+              <i className="bi bi-arrow-left-circle me-2"></i>
               Volver
             </button>
           </div>
+
+          <Modal show={showDesvincularModal} onHide={closeDesvincularModal} centered className="general-modal-dark" contentClassName="general-modal-content">
+            <Modal.Header closeButton className="general-modal-header">
+              <Modal.Title className="text-orange">Desvincular cliente</Modal.Title>
+            </Modal.Header>
+            <Modal.Body className="text-white">
+              <p className="text-white-50 small mb-3">
+                El cliente recibirá un email informando la desvinculación y los motivos que indiques. Los motivos son obligatorios.
+              </p>
+              <Form.Group className="mb-3">
+                <Form.Label>Motivos de desvinculación <span className="text-danger">*</span></Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  maxLength={250}
+                  value={desvincularReason}
+                  onChange={(e) => setDesvincularReason(e.target.value)}
+                  placeholder="Indica los motivos..."
+                  className="form-control"
+                />
+                <Form.Text className="text-white-50">
+                  {desvincularReason.length}/250
+                </Form.Text>
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer className="general-modal-footer">
+              <Button variant="secondary" onClick={closeDesvincularModal} disabled={desvincularSubmitting}>
+                Cancelar
+              </Button>
+              <Button
+                variant="danger"
+                onClick={handleConfirmDesvincular}
+                disabled={desvincularSubmitting || !desvincularReason.trim()}
+              >
+                {desvincularSubmitting ? "Enviando..." : "Confirmar desvinculación"}
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </div>
       </FadeIn>
     );

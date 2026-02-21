@@ -14,6 +14,7 @@ import { Cursos } from './components/Cursos/Cursos.jsx'
 import { Gestoria } from './components/Gestoria/Gestoria.jsx'
 import { Instructores } from './components/Instructores/Instructores.jsx'
 import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
+import { CursoVista } from './components/CursoVista/CursoVista.jsx'
 import { MercadoPagoPayment } from './components/MercadoPagoPayment/MercadoPagoPayment.jsx'
 import { PaymentSuccess } from './components/PaymentSuccess/PaymentSuccess.jsx'
 import { Dashboard } from './components/Dashboard/Dashboard.jsx'
@@ -46,6 +47,7 @@ export function App () {
                             <Route path='/recuperarPass' element={<CheckinRedirect><RecuperarPass /></CheckinRedirect>} />
                             <Route path='/terminosycondiciones' element={<CheckinRedirect><TerYCon /></CheckinRedirect>} />
                             <Route path='/course/:courseId' element={<CheckinRedirect><CursoDetalle /></CheckinRedirect>} />
+                            <Route path='/course/:courseId/learn' element={<ProtectedRoute><CheckinRedirect><CursoVista /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/course/buy/:courseId' element={<ProtectedRoute><CheckinRedirect><MercadoPagoPayment /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/payment/success' element={<ProtectedRoute><CheckinRedirect><PaymentSuccess /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

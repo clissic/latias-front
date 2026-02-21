@@ -156,6 +156,54 @@ class ApiService {
     return response.json();
   }
 
+  /** Inicia un intento de prueba parcial (descuenta el intento al abrir la prueba). */
+  async startModuleTestAttempt(userId, courseId, moduleId) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${courseId}/module/${encodeURIComponent(moduleId)}/test-start`,
+      { method: 'POST' }
+    );
+    return response.json();
+  }
+
+  /** Inicia un intento de la prueba final del curso. */
+  async startFinalTestAttempt(userId, courseId) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${courseId}/test-final-start`,
+      { method: "POST" }
+    );
+    return response.json();
+  }
+
+  /** Guarda el puntaje de la prueba final. */
+  async updateFinalTestResult(userId, courseId, score) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${courseId}/test-final-result`,
+      { method: "PUT", body: JSON.stringify({ score }) }
+    );
+    return response.json();
+  }
+
+  /** Obtiene el certificado (award) de curso del usuario. */
+  async getCourseCertificate(userId, courseId) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${encodeURIComponent(courseId)}/certificate`,
+      { method: "GET" }
+    );
+    return response.json();
+  }
+
+  /** Guarda el puntaje de la prueba parcial (al finalizar o cerrar). */
+  async updateModuleTestResult(userId, courseId, moduleId, score) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${courseId}/module/${encodeURIComponent(moduleId)}/test-result`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ score }),
+      }
+    );
+    return response.json();
+  }
+
   async purchaseCourse(userId, courseData) {
     const response = await this.request(`/courses/purchase/${userId}`, {
       method: 'POST',
@@ -227,9 +275,19 @@ class ApiService {
     return response.json();
   }
 
-  async updateMyManager(managerId, jurisdictionName) {
+  /** Desvincular un cliente (solo Gestor). reason obligatorio, máx 250 caracteres. Envía email al cliente. */
+  async unlinkClientAsGestor(clientId, reason) {
+    const response = await this.request('/users/gestor/unlink-client', {
+      method: 'POST',
+      body: JSON.stringify({ clientId, reason: (reason || '').trim() }),
+    });
+    return response.json();
+  }
+
+  async updateMyManager(managerId, jurisdictionName, reason) {
     const body = { managerId: managerId || '' };
     if (jurisdictionName) body.jurisdiction = jurisdictionName;
+    if ((managerId === '' || managerId === undefined) && reason !== undefined) body.reason = (reason || '').trim();
     const response = await this.request('/users/profile/manager', {
       method: 'PATCH',
       body: JSON.stringify(body),

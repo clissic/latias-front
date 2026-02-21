@@ -4,6 +4,9 @@ import Swal from "sweetalert2";
 import { apiService } from "../../../services/apiService";
 import "./CrearCurso.css";
 
+const SHORT_DESCRIPTION_MAX = 120;
+const LONG_DESCRIPTION_MAX = 540;
+
 export function CrearCurso() {
   // Estado inicial del curso
   const [courseData, setCourseData] = useState({
@@ -103,8 +106,13 @@ export function CrearCurso() {
   // Manejar cambios en datos básicos del curso
   const handleBasicChange = (e) => {
     const { name, value, type } = e.target;
-    // Convertir a número si es un campo numérico
-    const processedValue = type === "number" ? (value === "" ? 0 : parseFloat(value) || 0) : value;
+    let processedValue = type === "number" ? (value === "" ? 0 : parseFloat(value) || 0) : value;
+    if (name === "shortDescription" && typeof processedValue === "string") {
+      processedValue = processedValue.slice(0, SHORT_DESCRIPTION_MAX);
+    }
+    if (name === "longDescription" && typeof processedValue === "string") {
+      processedValue = processedValue.slice(0, LONG_DESCRIPTION_MAX);
+    }
     setCourseData(prev => ({
       ...prev,
       [name]: processedValue
@@ -880,7 +888,11 @@ export function CrearCurso() {
               name="shortDescription"
               value={courseData.shortDescription}
               onChange={handleBasicChange}
+              maxLength={SHORT_DESCRIPTION_MAX}
             />
+            <Form.Text className="text-muted text-end d-block">
+              {SHORT_DESCRIPTION_MAX - (courseData.shortDescription?.length || 0)} caracteres restantes
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="col-12">
@@ -891,7 +903,11 @@ export function CrearCurso() {
               name="longDescription"
               value={courseData.longDescription}
               onChange={handleBasicChange}
+              maxLength={LONG_DESCRIPTION_MAX}
             />
+            <Form.Text className="text-muted text-end d-block">
+              {LONG_DESCRIPTION_MAX - (courseData.longDescription?.length || 0)} caracteres restantes
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="col-12 col-md-4">

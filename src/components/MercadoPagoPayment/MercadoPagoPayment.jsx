@@ -402,7 +402,7 @@ export function MercadoPagoPayment() {
             <div className="mt-4 d-flex justify-content-end">
               <button 
                 className="btn btn-outline-orange" 
-                onClick={() => navigate(`/course/${courseId}`)}
+                onClick={() => navigate(`/course/${courseId}/learn`)}
               >
                 <i className="bi bi-arrow-left-circle-fill me-2"></i>
                 Volver al Curso

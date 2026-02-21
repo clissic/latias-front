@@ -88,6 +88,31 @@ export function GestionPagos() {
     setPage(1);
   };
 
+  const handleCopyPaymentId = async (paymentId) => {
+    if (!paymentId) return;
+    try {
+      await navigator.clipboard.writeText(paymentId);
+      Swal.fire({
+        icon: "success",
+        title: "Copiado",
+        text: "ID Pago copiado al portapapeles",
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#082b55",
+        color: "#ffffff",
+      });
+    } catch (error) {
+      console.error("Error al copiar:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se pudo copiar el ID Pago",
+        background: "#082b55",
+        color: "#ffffff",
+      });
+    }
+  };
+
   const clearFilters = () => {
     setFilters({
       paymentId: "",
@@ -203,19 +228,32 @@ export function GestionPagos() {
             <Table striped bordered hover variant="dark" className="table-dark">
               <thead>
                 <tr>
-                  <th>ID Pago</th>
+                  <th>ID</th>
                   <th>Curso</th>
                   <th>Usuario</th>
                   <th>Monto</th>
                   <th>Estado</th>
-                  <th>Ya comprado</th>
+                  <th title="¿Ya lo tenía comprado?">Comprado</th>
                   <th>Procesado</th>
                 </tr>
               </thead>
               <tbody>
                 {docs.map((pay) => (
                   <tr key={pay._id || pay.paymentId}>
-                    <td><small className="text-break">{pay.paymentId || "—"}</small></td>
+                    <td>
+                      <span className="d-inline-flex align-items-center gap-1">
+                        {pay.paymentId ? (
+                          <i
+                            className="bi bi-clipboard-fill cursor-pointer text-orange"
+                            title={pay.paymentId || "—"}
+                            onClick={() => handleCopyPaymentId(pay.paymentId)}
+                            style={{ cursor: "pointer", fontSize: "1rem" }}
+                            role="button"
+                            aria-label="Copiar ID Pago"
+                          />
+                        ) : null}
+                      </span>
+                    </td>
                     <td>
                       <div>
                         <strong>{pay.courseName || "—"}</strong>
@@ -228,7 +266,7 @@ export function GestionPagos() {
                         <br /><small className="text-white-50">{pay.userEmail}</small>
                         {pay.userId?._id ? (
                           <>
-                            <br /><small className="text-white-50">ID: {pay.userId._id}</small>
+                            <br /><small className="text-white-50">{pay.userId._id}</small>
                           </>
                         ) : null}
                       </div>

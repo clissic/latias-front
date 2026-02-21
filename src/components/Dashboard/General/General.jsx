@@ -208,6 +208,7 @@ export function General({ user }) {
             <Stat icon="bi-calendar-event-fill" value={eventsAttended.length} label="Eventos atendidos" />
             <Stat icon="bi-award-fill" value={statistics.certificatesQuantity || 0} label="Certificados obtenidos" />
           </div>
+          <div className="div-border-color my-4"></div>
         </div>
 
         {/* Continúa donde quedaste */}
@@ -227,7 +228,7 @@ export function General({ user }) {
                   <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
                 </div>
               </div>
-              <Link to={`/course/${firstCourse.courseId}`} className="btn btn-warning col-6 col-lg-2">
+              <Link to={`/course/${firstCourse.courseId}/learn`} className="btn btn-warning col-6 col-lg-2">
                 Ir al curso
               </Link>
             </div>

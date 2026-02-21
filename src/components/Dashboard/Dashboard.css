@@ -99,3 +99,15 @@
 .bright-filter {
   filter: opacity(75%);
 }
+
+.dashboard-logo-img {
+  max-width: 32%;
+  width: auto;
+  height: auto;
+  filter: opacity(0.75);
+  transition: filter 0.2s;
+}
+
+.dashboard-logo-img:hover {
+  filter: opacity(1);
+}

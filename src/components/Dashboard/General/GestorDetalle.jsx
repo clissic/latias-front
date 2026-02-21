@@ -51,12 +51,16 @@ export function GestorDetalle({ user: userProp }) {
   const [currentRequestPage, setCurrentRequestPage] = useState(1);
   const requestsPerPage = 2;
   const [showSpecialRequestModal, setShowSpecialRequestModal] = useState(false);
+  const [submittingSpecialRequest, setSubmittingSpecialRequest] = useState(false);
   const [fleet, setFleet] = useState([]);
   const [loadingFleet, setLoadingFleet] = useState(false);
   const [specialRequestForm, setSpecialRequestForm] = useState({
     shipId: "",
     body: "",
   });
+  const [showDesvincularModal, setShowDesvincularModal] = useState(false);
+  const [desvincularReason, setDesvincularReason] = useState("");
+  const [desvincularSubmitting, setDesvincularSubmitting] = useState(false);
 
   const managerId = user?.manager?.managerId || user?.manager?._id;
   const hasGestor = !!managerId;
@@ -126,8 +130,9 @@ export function GestorDetalle({ user: userProp }) {
       return;
     }
 
+    setSubmittingSpecialRequest(true);
     try {
-      const notes = `Solicitud especial: \n\n${specialRequestForm.body.trim()}`;
+      const notes = `${specialRequestForm.body.trim()}`;
       const res = await apiService.createShipRequest({
         ship: specialRequestForm.shipId,
         manager: managerId,
@@ -172,6 +177,8 @@ export function GestorDetalle({ user: userProp }) {
           confirmButton: "custom-swal-button",
         },
       });
+    } finally {
+      setSubmittingSpecialRequest(false);
     }
   };
 
@@ -248,32 +255,54 @@ export function GestorDetalle({ user: userProp }) {
 
   const handleVolver = () => navigate("/dashboard/general");
 
-  const handleDesvincular = async () => {
-    const { isConfirmed } = await Swal.fire({
-      title: "¿Desvincular gestor?",
-      text: "Dejarás de tener asignado a este gestor. Las solicitudes ya realizadas no se eliminan.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ffa500",
-      cancelButtonText: "Cancelar",
-      background: "#082b55",
-      color: "#ffffff",
-      customClass: {
-        confirmButton: "custom-swal-button",
-        cancelButton: "custom-swal-button",
-      },
-    });
-    if (!isConfirmed) return;
-    setAssigning(true);
+  const openDesvincularModal = () => {
+    setDesvincularReason("");
+    setShowDesvincularModal(true);
+  };
+
+  const closeDesvincularModal = () => {
+    if (!desvincularSubmitting) {
+      setShowDesvincularModal(false);
+      setDesvincularReason("");
+    }
+  };
+
+  const handleConfirmDesvincular = async () => {
+    const reasonTrim = desvincularReason.trim();
+    if (!reasonTrim) {
+      Swal.fire({
+        title: "Motivos obligatorios",
+        text: "Debes indicar los motivos de desvinculación (máximo 250 caracteres).",
+        icon: "warning",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (reasonTrim.length > 250) {
+      Swal.fire({
+        title: "Máximo 250 caracteres",
+        text: "Los motivos no pueden superar 250 caracteres.",
+        icon: "warning",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    setDesvincularSubmitting(true);
     try {
-      const res = await apiService.updateMyManager("");
+      const res = await apiService.updateMyManager("", undefined, reasonTrim);
       if (res.status === "success") {
         const profileRes = await apiService.getUserProfile();
         if (profileRes.status === "success" && profileRes.payload?.user) forceLogin(profileRes.payload.user);
+        setShowDesvincularModal(false);
+        setDesvincularReason("");
         Swal.fire({
           title: "Gestor desvinculado",
+          text: "Se ha enviado un email al gestor informando la desvinculación y los motivos.",
           icon: "success",
-          timer: 2000,
           background: "#082b55",
           color: "#ffffff",
           customClass: { confirmButton: "custom-swal-button" },
@@ -299,7 +328,7 @@ export function GestorDetalle({ user: userProp }) {
         customClass: { confirmButton: "custom-swal-button" },
       });
     } finally {
-      setAssigning(false);
+      setDesvincularSubmitting(false);
     }
   };
 
@@ -562,8 +591,16 @@ export function GestorDetalle({ user: userProp }) {
                     <div className="flota-certificate-card-body">
                       <div className="flota-certificate-card-main">
                         <div className="flota-certificate-field">
-                          <span className="flota-certificate-label">Tipo</span>
+                          <span className="flota-certificate-label">Solicitud</span>
                           <span className="flota-certificate-value">{Array.isArray(req.type) ? req.type.join(", ") : (req.type || "—")}</span>
+                        </div>
+                        <div className="flota-certificate-field">
+                          <span className="flota-certificate-label">Certificado</span>
+                          <span className="flota-certificate-value">{req.certificate || "—"}</span>
+                        </div>
+                        <div className="flota-certificate-field">
+                          <span className="flota-certificate-label">N° Cert.</span>
+                          <span className="flota-certificate-value">{req.number || "—"}</span>
                         </div>
                         <div className="flota-certificate-field">
                           <span className="flota-certificate-label">Barco</span>
@@ -669,14 +706,54 @@ export function GestorDetalle({ user: userProp }) {
 
         {/* Botones inferiores */}
         <div className="gestor-detalle-buttons col-12 d-flex justify-content-end gap-2">
-          <Button variant="outline-danger" onClick={handleDesvincular} disabled={assigning}>
-            {assigning ? "..." : "Desvincular"}
+          <Button variant="outline-danger" onClick={openDesvincularModal} disabled={desvincularSubmitting}>
+            <i className="bi bi-person-x me-1"></i>
+            {desvincularSubmitting ? "..." : "Desvincular"}
           </Button>
           <Button variant="outline" className="btn-outline-orange" onClick={handleVolver}>
-            <i className="bi bi-arrow-left-circle-fill me-1"></i>Volver
+            <i className="bi bi-arrow-left-circle me-1"></i>Volver
           </Button>
         </div>
       </div>
+
+      {/* Modal Desvincular gestor */}
+      <Modal show={showDesvincularModal} onHide={closeDesvincularModal} centered className="general-modal-dark" contentClassName="general-modal-content">
+        <Modal.Header closeButton className="general-modal-header">
+          <Modal.Title className="text-orange">Desvincular gestor</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-white">
+          <p className="text-white-50 small mb-3">
+            Dejarás de tener asignado a este gestor. Las solicitudes ya realizadas no se eliminan. El gestor recibirá un email informando tu desvinculación y los motivos que indiques. Los motivos son obligatorios.
+          </p>
+          <Form.Group className="mb-3">
+            <Form.Label>Motivos de desvinculación <span className="text-danger">*</span></Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={4}
+              maxLength={250}
+              value={desvincularReason}
+              onChange={(e) => setDesvincularReason(e.target.value)}
+              placeholder="Indica los motivos..."
+              className="form-control"
+            />
+            <Form.Text className="text-white-50">
+              {desvincularReason.length}/250
+            </Form.Text>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer className="general-modal-footer">
+          <Button variant="secondary" onClick={closeDesvincularModal} disabled={desvincularSubmitting}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleConfirmDesvincular}
+            disabled={desvincularSubmitting || !desvincularReason.trim()}
+          >
+            {desvincularSubmitting ? "Enviando..." : "Confirmar desvinculación"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       {/* Modal Modificar */}
       <Modal show={!!editModal} onHide={() => setEditModal(null)} centered className="general-modal-dark" contentClassName="general-modal-content">
@@ -719,7 +796,9 @@ export function GestorDetalle({ user: userProp }) {
         <Modal.Body className="text-white">
           {detailModal && (
             <div className="general-gestor-detail">
-              <p className="mb-2"><strong>Tipo:</strong> {detailModal.type || "—"}</p>
+              <p className="mb-2"><strong>Solicitud:</strong> {Array.isArray(detailModal.type) ? detailModal.type.join(", ") : (detailModal.type || "—")}</p>
+              <p className="mb-2"><strong>Certificado:</strong> {detailModal.certificate || "—"}</p>
+              <p className="mb-2"><strong>N° Cert.:</strong> {detailModal.number || "—"}</p>
               <p className="mb-2"><strong>Barco:</strong> {detailModal.ship?.name ?? detailModal.ship?.registrationNumber ?? "—"}</p>
               <p className="mb-2"><strong>Estado:</strong> {detailModal.status}</p>
               <p className="mb-2"><strong>Solicitado:</strong> {formatDate(detailModal.requestedAt)}</p>
@@ -787,9 +866,16 @@ export function GestorDetalle({ user: userProp }) {
           </Form>
         </Modal.Body>
         <Modal.Footer className="general-modal-footer">
-          <Button variant="secondary" onClick={handleCloseSpecialRequestModal}>Cancelar</Button>
-          <Button variant="warning" onClick={handleSpecialRequestSubmit} disabled={loadingFleet}>
-            Enviar
+          <Button variant="secondary" onClick={handleCloseSpecialRequestModal} disabled={submittingSpecialRequest}>Cancelar</Button>
+          <Button variant="warning" onClick={handleSpecialRequestSubmit} disabled={loadingFleet || submittingSpecialRequest}>
+            {submittingSpecialRequest ? (
+              <>
+                <span className="spinner-border me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", verticalAlign: "middle" }} />
+                Enviar
+              </>
+            ) : (
+              "Enviar"
+            )}
           </Button>
         </Modal.Footer>
       </Modal>

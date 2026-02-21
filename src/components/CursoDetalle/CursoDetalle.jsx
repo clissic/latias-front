@@ -1,13 +1,15 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { CartaInstructor } from "../CartaInstructor/CartaInstructor";
 import { ProgramaCurso } from "../ProgramaCurso/ProgramaCurso";
 import { apiService } from "../../services/apiService";
+import { useAuth } from "../../context/AuthContext";
 import "./CursoDetalle.css";
 
 export function CursoDetalle() {
   const { courseId } = useParams();
+  const { user } = useAuth();
   const [course, setCourse] = useState(null);
   const [instructor, setInstructor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +52,13 @@ export function CursoDetalle() {
       });
     }
   }, [course]);
-  
+
+  const purchasedCourses = Array.isArray(user?.purchasedCourses) ? user.purchasedCourses : [];
+  const hasPurchasedCourse = useMemo(
+    () => purchasedCourses.some((c) => String(c?.courseId ?? c?.course?.courseId ?? "") === String(courseId)),
+    [purchasedCourses, courseId]
+  );
+
   if (loading) {
     return (
       <div className="container mt-4 text-center">
@@ -84,7 +92,7 @@ export function CursoDetalle() {
   return (
         <div className="container">
             <FadeIn>
-                <div className="img-course-top mb-5" style={{ backgroundImage: `url(${course.image})` }}></div>
+                <div className="img-course-top mb-5" style={{ backgroundImage: `url(${course.bannerUrl})` }}></div>
                 <h2 className="text-orange">{(course.courseName || course.name || "").toUpperCase()}</h2>
                 <p className="text-white mb-5">{course.shortDescription}</p>
             </FadeIn>
@@ -149,9 +157,15 @@ export function CursoDetalle() {
                             )}
                         </div>
                         <div className="d-flex justify-content-center align-items-center">
-                            <Link to={`/course/buy/${courseId}`} className="btn btn-success w-50 mt-3">
-                                Enrolarte ahora
-                            </Link>
+                            {hasPurchasedCourse ? (
+                                <Link to={`/course/${courseId}/learn`} className="btn btn-warning btn-sm mt-3">
+                                    Ir al curso
+                                </Link>
+                            ) : (
+                                <Link to={`/course/buy/${courseId}`} className="btn btn-success w-50 mt-3">
+                                    Enrolarte ahora
+                                </Link>
+                            )}
                         </div>
                     </div>
                     <div className="col-12 col-lg-4">

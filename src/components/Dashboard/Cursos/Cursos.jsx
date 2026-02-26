@@ -1,13 +1,17 @@
-import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Pagination } from "react-bootstrap";
+import React, { useState, useMemo, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Pagination, Modal, Button } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { useUserCourses } from "../../../hooks/useApi";
+import { apiService } from "../../../services/apiService";
+import { generateCertificatePdf } from "../../../utils/certificatePdf";
 import "../Gestion/Gestion.css";
 import "./Cursos.css";
 
 const ITEMS_PER_PAGE = 6;
 const MAX_PAGES_TO_SHOW = 5;
+const PARTIAL_AVG_MIN = 60;
+const FINAL_TEST_MIN = 70;
 
 const DIFFICULTY_OPTIONS = ["", "Principiante", "Intermedio", "Avanzado"];
 
@@ -23,11 +27,14 @@ const defaultFilters = {
 };
 
 export function Cursos({ user }) {
+  const navigate = useNavigate();
   const userId = user?._id || user?.id;
   const { courses: cursosFromApi, loading } = useUserCourses(userId);
   const cursos = Array.isArray(cursosFromApi) ? cursosFromApi : [];
   const [currentPage, setCurrentPage] = useState(1);
   const [filtros, setFiltros] = useState(defaultFilters);
+  const [summaryModalCourse, setSummaryModalCourse] = useState(null);
+  const cursosListRef = useRef(null);
 
   const calculateProgress = (course) => {
     const modules = Array.isArray(course.modulesCompleted) ? course.modulesCompleted : [];
@@ -39,7 +46,28 @@ export function Cursos({ user }) {
       if (!Array.isArray(module.lessons)) return acc;
       return acc + module.lessons.filter((lesson) => lesson.completed).length;
     }, 0);
-    return totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+    const totalItems = totalLessons + 1;
+    const completedItems = completedLessons + (course.finalTestLastScore != null ? 1 : 0);
+    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  };
+
+  /** Estado del curso para la badge: "aprobado" | "reprobado" | "en_curso" */
+  const getCourseStatus = (curso) => {
+    const progress = calculateProgress(curso);
+    if (progress < 100) return "en_curso";
+    const modules = Array.isArray(curso.modulesCompleted) ? curso.modulesCompleted : [];
+    const partialModules = modules.filter((m) => String(m?.moduleId) !== "final");
+    const partials = partialModules.map((m) => m?.lastTestScore ?? null);
+    const scoresOnly = partials.filter((s) => s != null && typeof s === "number");
+    const avgPartial =
+      scoresOnly.length > 0
+        ? Math.round((scoresOnly.reduce((a, b) => a + b, 0) / scoresOnly.length) * 10) / 10
+        : null;
+    const finalScore = curso.finalTestLastScore ?? null;
+    const hasFinalScore = finalScore != null && typeof finalScore === "number";
+    const passed =
+      hasFinalScore && avgPartial != null && avgPartial >= PARTIAL_AVG_MIN && finalScore >= FINAL_TEST_MIN;
+    return passed ? "aprobado" : "reprobado";
   };
 
   const categoriasUnicas = useMemo(
@@ -83,6 +111,29 @@ export function Cursos({ user }) {
     [cursosFiltered, indexOfFirst, indexOfLast]
   );
 
+  /** Resumen para el modal (mismo cálculo que CursoVista). */
+  const summaryData = useMemo(() => {
+    const curso = summaryModalCourse;
+    if (!curso) return { partials: [], avgPartial: null, finalScore: null, passed: false, finalGrade: null };
+    const modules = Array.isArray(curso.modulesCompleted) ? curso.modulesCompleted : [];
+    const partialModules = modules.filter((m) => String(m?.moduleId) !== "final");
+    const partials = partialModules.map((m) => ({
+      moduleName: m?.moduleName || `Módulo ${m?.moduleId ?? ""}`,
+      score: m?.lastTestScore ?? null,
+    }));
+    const scoresOnly = partials.map((p) => p.score).filter((s) => s != null && typeof s === "number");
+    const avgPartial =
+      scoresOnly.length > 0
+        ? Math.round((scoresOnly.reduce((a, b) => a + b, 0) / scoresOnly.length) * 10) / 10
+        : null;
+    const finalScore = curso.finalTestLastScore ?? null;
+    const hasFinalScore = finalScore != null && typeof finalScore === "number";
+    const passed =
+      hasFinalScore && avgPartial != null && avgPartial >= PARTIAL_AVG_MIN && finalScore >= FINAL_TEST_MIN;
+    const finalGrade = passed ? Math.round((finalScore * 0.6 + avgPartial * 0.4) * 10) / 10 : null;
+    return { partials, avgPartial, finalScore, passed, finalGrade };
+  }, [summaryModalCourse]);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFiltros((prev) => ({ ...prev, [name]: value }));
@@ -117,7 +168,26 @@ export function Cursos({ user }) {
     return pages;
   };
 
-  const handlePageChange = (page) => setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  const handlePageChange = (page) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    cursosListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleVerCertificado = async () => {
+    const userId = user?.id ?? user?._id;
+    const curso = summaryModalCourse;
+    if (!userId || !curso?.courseId) return;
+    try {
+      const res = await apiService.getCourseCertificate(userId, curso.courseId);
+      if (res?.status === "success" && res?.payload) {
+        await generateCertificatePdf(res.payload, curso);
+      }
+    } catch (e) {
+      console.error("Error al obtener certificado:", e);
+    } finally {
+      setSummaryModalCourse(null);
+    }
+  };
 
   return (
     <FadeIn>
@@ -274,10 +344,19 @@ export function Cursos({ user }) {
               </div>
             </div>
           </div>
-          <div className="row g-4">
+          <div ref={cursosListRef}>
+          {cursosFiltered.length === 0 ? (
+            <div className="text-center text-white py-5">
+              <i className="bi bi-book-half text-orange" style={{ fontSize: "4rem" }}></i>
+              <p className="mt-3">No hay cursos que coincidan con los filtros.</p>
+            </div>
+          ) : (
+            <div className="row g-4">
             {currentCursos.map((curso, index) => {
               const progress = calculateProgress(curso);
               const modules = Array.isArray(curso.modulesCompleted) ? curso.modulesCompleted : [];
+              const status = getCourseStatus(curso);
+              const statusLabel = status === "aprobado" ? "Aprobado" : status === "reprobado" ? "Reprobado" : "En curso";
 
               return (
                 <div
@@ -285,12 +364,20 @@ export function Cursos({ user }) {
                   className="col-12 col-md-4"
                 >
                   <div className="dashboard-item-build-cursos cursos-card h-100 d-flex flex-column">
-                    <div
-                      className="cursos-card-image-wrap"
-                      style={{ backgroundImage: curso.bannerUrl ? `url(${curso.bannerUrl})` : undefined }}
-                      role="img"
-                      aria-label={curso.courseName}
-                    />
+                    <div className="cursos-card-image-wrapper position-relative">
+                      <div
+                        className="cursos-card-image-wrap"
+                        style={{ backgroundImage: curso.bannerUrl ? `url(${curso.bannerUrl})` : undefined }}
+                        role="img"
+                        aria-label={curso.courseName}
+                      />
+                      <span
+                        className={`cursos-card-status-badge cursos-card-status-badge--${status}`}
+                        aria-label={`Estado: ${statusLabel}`}
+                      >
+                        {statusLabel}
+                      </span>
+                    </div>
 
                     <div className="cursos-card-body d-flex flex-column flex-grow-1">
                       <h3 className="text-orange cursos-card-title">{curso.courseName}</h3>
@@ -330,21 +417,33 @@ export function Cursos({ user }) {
                       </div>
 
                       <div className="cursos-card-actions d-flex flex-column gap-2 mt-3">
-                        <Link
-                          to={`/course/${curso.courseId}/learn`}
-                          className="btn btn-warning btn-sm"
-                        >
-                          Ir al curso
-                        </Link>
+                        {progress >= 100 ? (
+                          <button
+                            type="button"
+                            className="btn btn-warning btn-sm"
+                            onClick={() => setSummaryModalCourse(curso)}
+                          >
+                            Ver resumen
+                          </button>
+                        ) : (
+                          <Link
+                            to={`/course/${curso.courseId}/learn`}
+                            className="btn btn-warning btn-sm"
+                          >
+                            Ir al curso
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               );
             })}
+            </div>
+          )}
           </div>
 
-          <div className="d-flex justify-content-center align-items-center mt-4 cursos-progreso-pagination mb-4">
+          <div className="d-flex flex-column align-items-center mt-4 mb-4">
             <Pagination className="mb-0">
               <Pagination.First
                 onClick={() => handlePageChange(1)}
@@ -378,19 +477,105 @@ export function Cursos({ user }) {
                 className="custom-pagination-item"
               />
               <Pagination.Last
-                onClick={() => handlePageChange(totalPages)}
-                disabled={effectivePage === totalPages || totalPages === 0}
+                onClick={() => handlePageChange(totalPages || 1)}
+                disabled={effectivePage === (totalPages || 1) || totalPages === 0}
                 className="custom-pagination-item"
               />
             </Pagination>
-            <span className="text-white-50 small ms-3">
-              Página {effectivePage} de {totalPages} ({cursosFiltered.length} cursos)
-            </span>
+            <div className="text-white mt-2">
+              Página {effectivePage} de {totalPages || 1} ({cursosFiltered.length} cursos)
+            </div>
           </div>
           </>
         )}
       </div>
       </div>
+
+      <Modal
+        show={!!summaryModalCourse}
+        onHide={() => setSummaryModalCourse(null)}
+        centered
+        className="curso-vista-summary-modal"
+        contentClassName="curso-vista-summary-modal-content"
+      >
+        <Modal.Header closeButton closeVariant="white" className="curso-vista-summary-modal-header">
+          <Modal.Title className="text-orange">Resumen del curso</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="curso-vista-summary-modal-body">
+          <h6 className="text-white mb-2">Pruebas parciales</h6>
+          <ul className="curso-vista-summary-list mb-3">
+            {summaryData.partials.map((p, i) => (
+              <li key={i} className="d-flex justify-content-between">
+                <span className="text-white-50">{p.moduleName}</span>
+                <span className="text-white">{p.score != null ? `${p.score}%` : "—"}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="mb-1 text-white-50">
+            Promedio pruebas parciales: <strong className="text-white">{summaryData.avgPartial != null ? `${summaryData.avgPartial}%` : "—"}</strong>
+            {summaryData.avgPartial != null && (
+              <span className="ms-1">(mínimo requerido: {PARTIAL_AVG_MIN}%)</span>
+            )}
+          </p>
+          <p className="mb-3 text-white-50">
+            Prueba final: <strong className="text-white">{summaryData.finalScore != null ? `${summaryData.finalScore}%` : "—"}</strong>
+            <span className="ms-1">(mínimo requerido: {FINAL_TEST_MIN}%)</span>
+          </p>
+          <hr className="border-secondary" />
+          {summaryData.passed ? (
+            <div className="curso-vista-summary-verdict passed">
+              <p className="text-success fw-bold mb-1">Curso aprobado</p>
+              <p className="text-white-50 mb-0">
+                Nota final: <strong className="text-orange">{summaryData.finalGrade}%</strong>
+                <span className="d-block small mt-1">(60% prueba final + 40% promedio de pruebas parciales)</span>
+              </p>
+              <Button
+                variant="success"
+                className="mt-3"
+                onClick={handleVerCertificado}
+              >
+                <i className="bi bi-award-fill me-2" />
+                Ver certificado
+              </Button>
+            </div>
+          ) : (
+            <div className="curso-vista-summary-verdict failed">
+              <p className="text-danger fw-bold mb-2">Curso reprobado</p>
+              <p className="text-white-50 mb-0">
+                {summaryData.avgPartial != null && summaryData.avgPartial < PARTIAL_AVG_MIN && summaryData.finalScore != null && summaryData.finalScore < FINAL_TEST_MIN && (
+                  <>No se alcanzó el promedio mínimo de pruebas parciales ({PARTIAL_AVG_MIN}%) ni el mínimo de la prueba final ({FINAL_TEST_MIN}%). Deberá recursar el curso.</>
+                )}
+                {summaryData.avgPartial != null && summaryData.avgPartial < PARTIAL_AVG_MIN && (summaryData.finalScore == null || summaryData.finalScore >= FINAL_TEST_MIN) && (
+                  <>No se alcanzó el promedio mínimo de las pruebas parciales ({PARTIAL_AVG_MIN}%). Deberá recursar el curso.</>
+                )}
+                {summaryData.finalScore != null && summaryData.finalScore < FINAL_TEST_MIN && (summaryData.avgPartial == null || summaryData.avgPartial >= PARTIAL_AVG_MIN) && (
+                  <>No se alcanzó el mínimo requerido en la prueba final ({FINAL_TEST_MIN}%). Deberá recursar el curso.</>
+                )}
+                {summaryData.avgPartial == null && summaryData.finalScore != null && summaryData.finalScore < FINAL_TEST_MIN && (
+                  <>No se alcanzó el mínimo requerido en la prueba final ({FINAL_TEST_MIN}%). Deberá recursar el curso.</>
+                )}
+                {summaryData.finalScore == null && summaryData.avgPartial != null && summaryData.avgPartial < PARTIAL_AVG_MIN && (
+                  <>No se alcanzó el promedio mínimo de las pruebas parciales ({PARTIAL_AVG_MIN}%). Deberá recursar el curso.</>
+                )}
+                {!((summaryData.avgPartial != null && summaryData.avgPartial < PARTIAL_AVG_MIN) || (summaryData.finalScore != null && summaryData.finalScore < FINAL_TEST_MIN)) && (
+                  <>No se alcanzaron los requisitos mínimos para aprobar. Deberá recursar el curso.</>
+                )}
+              </p>
+              <Button
+                variant="warning"
+                className="btn mt-3 btn-orange"
+                onClick={() => {
+                  setSummaryModalCourse(null);
+                  navigate(`/course/buy/${summaryModalCourse?.courseId}`);
+                }}
+              >
+                <i className="bi bi-arrow-repeat me-2" />
+                Cursar nuevamente
+              </Button>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
     </FadeIn>
   );
 }

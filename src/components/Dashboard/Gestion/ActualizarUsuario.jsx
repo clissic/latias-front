@@ -14,6 +14,7 @@ export function ActualizarUsuario({ user }) {
     phone: "",
     category: ["Cadete"]
   });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -89,13 +90,14 @@ export function ActualizarUsuario({ user }) {
     }
 
     try {
+      setIsUpdating(true);
       const response = await apiService.updateUserById(user._id, userData);
       
       if (response.status === "success") {
         Swal.fire({
           icon: "success",
           title: "Usuario actualizado",
-          text: response.msg || "El usuario se ha actualizado exitosamente",
+          text: "El usuario se ha actualizado exitosamente",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -118,6 +120,8 @@ export function ActualizarUsuario({ user }) {
           confirmButton: "custom-swal-button",
         },
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -227,8 +231,17 @@ export function ActualizarUsuario({ user }) {
       <div className="form-section mt-4">
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
-          <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle-fill me-2"></i> ACTUALIZAR USUARIO
+          <Button variant="warning" type="submit" size="lg" className="px-5" disabled={isUpdating}>
+            {isUpdating ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Actualizando...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-circle-fill me-2"></i> Actualizar
+              </>
+            )}
           </Button>
         </div>
       </div>

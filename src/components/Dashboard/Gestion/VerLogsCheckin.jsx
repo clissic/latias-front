@@ -469,8 +469,8 @@ export function VerLogsCheckin() {
                   onClick={handleClearFilters}
                   className="w-100"
                 >
-                  <i className="bi bi-x-circle me-2"></i>
-                  Limpiar Filtros
+                  <i className="bi bi-funnel me-2"></i>
+                  Limpiar filtros
                 </Button>
               </div>
             </div>
@@ -492,8 +492,8 @@ export function VerLogsCheckin() {
             onClick={handleClearFilters}
             className="mt-3"
           >
-            <i className="bi bi-x-circle me-2"></i>
-            Limpiar Filtros
+            <i className="bi bi-funnel me-2"></i>
+            Limpiar filtros
           </Button>
         </div>
       ) : (

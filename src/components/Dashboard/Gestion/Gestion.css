@@ -73,7 +73,6 @@
 .gestion-card:hover {
   background-color: rgba(0, 0, 0, 0.5);
   border-color: #082b55ac;
-  transform: translateY(-5px);
   box-shadow: 0 10px 20px #051933a0;
 }
 
@@ -417,4 +416,379 @@
   background: rgba(255, 165, 0, 0.2);
   border-color: #ffa500;
   color: #ffa500;
+}
+
+/* Filtros de gestión (certificados y otros) - mismo estilo que BuscarCurso */
+/* Filtros de gestión de certificados - mismo estilo que Certificados (Dashboard) / Mi Flota */
+.gestion-section .portafolio-filters {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  margin-bottom: 1rem;
+}
+
+.gestion-section .portafolio-filters h4 {
+  margin-bottom: 0.75rem;
+}
+
+.gestion-section .portafolio-filters .row {
+  flex-wrap: wrap;
+}
+
+.gestion-section .portafolio-filters .form-control,
+.gestion-section .portafolio-filters .form-select {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.gestion-section .portafolio-input,
+.gestion-section .portafolio-filters .form-select.portafolio-input {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.gestion-section .portafolio-input:focus,
+.gestion-section .portafolio-filters .form-select.portafolio-input:focus {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 165, 0, 0.5);
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 165, 0, 0.25);
+}
+
+.gestion-section .portafolio-modal-filters {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  min-width: 0;
+  overflow: visible;
+  margin-bottom: 0;
+}
+
+.gestion-section .portafolio-modal-filters .row {
+  flex-wrap: wrap;
+}
+
+.gestion-section .portafolio-modal-filters .form-control,
+.gestion-section .portafolio-modal-filters .form-select {
+  font-size: 0.8rem;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.gestion-section .portafolio-modal-filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.gestion-section .portafolio-modal-filter-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* Desplegable de países (filtro gestores) - mismo estilo que Portafolio */
+.gestion-section .portafolio-country-trigger {
+  min-height: 31px;
+}
+
+.gestion-section .portafolio-country-wrap {
+  position: relative;
+}
+
+.gestion-section .portafolio-country-wrap.portafolio-country-open {
+  position: relative;
+  z-index: 1060;
+}
+
+.gestion-section .portafolio-country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.98);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1060;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.gestion-section .portafolio-country-search {
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0;
+  margin: 0;
+}
+
+.gestion-section .portafolio-country-list {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.gestion-section .portafolio-country-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.gestion-section .portafolio-country-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.gestion-section .portafolio-country-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.gestion-section .portafolio-country-option {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: #fff;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.gestion-section .portafolio-country-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.gestion-section .portafolio-country-option:last-child {
+  border-bottom: none;
+}
+
+.gestion-section .portafolio-country-flag {
+  margin-right: 0.75rem;
+  min-width: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gestion-section .portafolio-country-flag .twemoji-flag {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+}
+
+.gestion-section .portafolio-country-no-results {
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+/* Filtro País (mismo estilo que Bandera en Mi Flota) */
+.gestion-section .flota-filter-bandera-wrap .country-dropdown,
+.gestion-section .gestion-pais-filter-wrap .country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1060;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-option {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-option:last-child {
+  border-bottom: none;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-flag {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+  min-width: 2rem;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-flag .twemoji-flag {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-block;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-input-display {
+  display: flex;
+  align-items: center;
+  min-height: calc(1.5rem + 0.75rem + 2px);
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-input-display .twemoji-flag {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-code {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-option.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.gestion-section .flota-filter-bandera-wrap .country-option.no-results:hover {
+  background-color: transparent;
+}
+
+.gestion-section .portafolio-country-no-results:hover {
+  background-color: transparent;
+}
+
+/* Mismo estilo del filtro País para Portafolio de clientes */
+.portafolio-filters .flota-filter-bandera-wrap .country-dropdown,
+.portafolio-filters .gestion-pais-filter-wrap .country-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: rgba(8, 43, 85, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1060;
+  margin-top: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-option {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-option:hover {
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-option:last-child {
+  border-bottom: none;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-flag {
+  font-size: 1.5rem;
+  margin-right: 0.75rem;
+  min-width: 2rem;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-flag .twemoji-flag {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-block;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-input-display {
+  display: flex;
+  align-items: center;
+  min-height: calc(1.5rem + 0.75rem + 2px);
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-input-display .twemoji-flag {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-code {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-option.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: default;
+}
+
+.portafolio-filters .flota-filter-bandera-wrap .country-option.no-results:hover {
+  background-color: transparent;
 }

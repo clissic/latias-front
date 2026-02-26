@@ -7,11 +7,19 @@ import { apiService } from "../../services/apiService";
 import { useAuth } from "../../context/AuthContext";
 import "./CursoDetalle.css";
 
+function instructorImageUrl(img) {
+  if (!img) return null;
+  if (img.startsWith("http") || img.startsWith("data:")) return img;
+  if (img.startsWith("/api")) return img; // ya tiene /api, no duplicar
+  return img.startsWith("/") ? `/api${img}` : `/api/${img}`;
+}
+
 export function CursoDetalle() {
   const { courseId } = useParams();
   const { user } = useAuth();
   const [course, setCourse] = useState(null);
   const [instructor, setInstructor] = useState(null);
+  const [loadingInstructor, setLoadingInstructor] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -39,18 +47,53 @@ export function CursoDetalle() {
     }
   }, [courseId]);
 
+  // Obtener instructor del curso por _id y mostrarlo en la carta
   useEffect(() => {
-    if (!course || !course.professor || course.professor.length === 0) return;
-    
-    // El instructor viene en el campo professor del curso
-    const courseInstructor = course.professor[0];
-    if (courseInstructor) {
-      setInstructor({
-        firstName: courseInstructor.firstName,
-        lastName: courseInstructor.lastName,
-        profession: courseInstructor.profession
-      });
+    const raw =
+      course?.instructor &&
+      (typeof course.instructor === "string"
+        ? course.instructor
+        : course.instructor?._id ?? course.instructor?.id);
+    const instructorId = raw != null ? String(raw).trim() : "";
+
+    if (!course || !instructorId) {
+      setInstructor(null);
+      setLoadingInstructor(false);
+      return;
     }
+
+    let cancelled = false;
+    setLoadingInstructor(true);
+    setInstructor(null);
+
+    const fetchInstructor = async () => {
+      try {
+        const res = await apiService.getInstructorById(instructorId);
+        if (cancelled) return;
+        if (res.status === "success" && res.payload) {
+          const p = res.payload;
+          setInstructor({
+            id: p._id ?? p.id,
+            firstName: p.firstName ?? "",
+            lastName: p.lastName ?? "",
+            profession: p.profession ?? "",
+            profileImage: instructorImageUrl(p.profileImage) || undefined,
+            experience: p.experience ?? undefined,
+            socialMedia: p.socialMedia ?? undefined,
+          });
+        }
+      } catch {
+        if (!cancelled) setInstructor(null);
+      } finally {
+        if (!cancelled) setLoadingInstructor(false);
+      }
+    };
+
+    fetchInstructor();
+    return () => {
+      cancelled = true;
+      setLoadingInstructor(false);
+    };
   }, [course]);
 
   const purchasedCourses = Array.isArray(user?.purchasedCourses) ? user.purchasedCourses : [];
@@ -135,14 +178,29 @@ export function CursoDetalle() {
             </FadeIn>
             <FadeIn>
                 <div className="row gap-4 mt-5 justify-content-between">
-                    {instructor && (
+                    {(course.instructor && (instructor || loadingInstructor)) && (
                         <div className="col-12 col-sm-4 col-lg-3">
                             <h5 className="text-orange mb-4">Instructor:</h5>
-                            <CartaInstructor 
-                                firstName={instructor.firstName}
-                                lastName={instructor.lastName}
-                                profession={instructor.profession}
-                            />
+                            {loadingInstructor ? (
+                                <div className="card cartaInstructor bg-transparent text-white border-secondary">
+                                    <div className="card-body d-flex align-items-center justify-content-center py-4">
+                                        <div className="spinner-border text-orange" role="status">
+                                            <span className="visually-hidden">Cargando instructor...</span>
+                                        </div>
+                                        <p className="text-white mb-0 ms-2">Cargando instructor...</p>
+                                    </div>
+                                </div>
+                            ) : instructor ? (
+                                <CartaInstructor
+                                    id={instructor.id}
+                                    profileImage={instructor.profileImage}
+                                    firstName={instructor.firstName}
+                                    lastName={instructor.lastName}
+                                    profession={instructor.profession}
+                                    experience={instructor.experience}
+                                    socialMedia={instructor.socialMedia}
+                                />
+                            ) : null}
                         </div>
                     )}
                     <div className="col-12 col-sm-7 col-lg-4">

@@ -46,6 +46,14 @@
   filter: invert(1);
 }
 
+/* Spinner del botón Buscar: mismo tamaño que el texto (1em) */
+.btn .spinner-border-sm {
+  width: 1em;
+  height: 1em;
+  border-width: 0.15em;
+  vertical-align: -0.1em;
+}
+
 @media (max-width: 768px) {
   .filters-section {
     padding: 1rem;

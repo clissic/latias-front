@@ -1,3 +1,22 @@
+/* Botones "Agregar barco" y "Agregar certificado": se ajustan al texto y quedan alineados a la derecha en todas las resoluciones (incl. mobile) */
+.flota-add-boat-btn {
+  flex-shrink: 0;
+  width: auto;
+}
+
+/* En mobile: título "Certificados del barco" arriba (alineado a la izquierda) y botón "Agregar certificado" debajo a ancho completo */
+@media (max-width: 767.98px) {
+  .flota-certificados-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    text-align: left;
+  }
+  .flota-certificados-header .flota-add-boat-btn {
+    width: 100%;
+  }
+}
+
 .dashboard-item-build-flota {
   background-color: rgba(8, 43, 85, 0.5);
   border: 1px solid rgba(255, 165, 0, 0.3);
@@ -211,7 +230,6 @@
 .boat-card-minimal:hover {
   background-color: rgba(0, 0, 0, 0.5);
   border-color: #082b55ac;
-  transform: translateY(-5px);
   box-shadow: 0 10px 20px #051933a0;
 }
 
@@ -272,14 +290,25 @@
   margin-top: auto;
   display: flex;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .boat-card-actions .btn {
-  height: 100%;
+  height: 38px;
   min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 0;
+}
+
+/* 90% ancho para "Más detalles", 10% para botón eliminar */
+.boat-card-actions .boat-card-btn-details {
+  flex: 9 0 0;
+}
+
+.boat-card-actions .boat-card-btn-remove {
+  flex: 1 0 0;
 }
 
 .boat-detail-parallax {
@@ -454,12 +483,6 @@
 
 .flota-certificate-card-actions .action-link {
   white-space: nowrap;
-}
-
-.flota-certificates-empty {
-  background-color: rgba(8, 43, 85, 0.3);
-  border: 1px solid rgba(255, 165, 0, 0.2);
-  border-radius: 10px;
 }
 
 .flota-certificates-pagination {

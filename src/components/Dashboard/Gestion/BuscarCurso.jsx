@@ -434,7 +434,7 @@ export function BuscarCurso({ onUpdateCourse }) {
 
           <div className="d-flex gap-2 mt-4">
             <Button
-              variant="success"
+              variant="warning"
               onClick={handleSearch}
               disabled={loading}
               className="flex-grow-1"
@@ -447,7 +447,7 @@ export function BuscarCurso({ onUpdateCourse }) {
               ) : (
                 <>
                   <i className="bi bi-search me-2"></i>
-                  BUSCAR
+                  Buscar
                 </>
               )}
             </Button>
@@ -456,8 +456,8 @@ export function BuscarCurso({ onUpdateCourse }) {
               onClick={handleReset}
               disabled={loading}
             >
-              <i className="bi bi-arrow-counterclockwise me-2"></i>
-              Limpiar
+              <i className="bi bi-funnel me-2"></i>
+              Limpiar filtros
             </Button>
           </div>
         </Form>

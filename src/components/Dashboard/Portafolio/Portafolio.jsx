@@ -8,20 +8,40 @@ import "../Gestion/Gestion.css";
 import "../General/General.css";
 import "./Portafolio.css";
 
+const TWEMOJI_BASE = "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg";
+
 const TwemojiFlag = ({ emoji, className = "", size = "22x22" }) => {
-  const flagRef = useRef(null);
+  const [twemojiReady, setTwemojiReady] = useState(!!(typeof window !== "undefined" && window.twemoji));
   useEffect(() => {
-    if (flagRef.current && emoji && window.twemoji) {
-      window.twemoji.parse(flagRef.current, {
-        folder: "svg",
-        ext: ".svg",
-        className: `twemoji-flag ${className}`.trim(),
-        size,
-      });
-    }
-  }, [emoji, className, size]);
+    if (twemojiReady || typeof window === "undefined") return;
+    const t = setInterval(() => {
+      if (window.twemoji) {
+        setTwemojiReady(true);
+        clearInterval(t);
+      }
+    }, 50);
+    return () => clearInterval(t);
+  }, [twemojiReady]);
   if (!emoji) return null;
-  return <span ref={flagRef} className={className}>{emoji}</span>;
+  const sizeNum = size && typeof size === "string" && size.includes("x") ? parseInt(size, 10) : 22;
+  const sizePx = `${sizeNum}px`;
+  if (twemojiReady && window.twemoji.convert && window.twemoji.convert.toCodePoint) {
+    try {
+      const codePoint = window.twemoji.convert.toCodePoint(emoji);
+      const src = `${TWEMOJI_BASE}/${codePoint}.svg`;
+      return (
+        <img
+          src={src}
+          alt=""
+          className={`twemoji-flag ${className}`.trim()}
+          style={{ width: sizePx, height: sizePx, display: "inline-block", verticalAlign: "middle" }}
+        />
+      );
+    } catch (_) {
+      // fallback: mostrar emoji nativo
+    }
+  }
+  return <span className={className} style={{ fontSize: sizePx, lineHeight: 1 }}>{emoji}</span>;
 };
 
 const boatImageUrl = (img) => {
@@ -59,7 +79,7 @@ export function Portafolio({ user }) {
   const [filterFirstName, setFilterFirstName] = useState("");
   const [filterLastName, setFilterLastName] = useState("");
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
-  const [countrySearchInput, setCountrySearchInput] = useState("");
+  const [countrySearchInput, setCountrySearchInput] = useState("Todos");
   const countryDropdownRef = useRef(null);
 
   const [selectedClient, setSelectedClient] = useState(null);
@@ -68,6 +88,9 @@ export function Portafolio({ user }) {
   const [boatFilterName, setBoatFilterName] = useState("");
   const [boatFilterRegistro, setBoatFilterRegistro] = useState("");
   const [boatFilterBandera, setBoatFilterBandera] = useState("");
+  const [showBoatBanderaDropdown, setShowBoatBanderaDropdown] = useState(false);
+  const [boatBanderaSearch, setBoatBanderaSearch] = useState("Todas");
+  const boatBanderaDropdownRef = useRef(null);
   const [boatFilterPuerto, setBoatFilterPuerto] = useState("");
   const [boatFilterTipo, setBoatFilterTipo] = useState("");
   const [boatFilterDisplacement, setBoatFilterDisplacement] = useState("");
@@ -105,9 +128,27 @@ export function Portafolio({ user }) {
   const [historialFilterCierreDesde, setHistorialFilterCierreDesde] = useState("");
   const [historialFilterCierreHasta, setHistorialFilterCierreHasta] = useState("");
   const [boatPage, setBoatPage] = useState(1);
+  const portafolioBoatListRef = useRef(null);
+  const certificatesModalRef = useRef(null);
+  const pendientesModalRef = useRef(null);
+  const historialModalRef = useRef(null);
+  const [boatTypes, setBoatTypes] = useState([]);
   const [showDesvincularModal, setShowDesvincularModal] = useState(false);
   const [desvincularReason, setDesvincularReason] = useState("");
   const [desvincularSubmitting, setDesvincularSubmitting] = useState(false);
+  const [showCertFormModal, setShowCertFormModal] = useState(false);
+  const [editingCertificateId, setEditingCertificateId] = useState(null);
+  const [certificateFormData, setCertificateFormData] = useState({
+    certificateType: "",
+    number: "",
+    issueDate: "",
+    expirationDate: "",
+    annualInspection: "no_realizada",
+    observations: "",
+    pdfFile: "",
+  });
+  const [certificatePdfFile, setCertificatePdfFile] = useState(null);
+  const [submittingCertificate, setSubmittingCertificate] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -134,10 +175,41 @@ export function Portafolio({ user }) {
       if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target)) {
         setShowCountryDropdown(false);
       }
+      if (boatBanderaDropdownRef.current && !boatBanderaDropdownRef.current.contains(e.target)) {
+        setShowBoatBanderaDropdown(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiService.getBoatTypes().then((res) => {
+      if (!cancelled && res.status === "success" && Array.isArray(res.payload)) {
+        setBoatTypes(res.payload);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    if (certificatesModal.open && certificatesModalRef.current) {
+      certificatesModalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [certificatesModal.open]);
+
+  useEffect(() => {
+    if (pendientesModal.open && pendientesModalRef.current) {
+      pendientesModalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [pendientesModal.open]);
+
+  useEffect(() => {
+    if (historialModal.open && historialModalRef.current) {
+      historialModalRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [historialModal.open]);
 
   useEffect(() => {
     if (!selectedClient?._id) {
@@ -188,6 +260,237 @@ export function Portafolio({ user }) {
   const closeCertificatesModal = () => {
     setCertificatesModal({ open: false, boatId: null, boatName: "" });
     setCertificatesList([]);
+    setShowCertFormModal(false);
+    setEditingCertificateId(null);
+  };
+
+  const refreshCertificatesList = async () => {
+    if (!certificatesModal.boatId) return;
+    setCertificatesLoading(true);
+    try {
+      const res = await apiService.getCertificatesByBoat(certificatesModal.boatId);
+      if (res.status === "success" && Array.isArray(res.payload)) {
+        setCertificatesList(res.payload);
+      } else {
+        setCertificatesList([]);
+      }
+    } catch {
+      setCertificatesList([]);
+    } finally {
+      setCertificatesLoading(false);
+    }
+  };
+
+  const openAddCertificateForm = () => {
+    setEditingCertificateId(null);
+    setCertificateFormData({
+      certificateType: "",
+      number: "",
+      issueDate: "",
+      expirationDate: "",
+      annualInspection: "no_realizada",
+      observations: "",
+      pdfFile: "",
+    });
+    setCertificatePdfFile(null);
+    setShowCertFormModal(true);
+  };
+
+  const openEditCertificateForm = (certificate) => {
+    setCertificateFormData({
+      certificateType: certificate.certificateType || "",
+      number: certificate.number || "",
+      issueDate: certificate.issueDate ? new Date(certificate.issueDate).toISOString().split("T")[0] : "",
+      expirationDate: certificate.expirationDate ? new Date(certificate.expirationDate).toISOString().split("T")[0] : "",
+      annualInspection: certificate.annualInspection || "no_realizada",
+      observations: certificate.observations || "",
+      pdfFile: certificate.pdfFile || "",
+    });
+    setCertificatePdfFile(null);
+    setEditingCertificateId(certificate._id);
+    setShowCertFormModal(true);
+  };
+
+  const closeCertFormModal = () => {
+    setShowCertFormModal(false);
+    setEditingCertificateId(null);
+    setCertificateFormData({
+      certificateType: "",
+      number: "",
+      issueDate: "",
+      expirationDate: "",
+      annualInspection: "no_realizada",
+      observations: "",
+      pdfFile: "",
+    });
+    setCertificatePdfFile(null);
+  };
+
+  const handleDeleteCertificatePortafolio = async (certificateId) => {
+    const result = await Swal.fire({
+      title: "¿Eliminar certificado?",
+      text: "¿Estás seguro de que deseas eliminar este certificado? Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+        cancelButton: "custom-swal-button",
+      },
+    });
+    if (result.isConfirmed) {
+      try {
+        const response = await apiService.deleteCertificate(certificateId);
+        if (response.status === "success") {
+          Swal.fire({
+            icon: "success",
+            title: "Certificado eliminado",
+            text: "El certificado ha sido eliminado exitosamente",
+            confirmButtonText: "Aceptar",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: { confirmButton: "custom-swal-button" },
+          });
+          await refreshCertificatesList();
+        } else {
+          throw new Error(response.msg || "Error al eliminar el certificado");
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "Error al eliminar el certificado",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      }
+    }
+  };
+
+  const handleCertificateInputChangePortafolio = (e) => {
+    const { name, value, type, checked } = e.target;
+    setCertificateFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const handleCertificatePdfChangePortafolio = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Solo se permiten archivos PDF",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "El archivo PDF no puede ser mayor a 10MB",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+        return;
+      }
+      setCertificatePdfFile(file);
+    }
+  };
+
+  const handleCertificateFormSubmitPortafolio = async (e) => {
+    e.preventDefault();
+    const boatId = certificatesModal.boatId;
+    if (!boatId) return;
+    if (!certificateFormData.certificateType?.trim() || !certificateFormData.issueDate || !certificateFormData.expirationDate) {
+      Swal.fire({
+        icon: "warning",
+        title: "Campos requeridos",
+        text: "Por favor completa todos los campos obligatorios",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    try {
+      setSubmittingCertificate(true);
+      let pdfPath = "";
+      if (certificatePdfFile) {
+        const pdfFormData = new FormData();
+        pdfFormData.append("pdfFile", certificatePdfFile);
+        const uploadResponse = await apiService.uploadCertificatePDF(pdfFormData);
+        if (uploadResponse.status === "success" && uploadResponse.payload?.pdfFile) {
+          pdfPath = uploadResponse.payload.pdfFile;
+        } else {
+          throw new Error(uploadResponse.msg || "Error al subir el PDF");
+        }
+      }
+      const certificateNumber = certificateFormData.number?.trim() || "S/N";
+      const certificateData = {
+        boatId,
+        certificateType: certificateFormData.certificateType,
+        number: certificateNumber,
+        issueDate: certificateFormData.issueDate,
+        expirationDate: certificateFormData.expirationDate,
+        annualInspection: certificateFormData.annualInspection,
+        observations: certificateFormData.observations || undefined,
+        pdfFile: pdfPath || certificateFormData.pdfFile || undefined,
+      };
+      if (editingCertificateId) {
+        const response = await apiService.updateCertificate(editingCertificateId, certificateData);
+        if (response.status !== "success") throw new Error(response.msg || "Error al actualizar el certificado");
+        Swal.fire({
+          icon: "success",
+          title: "Certificado actualizado",
+          text: "El certificado ha sido actualizado exitosamente",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      } else {
+        const response = await apiService.createCertificate(certificateData);
+        if (response.status !== "success") throw new Error(response.msg || "Error al crear el certificado");
+        Swal.fire({
+          icon: "success",
+          title: "Certificado creado",
+          text: "El certificado ha sido agregado exitosamente",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      }
+      closeCertFormModal();
+      await refreshCertificatesList();
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Error al guardar el certificado",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } finally {
+      setSubmittingCertificate(false);
+    }
   };
 
   const openPendientes = async (boatId, boatName) => {
@@ -365,6 +668,8 @@ export function Portafolio({ user }) {
         setBoatFilterName("");
         setBoatFilterRegistro("");
         setBoatFilterBandera("");
+        setBoatBanderaSearch("Todas");
+        setShowBoatBanderaDropdown(false);
         setBoatFilterPuerto("");
         setBoatFilterTipo("");
         setBoatFilterDisplacement("");
@@ -411,20 +716,22 @@ export function Portafolio({ user }) {
   const filteredBoats = activeBoats.filter((b) => {
     const name = (b.name || "").toLowerCase();
     const reg = (b.registrationNumber || "").toLowerCase();
-    const country = (b.registrationCountry || "").toLowerCase();
     const port = (b.registrationPort || "").toLowerCase();
     const tipo = (b.boatType || "").toLowerCase();
     const displacementStr = String(b.displacement ?? "").toLowerCase();
     if (boatFilterName.trim() && !name.includes(boatFilterName.trim().toLowerCase())) return false;
     if (boatFilterRegistro.trim() && !reg.includes(boatFilterRegistro.trim().toLowerCase())) return false;
-    if (boatFilterBandera.trim() && !country.includes(boatFilterBandera.trim().toLowerCase())) return false;
+    if (boatFilterBandera) {
+      const boatCountryCode = getCountry(b.registrationCountry)?.code || (b.registrationCountry || "").toUpperCase();
+      if (boatCountryCode !== boatFilterBandera.toUpperCase()) return false;
+    }
     if (boatFilterPuerto.trim() && !port.includes(boatFilterPuerto.trim().toLowerCase())) return false;
-    if (boatFilterTipo.trim() && !tipo.includes(boatFilterTipo.trim().toLowerCase())) return false;
+    if (boatFilterTipo && (b.boatType || "") !== boatFilterTipo) return false;
     if (boatFilterDisplacement.trim() && !displacementStr.includes(boatFilterDisplacement.trim().toLowerCase())) return false;
     return true;
   });
 
-  const totalBoatPages = Math.ceil(filteredBoats.length / BOATS_PER_PAGE);
+  const totalBoatPages = Math.max(1, Math.ceil(filteredBoats.length / BOATS_PER_PAGE));
   const indexOfLastBoat = boatPage * BOATS_PER_PAGE;
   const indexOfFirstBoat = indexOfLastBoat - BOATS_PER_PAGE;
   const currentBoats = filteredBoats.slice(indexOfFirstBoat, indexOfLastBoat);
@@ -443,7 +750,7 @@ export function Portafolio({ user }) {
 
   const handleBoatPageChange = (page) => {
     setBoatPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    portafolioBoatListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -454,13 +761,19 @@ export function Portafolio({ user }) {
     setBoatFilterName("");
     setBoatFilterRegistro("");
     setBoatFilterBandera("");
+    setShowBoatBanderaDropdown(false);
+    setBoatBanderaSearch("Todas");
     setBoatFilterPuerto("");
     setBoatFilterTipo("");
     setBoatFilterDisplacement("");
   };
 
   useEffect(() => {
-    if (selectedClient) setBoatPage(1);
+    if (selectedClient) {
+      setBoatPage(1);
+      setShowBoatBanderaDropdown(false);
+      setBoatBanderaSearch("Todas");
+    }
   }, [selectedClient]);
 
   const filteredClients = clients.filter((c) => {
@@ -479,20 +792,32 @@ export function Portafolio({ user }) {
     return true;
   });
 
-  const filteredCountries = countries.filter(
-    (co) =>
-      co.name.toLowerCase().includes(countrySearchInput.toLowerCase()) ||
-      co.code.toLowerCase().includes(countrySearchInput.toLowerCase())
-  );
+  const filteredCountries = (!countrySearchInput.trim() || countrySearchInput.trim().toLowerCase() === "todos")
+    ? countries
+    : countries.filter(
+        (co) =>
+          co.name.toLowerCase().includes(countrySearchInput.toLowerCase()) ||
+          co.code.toLowerCase().includes(countrySearchInput.toLowerCase())
+      );
 
   const selectedCountry = filterCountry ? countries.find((c) => c.code === filterCountry) : null;
+
+  const filteredCountriesForBoatBandera = (!boatBanderaSearch.trim() || boatBanderaSearch.trim().toLowerCase() === "todas")
+    ? countries
+    : countries.filter(
+        (co) =>
+          co.name.toLowerCase().includes(boatBanderaSearch.toLowerCase()) ||
+          co.code.toLowerCase().includes(boatBanderaSearch.toLowerCase())
+      );
+
+  const selectedBoatCountry = boatFilterBandera ? countries.find((c) => c.code === boatFilterBandera) : null;
 
   const clearClientFilters = () => {
     setFilterCountry("");
     setFilterFirstName("");
     setFilterLastName("");
     setShowCountryDropdown(false);
-    setCountrySearchInput("");
+    setCountrySearchInput("Todos");
   };
 
   if (!user) return null;
@@ -530,9 +855,75 @@ export function Portafolio({ user }) {
                   <label className="portafolio-modal-filter-label">Registro</label>
                   <input type="text" className="form-control portafolio-input form-control-sm" value={boatFilterRegistro} onChange={(e) => setBoatFilterRegistro(e.target.value)} />
                 </div>
-                <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item" ref={boatBanderaDropdownRef}>
                   <label className="portafolio-modal-filter-label">Bandera</label>
-                  <input type="text" className="form-control portafolio-input form-control-sm" value={boatFilterBandera} onChange={(e) => setBoatFilterBandera(e.target.value)} />
+                  <div className="position-relative flota-filter-bandera-wrap gestion-pais-filter-wrap">
+                    {selectedBoatCountry && boatBanderaSearch && boatBanderaSearch !== "Todas" && !showBoatBanderaDropdown ? (
+                      <div
+                        className="form-control portafolio-input form-control-sm country-input-display d-flex align-items-center"
+                        style={{ minHeight: "31px", cursor: "pointer" }}
+                        onClick={() => {
+                          setBoatBanderaSearch("");
+                          setShowBoatBanderaDropdown(true);
+                        }}
+                      >
+                        <TwemojiFlag emoji={selectedBoatCountry.flag} size="22x22" />
+                        <span className="ms-2">{selectedBoatCountry.name} ({selectedBoatCountry.code})</span>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        className="form-control portafolio-input form-control-sm"
+                        placeholder="Buscar país..."
+                        value={boatBanderaSearch}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setBoatBanderaSearch(value);
+                          setShowBoatBanderaDropdown(true);
+                          if (!value.trim()) setBoatFilterBandera("");
+                        }}
+                        onFocus={() => setShowBoatBanderaDropdown(true)}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                    )}
+                    {showBoatBanderaDropdown && (
+                      <div className="country-dropdown">
+                        <div
+                          className="country-option"
+                          onClick={() => {
+                            setBoatFilterBandera("");
+                            setBoatBanderaSearch("Todas");
+                            setShowBoatBanderaDropdown(false);
+                          }}
+                        >
+                          <span className="country-name text-white-50">Todas</span>
+                        </div>
+                        {filteredCountriesForBoatBandera.length > 0 ? (
+                          filteredCountriesForBoatBandera.map((co) => (
+                            <div
+                              key={co.code}
+                              className="country-option"
+                              onClick={() => {
+                                setBoatFilterBandera(co.code);
+                                setBoatBanderaSearch(`${co.flag} ${co.name} (${co.code})`);
+                                setShowBoatBanderaDropdown(false);
+                              }}
+                            >
+                              <span className="country-flag">
+                                <TwemojiFlag emoji={co.flag} size="22x22" />
+                              </span>
+                              <span className="country-name">{co.name}</span>
+                              <span className="country-code">{co.code}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="country-option no-results">
+                            No se encontraron países
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
                   <label className="portafolio-modal-filter-label">Puerto</label>
@@ -540,7 +931,16 @@ export function Portafolio({ user }) {
                 </div>
                 <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
                   <label className="portafolio-modal-filter-label">Tipo</label>
-                  <input type="text" className="form-control portafolio-input form-control-sm" value={boatFilterTipo} onChange={(e) => setBoatFilterTipo(e.target.value)} />
+                  <Form.Select
+                    className="form-select portafolio-input form-control-sm"
+                    value={boatFilterTipo}
+                    onChange={(e) => setBoatFilterTipo(e.target.value)}
+                  >
+                    <option value="">Todos</option>
+                    {boatTypes.map((t) => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </Form.Select>
                 </div>
                 <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
                   <label className="portafolio-modal-filter-label">Desplazamiento</label>
@@ -558,10 +958,15 @@ export function Portafolio({ user }) {
               <h4 className="text-orange mb-4">Flota:</h4>
               {boatsLoading ? (
                 <div className="text-center py-4"><div className="spinner-border text-warning" role="status" /><p className="mt-2 mb-0 small">Cargando barcos...</p></div>
-              ) : filteredBoats.length === 0 ? (
-                <div className="text-center py-4 text-white-50">No hay barcos activos que coincidan con los filtros.</div>
               ) : (
                 <>
+                <div ref={portafolioBoatListRef}>
+              {filteredBoats.length === 0 ? (
+                <div className="text-center text-white py-5">
+                  <i className="bi bi bi-inbox-fill text-orange" style={{fontSize: "4rem"}}></i>
+                  <p className="mt-3">No hay barcos activos que coincidan con los filtros.</p>
+                </div>
+              ) : (
                   <div className="row g-3">
                     {currentBoats.map((boat) => (
                       <div key={boat._id} className="col-12 col-lg-6">
@@ -631,7 +1036,9 @@ export function Portafolio({ user }) {
                       </div>
                     ))}
                   </div>
-                  <div className="d-flex flex-column align-items-center mt-4">
+              )}
+                </div>
+                  <div className="d-flex flex-column align-items-center mt-4 mb-4">
                     <Pagination className="mb-0">
                       <Pagination.First
                         onClick={() => handleBoatPageChange(1)}
@@ -668,7 +1075,7 @@ export function Portafolio({ user }) {
                         className="custom-pagination-item"
                       />
                     </Pagination>
-                    <div className="text-white mt-2 small">
+                    <div className="text-white mt-2">
                       Página {boatPage} de {totalBoatPages || 1} ({filteredBoats.length} barcos)
                     </div>
                   </div>
@@ -679,10 +1086,22 @@ export function Portafolio({ user }) {
 
           {certificatesModal.open && (
             <div className="portafolio-modal-overlay" onClick={closeCertificatesModal}>
-              <div className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
-                <div className="d-flex justify-content-between align-items-center mb-3 portafolio-modal-header">
-                  <h5 className="text-orange mb-0 portafolio-modal-title">Certificados — {certificatesModal.boatName || "Barco"}</h5>
-                  <button type="button" className="btn-close btn-close-white flex-shrink-0" aria-label="Cerrar" onClick={closeCertificatesModal}></button>
+              <div ref={certificatesModalRef} className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="portafolio-certificates-modal-header d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 portafolio-modal-header">
+                  <div className="d-flex justify-content-between align-items-center flex-grow-1 flex-shrink-0 min-w-0">
+                    <h5 className="text-orange mb-0 portafolio-modal-title">Certificados — {certificatesModal.boatName || "Barco"}</h5>
+                    <button type="button" className="btn-close btn-close-white flex-shrink-0 ms-2" aria-label="Cerrar" onClick={closeCertificatesModal}></button>
+                  </div>
+                  {selectedClient && (
+                    <button
+                      type="button"
+                      className="btn btn-warning btn-sm portafolio-certificates-add-btn"
+                      onClick={openAddCertificateForm}
+                    >
+                      <i className="bi bi-plus-circle-fill me-1"></i>
+                      Agregar certificado
+                    </button>
+                  )}
                 </div>
                 {certificatesLoading ? (
                   <div className="text-center py-4"><div className="spinner-border text-warning" role="status" /></div>
@@ -733,26 +1152,6 @@ export function Portafolio({ user }) {
                                 <input type="text" className="form-control form-control-sm portafolio-input" value={certFilterTipo} onChange={(e) => { setCertFilterTipo(e.target.value); setCertPage(1); }} />
                               </div>
                               <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                                <label className="portafolio-modal-filter-label">Número</label>
-                                <input type="text" className="form-control form-control-sm portafolio-input" value={certFilterNumero} onChange={(e) => { setCertFilterNumero(e.target.value); setCertPage(1); }} />
-                              </div>
-                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                                <label className="portafolio-modal-filter-label">Emisión desde</label>
-                                <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterEmisionDesde} onChange={(e) => { setCertFilterEmisionDesde(e.target.value); setCertPage(1); }} />
-                              </div>
-                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                                <label className="portafolio-modal-filter-label">Emisión hasta</label>
-                                <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterEmisionHasta} onChange={(e) => { setCertFilterEmisionHasta(e.target.value); setCertPage(1); }} />
-                              </div>
-                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                                <label className="portafolio-modal-filter-label">Vencimiento desde</label>
-                                <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterVencimientoDesde} onChange={(e) => { setCertFilterVencimientoDesde(e.target.value); setCertPage(1); }} />
-                              </div>
-                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                                <label className="portafolio-modal-filter-label">Vencimiento hasta</label>
-                                <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterVencimientoHasta} onChange={(e) => { setCertFilterVencimientoHasta(e.target.value); setCertPage(1); }} />
-                              </div>
-                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
                                 <label className="portafolio-modal-filter-label">Estado</label>
                                 <select className="form-select form-select-sm portafolio-input" value={certFilterEstado} onChange={(e) => { setCertFilterEstado(e.target.value); setCertPage(1); }}>
                                   <option value="">Todos los estados</option>
@@ -761,20 +1160,44 @@ export function Portafolio({ user }) {
                                   <option value="Anulado">Anulado</option>
                                 </select>
                               </div>
+                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                                <label className="portafolio-modal-filter-label">Número</label>
+                                <input type="text" className="form-control form-control-sm portafolio-input" value={certFilterNumero} onChange={(e) => { setCertFilterNumero(e.target.value); setCertPage(1); }} />
+                              </div>
+                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                                <label className="portafolio-modal-filter-label">Emisión (desde - hasta)</label>
+                                <div className="d-flex gap-1 portafolio-modal-filter-date-range">
+                                  <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterEmisionDesde} onChange={(e) => { setCertFilterEmisionDesde(e.target.value); setCertPage(1); }} />
+                                  <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterEmisionHasta} onChange={(e) => { setCertFilterEmisionHasta(e.target.value); setCertPage(1); }} />
+                                </div>
+                              </div>
+                              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+                                <label className="portafolio-modal-filter-label">Vencimiento (desde - hasta)</label>
+                                <div className="d-flex gap-1 portafolio-modal-filter-date-range">
+                                  <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterVencimientoDesde} onChange={(e) => { setCertFilterVencimientoDesde(e.target.value); setCertPage(1); }} />
+                                  <input type="date" className="form-control form-control-sm portafolio-input" value={certFilterVencimientoHasta} onChange={(e) => { setCertFilterVencimientoHasta(e.target.value); setCertPage(1); }} />
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="table-responsive portafolio-table-wrap">
                             <Table striped bordered hover variant="dark" className="table-dark table-sm">
-                              <thead><tr><th>Tipo</th><th>Número</th><th>Emisión</th><th>Vencimiento</th><th>Estado</th></tr></thead>
+                              <thead>
+                                <tr>
+                                  <th>Tipo</th>
+                                  <th>Estado</th>
+                                  <th>Número</th>
+                                  <th>Emisión</th>
+                                  <th>Vencimiento</th>
+                                  {selectedClient && <th className="text-nowrap">Acciones</th>}
+                                </tr>
+                              </thead>
                               <tbody>
                                 {paginated.map((cert) => {
                                   const estado = getCertificateEstado(cert);
                                   return (
                                     <tr key={cert._id}>
                                       <td>{cert.certificateType || "—"}</td>
-                                      <td>{cert.number || "—"}</td>
-                                      <td>{cert.issueDate ? new Date(cert.issueDate).toLocaleDateString() : "—"}</td>
-                                      <td>{cert.expirationDate ? new Date(cert.expirationDate).toLocaleDateString() : "—"}</td>
                                       <td>
                                         <span
                                           className={estado.label === "Vencido" || estado.label === "Anulado" ? "text-danger" : estado.soonExpiry ? "text-warning" : "text-success"}
@@ -783,6 +1206,29 @@ export function Portafolio({ user }) {
                                           {estado.label}
                                         </span>
                                       </td>
+                                      <td>{cert.number || "—"}</td>
+                                      <td>{cert.issueDate ? new Date(cert.issueDate).toLocaleDateString() : "—"}</td>
+                                      <td>{cert.expirationDate ? new Date(cert.expirationDate).toLocaleDateString() : "—"}</td>
+                                      {selectedClient && (
+                                        <td>
+                                          <div className="d-flex flex-column gap-1 portafolio-cert-actions">
+                                            <a
+                                              href="#"
+                                              className="text-warning text-decoration-none"
+                                              onClick={(e) => { e.preventDefault(); openEditCertificateForm(cert); }}
+                                            >
+                                              <i className="bi bi-pencil-fill me-1"></i>Modificar
+                                            </a>
+                                            <a
+                                              href="#"
+                                              className="text-danger text-decoration-none"
+                                              onClick={(e) => { e.preventDefault(); handleDeleteCertificatePortafolio(cert._id); }}
+                                            >
+                                              <i className="bi bi-trash-fill me-1"></i>Eliminar
+                                            </a>
+                                          </div>
+                                        </td>
+                                      )}
                                     </tr>
                                   );
                                 })}
@@ -805,9 +1251,129 @@ export function Portafolio({ user }) {
             </div>
           )}
 
+          {showCertFormModal && (
+            <div className="portafolio-modal-overlay" onClick={closeCertFormModal}>
+              <div className="portafolio-modal-content portafolio-cert-form-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="d-flex justify-content-between align-items-center mb-3 portafolio-modal-header">
+                  <h5 className="text-orange mb-0 portafolio-modal-title">
+                    {editingCertificateId ? "Modificar certificado" : "Agregar certificado"}
+                  </h5>
+                  <button type="button" className="btn-close btn-close-white flex-shrink-0" aria-label="Cerrar" onClick={closeCertFormModal}></button>
+                </div>
+                <form onSubmit={handleCertificateFormSubmitPortafolio}>
+                  <div className="row g-3">
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">Tipo de Certificado <span className="text-danger">*</span></label>
+                      <select
+                        className="form-select form-select-sm portafolio-input"
+                        name="certificateType"
+                        value={certificateFormData.certificateType}
+                        onChange={handleCertificateInputChangePortafolio}
+                        required
+                      >
+                        <option value="">Seleccione un tipo</option>
+                        <option value="Cert. Navegabilidad">Cert. Navegabilidad</option>
+                        <option value="Cert. Licencia Estación">Cert. Licencia Estación</option>
+                        <option value="Cert. Balsas Salvavidas">Cert. Balsas Salvavidas</option>
+                        <option value="Tasa Anual">Tasa Anual</option>
+                        <option value="Trib. Emb. Extranjera">Trib. Emb. Extranjera</option>
+                        <option value="Venc. Bengalas">Venc. Bengalas</option>
+                        <option value="Venc. Extintor">Venc. Extintor</option>
+                        <option value="Otro">Otro</option>
+                      </select>
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">Número</label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm portafolio-input"
+                        name="number"
+                        value={certificateFormData.number}
+                        onChange={handleCertificateInputChangePortafolio}
+                        placeholder="S/N"
+                      />
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">Fecha de Emisión <span className="text-danger">*</span></label>
+                      <input
+                        type="date"
+                        className="form-control form-control-sm portafolio-input"
+                        name="issueDate"
+                        value={certificateFormData.issueDate}
+                        onChange={handleCertificateInputChangePortafolio}
+                        required
+                      />
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">Fecha de Vencimiento <span className="text-danger">*</span></label>
+                      <input
+                        type="date"
+                        className="form-control form-control-sm portafolio-input"
+                        name="expirationDate"
+                        value={certificateFormData.expirationDate}
+                        onChange={handleCertificateInputChangePortafolio}
+                        required
+                      />
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">Inspección Anual <span className="text-danger">*</span></label>
+                      <select
+                        className="form-select form-select-sm portafolio-input"
+                        name="annualInspection"
+                        value={certificateFormData.annualInspection}
+                        onChange={handleCertificateInputChangePortafolio}
+                        required
+                      >
+                        <option value="no_realizada">No realizada</option>
+                        <option value="realizada">Realizada</option>
+                        <option value="no_corresponde">No corresponde</option>
+                      </select>
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label text-white-50 small">PDF del Certificado (Opcional)</label>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="form-control form-control-sm portafolio-input"
+                        onChange={handleCertificatePdfChangePortafolio}
+                      />
+                      <small className="text-muted d-block mt-1">Máximo 10MB</small>
+                      {certificatePdfFile && (
+                        <small className="text-success d-block mt-1">
+                          <i className="bi bi-check-circle-fill me-1"></i>Archivo: {certificatePdfFile.name}
+                        </small>
+                      )}
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label text-white-50 small">Observaciones</label>
+                      <textarea
+                        className="form-control form-control-sm portafolio-input"
+                        name="observations"
+                        rows="2"
+                        value={certificateFormData.observations}
+                        onChange={handleCertificateInputChangePortafolio}
+                      />
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={closeCertFormModal} disabled={submittingCertificate}>
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn btn-warning btn-sm" disabled={submittingCertificate}>
+                      {submittingCertificate ? (
+                        <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                      ) : null}
+                      {editingCertificateId ? "Actualizar certificado" : "Crear certificado"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
           {pendientesModal.open && (
             <div className="portafolio-modal-overlay" onClick={closePendientesModal}>
-              <div className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div ref={pendientesModalRef} className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="d-flex justify-content-between align-items-center mb-3 portafolio-modal-header">
                   <h5 className="text-orange mb-0 portafolio-modal-title">Pendientes — {pendientesModal.boatName || "Barco"}</h5>
                   <button type="button" className="btn-close btn-close-white flex-shrink-0" aria-label="Cerrar" onClick={closePendientesModal}></button>
@@ -908,7 +1474,7 @@ export function Portafolio({ user }) {
 
           {historialModal.open && (
             <div className="portafolio-modal-overlay" onClick={closeHistorialModal}>
-              <div className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
+              <div ref={historialModalRef} className="portafolio-modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="d-flex justify-content-between align-items-center mb-3 portafolio-modal-header">
                   <h5 className="text-orange mb-0 portafolio-modal-title">Historial — {historialModal.boatName || "Barco"}</h5>
                   <button type="button" className="btn-close btn-close-white flex-shrink-0" aria-label="Cerrar" onClick={closeHistorialModal}></button>
@@ -1038,6 +1604,8 @@ export function Portafolio({ user }) {
                 setBoatFilterName("");
                 setBoatFilterRegistro("");
                 setBoatFilterBandera("");
+                setBoatBanderaSearch("Todas");
+                setShowBoatBanderaDropdown(false);
                 setBoatFilterPuerto("");
                 setBoatFilterTipo("");
                 setBoatFilterDisplacement("");
@@ -1094,75 +1662,76 @@ export function Portafolio({ user }) {
     <FadeIn>
       <div className="container d-flex flex-column col-12 col-lg-11 text-white portafolio-root">
         <div className="col-12">
-          <h2 className="mb-3 text-orange">Portafolio:</h2>
+          <h2 className="mb-3 text-orange">Portafolio de clientes:</h2>
           <div className="div-border-color my-4"></div>
         </div>
 
-        <div className="portafolio-filters col-12">
+        <div className="portafolio-filters col-12 mb-5">
           <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
           <div className="row g-2 portafolio-modal-filters">
-            <div className={`col-12 col-sm-6 col-md-4 portafolio-modal-filter-item portafolio-country-wrap ${showCountryDropdown ? "portafolio-country-open" : ""}`} ref={countryDropdownRef}>
+            <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item" ref={countryDropdownRef}>
               <label className="portafolio-modal-filter-label">País</label>
-              <div className="position-relative">
-                <div
-                  className="form-control form-control-sm portafolio-select portafolio-country-trigger d-flex align-items-center"
-                  onClick={() => {
-                    setShowCountryDropdown((v) => !v);
-                    if (!showCountryDropdown) setCountrySearchInput("");
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {selectedCountry ? (
-                    <>
-                      <TwemojiFlag emoji={selectedCountry.flag} className="me-2" size="22x22" />
-                      <span>{selectedCountry.name}</span>
-                    </>
-                  ) : (
-                    <span className="text-white-50">Todos</span>
-                  )}
-                </div>
+              <div className="position-relative flota-filter-bandera-wrap gestion-pais-filter-wrap">
+                {selectedCountry && countrySearchInput && countrySearchInput !== "Todos" && !showCountryDropdown ? (
+                  <div
+                    className="form-control portafolio-input form-control-sm country-input-display d-flex align-items-center"
+                    style={{ minHeight: "31px", cursor: "pointer" }}
+                    onClick={() => {
+                      setCountrySearchInput("");
+                      setShowCountryDropdown(true);
+                    }}
+                  >
+                    <TwemojiFlag emoji={selectedCountry.flag} size="22x22" />
+                    <span className="ms-2">{selectedCountry.name} ({selectedCountry.code})</span>
+                  </div>
+                ) : (
+                  <input
+                    type="text"
+                    className="form-control portafolio-input form-control-sm"
+                    placeholder="Buscar país..."
+                    value={countrySearchInput}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setCountrySearchInput(value);
+                      setShowCountryDropdown(true);
+                      if (!value.trim()) setFilterCountry("");
+                    }}
+                    onFocus={() => setShowCountryDropdown(true)}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                )}
                 {showCountryDropdown && (
-                  <div className="portafolio-country-dropdown">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm portafolio-input portafolio-country-search"
-                      placeholder="Buscar país..."
-                      value={countrySearchInput}
-                      onChange={(e) => setCountrySearchInput(e.target.value)}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    />
-                    <div className="portafolio-country-list">
-                      <div
-                        className="portafolio-country-option"
-                        onClick={() => {
-                          setFilterCountry("");
-                          setShowCountryDropdown(false);
-                        }}
-                      >
-                        <span className="text-white-50">Todos</span>
-                      </div>
-                      {filteredCountries.length > 0 ? (
-                        filteredCountries.map((co) => (
-                          <div
-                            key={co.code}
-                            className="portafolio-country-option"
-                            onClick={() => {
-                              setFilterCountry(co.code);
-                              setShowCountryDropdown(false);
-                            }}
-                          >
-                            <span className="portafolio-country-flag">
-                              <TwemojiFlag emoji={co.flag} size="22x22" />
-                            </span>
-                            <span>{co.name}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="portafolio-country-option portafolio-country-no-results">
-                          No se encontraron países
-                        </div>
-                      )}
+                  <div className="country-dropdown">
+                    <div className="country-option" onClick={() => {
+                      setFilterCountry("");
+                      setCountrySearchInput("Todos");
+                      setShowCountryDropdown(false);
+                    }}>
+                      <span className="country-name text-white-50">Todos</span>
                     </div>
+                    {filteredCountries.length > 0 ? (
+                      filteredCountries.map((co) => (
+                        <div
+                          key={co.code}
+                          className="country-option"
+                          onClick={() => {
+                            setFilterCountry(co.code);
+                            setCountrySearchInput(`${co.flag} ${co.name} (${co.code})`);
+                            setShowCountryDropdown(false);
+                          }}
+                        >
+                          <span className="country-flag">
+                            <TwemojiFlag emoji={co.flag} size="22x22" />
+                          </span>
+                          <span className="country-name">{co.name}</span>
+                          <span className="country-code">{co.code}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="country-option no-results">
+                        No se encontraron países
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -1194,7 +1763,6 @@ export function Portafolio({ user }) {
         </div>
 
         {/* Tarjetas de clientes */}
-        <h4 className="text-orange my-4"><i className="bi bi-person-vcard-fill me-2"></i>Clientes:</h4>
         {loading ? (
           <div className="col-12 text-center py-5">
             <div className="spinner-border text-warning" role="status" />
@@ -1226,6 +1794,14 @@ export function Portafolio({ user }) {
                       {[client.firstName, client.lastName].filter(Boolean).join(" ") || "—"}
                     </h4>
                     <p className="text-white-50 small mb-2">{client.email || "—"}</p>
+                    {(() => {
+                      const country = getCountry(client.address?.country);
+                      return country?.flag ? (
+                        <div className="mb-2 d-flex justify-content-center">
+                          <TwemojiFlag emoji={country.flag} size="32x32" className="portafolio-card-flag" />
+                        </div>
+                      ) : null;
+                    })()}
                     <div className="d-flex align-items-center justify-content-center gap-2 mt-2">
                       <span className="text-orange" style={{ fontSize: "1rem" }}>Flota:</span>
                       <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>

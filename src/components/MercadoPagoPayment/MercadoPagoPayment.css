@@ -156,7 +156,6 @@
 
 .btn-success:hover {
   background: linear-gradient(135deg, #218838, #1ea085);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
@@ -176,7 +175,6 @@
 
 .btn-warning:hover {
   background: linear-gradient(135deg, #e0a800, #e55a00);
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
@@ -193,7 +191,6 @@
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
   color: #ffffff;
-  transform: translateY(-2px);
 }
 
 .spinner-border-sm {

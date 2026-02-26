@@ -38,8 +38,7 @@ export function CrearCurso() {
           {
             lessonName: "",
             lessonDescription: "",
-            videoUrl: "",
-            completed: false
+            videoUrl: ""
           }
         ],
         questionBank: [
@@ -70,18 +69,17 @@ export function CrearCurso() {
   });
 
   // Estado para la lista de instructores
-  const [professors, setProfessors] = useState([]);
-  const [loadingProfessors, setLoadingProfessors] = useState(false);
+  const [instructors, setInstructors] = useState([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(false);
 
   // Cargar instructores al montar el componente
   useEffect(() => {
-    const loadProfessors = async () => {
-      setLoadingProfessors(true);
+    const loadInstructors = async () => {
+      setLoadingInstructors(true);
       try {
         const response = await apiService.getInstructors();
-        if (response.status === "success" && response.payload) {
-          setProfessors(response.payload);
-        }
+        const list = Array.isArray(response?.payload) ? response.payload : [];
+        setInstructors(list);
       } catch (error) {
         console.error("Error al cargar instructores:", error);
         Swal.fire({
@@ -96,11 +94,11 @@ export function CrearCurso() {
           },
         });
       } finally {
-        setLoadingProfessors(false);
+        setLoadingInstructors(false);
       }
     };
 
-    loadProfessors();
+    loadInstructors();
   }, []);
 
   // Manejar cambios en datos básicos del curso
@@ -142,7 +140,7 @@ export function CrearCurso() {
   // Manejar cambios en la selección del instructor
   const handleInstructorChange = (e) => {
     const selectedId = e.target.value;
-    const selectedInstructor = professors.find(p => p._id === selectedId);
+    const selectedInstructor = instructors.find((p) => p._id === selectedId);
     
     if (selectedInstructor) {
       setCourseData(prev => ({
@@ -261,8 +259,7 @@ export function CrearCurso() {
             {
               lessonName: "",
               lessonDescription: "",
-              videoUrl: "",
-              completed: false
+              videoUrl: ""
             }
           ],
           questionBank: [
@@ -313,8 +310,7 @@ export function CrearCurso() {
                 {
                   lessonName: "",
                   lessonDescription: "",
-                  videoUrl: "",
-                  completed: false
+                  videoUrl: ""
                 }
               ]
             }
@@ -511,16 +507,23 @@ export function CrearCurso() {
     // Unificar las partes del SKU en el formato "PART1-PART2-PART3"
     const sku = `${data.skuPart1}-${data.skuPart2}-${data.skuPart3}`;
     
+    // El backend guarda solo el _id del instructor en el campo "instructor".
+    const instructorId = data.selectedInstructorId || null;
+
     const processedData = {
       ...data,
       courseId: courseId,
       sku: sku,
+      instructor: instructorId || undefined,
       modules: data.modules.map((module, moduleIndex) => ({
-        ...module,
         moduleId: `module_${moduleIndex}`,
+        moduleName: module.moduleName,
+        moduleDescription: module.moduleDescription,
         lessons: module.lessons.map((lesson, lessonIndex) => ({
-          ...lesson,
-          lessonId: `lesson_${moduleIndex}_${lessonIndex}`
+          lessonId: `lesson_${moduleIndex}_${lessonIndex}`,
+          lessonName: lesson.lessonName,
+          lessonDescription: lesson.lessonDescription || "",
+          videoUrl: lesson.videoUrl || ""
         })),
         questionBank: module.questionBank.map((question, questionIndex) => ({
           ...question,
@@ -692,11 +695,6 @@ export function CrearCurso() {
         price: 0,
         difficulty: "",
         category: "",
-        professor: {
-          firstName: "",
-          lastName: "",
-          profession: ""
-        },
         selectedInstructorId: "",
         modules: [
           {
@@ -706,8 +704,7 @@ export function CrearCurso() {
               {
                 lessonName: "",
                 lessonDescription: "",
-                videoUrl: "",
-                completed: false
+                videoUrl: ""
               }
             ],
             questionBank: [
@@ -1070,21 +1067,21 @@ export function CrearCurso() {
             <Form.Select
               value={courseData.selectedInstructorId}
               onChange={handleInstructorChange}
-              disabled={loadingProfessors}
+              disabled={loadingInstructors}
             >
               <option value="">Seleccione un instructor</option>
-              {professors.map((instructor) => (
+              {instructors.map((instructor) => (
                 <option key={instructor._id} value={instructor._id}>
                   {instructor.firstName} {instructor.lastName} - CI: {instructor.ci}
                 </option>
               ))}
             </Form.Select>
-            {loadingProfessors && (
+            {loadingInstructors && (
               <Form.Text className="text-muted">
                 Cargando instructores...
               </Form.Text>
             )}
-            {!loadingProfessors && professors.length === 0 && (
+            {!loadingInstructors && instructors.length === 0 && (
               <Form.Text className="text-muted">
                 No hay instructores disponibles. Crea un instructor primero.
               </Form.Text>

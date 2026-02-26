@@ -144,6 +144,15 @@ class ApiService {
     return response.json();
   }
 
+  /** Registra que el usuario accedió al curso (actualiza lastAccessedAt para "Continúa donde quedaste"). */
+  async recordCourseAccess(userId, courseId) {
+    const response = await this.request(
+      `/courses/user/${userId}/course/${encodeURIComponent(courseId)}/access`,
+      { method: 'PUT' }
+    );
+    return response.json();
+  }
+
   /** Actualiza el progreso de una lección (marcar completada). Recalcula el progreso del curso. */
   async updateUserLessonProgress(userId, courseId, moduleId, lessonId, completed) {
     const response = await this.request(
@@ -189,6 +198,12 @@ class ApiService {
       `/courses/user/${userId}/course/${encodeURIComponent(courseId)}/certificate`,
       { method: "GET" }
     );
+    return response.json();
+  }
+
+  /** Lista todos los certificados de curso (solo Administrador). */
+  async getCourseCertificates() {
+    const response = await this.request("/courses/admin/certificates", { method: "GET" });
     return response.json();
   }
 
@@ -548,15 +563,25 @@ class ApiService {
 
   // Métodos para instructores
   async getInstructors() {
-    const response = await this.request('/professors', {
-      method: 'GET',
-      includeAuth: false, // Los instructores son públicos
-    });
-    return response.json();
+    try {
+      const response = await this.request('/instructors', {
+        method: 'GET',
+        includeAuth: false, // Los instructores son públicos
+      });
+      const data = response && typeof response.json === 'function' ? await response.json() : null;
+      if (!data || typeof data !== 'object') {
+        return { status: 'error', msg: 'Respuesta inválida', payload: [] };
+      }
+      const list = Array.isArray(data.payload) ? data.payload : [];
+      return { ...data, payload: list };
+    } catch (err) {
+      console.error('getInstructors error:', err);
+      return { status: 'error', msg: err?.message || 'Error al cargar instructores', payload: [] };
+    }
   }
 
   async getInstructorById(id) {
-    const response = await this.request(`/professors/id/${id}`, {
+    const response = await this.request(`/instructors/id/${id}`, {
       method: 'GET',
       includeAuth: false,
     });
@@ -564,7 +589,7 @@ class ApiService {
   }
 
   async getInstructorByCi(ci) {
-    const response = await this.request(`/professors/ci/${ci}`, {
+    const response = await this.request(`/instructors/ci/${ci}`, {
       method: 'GET',
       includeAuth: false,
     });
@@ -572,7 +597,7 @@ class ApiService {
   }
 
   async createInstructor(instructorData) {
-    const response = await this.request('/professors/create', {
+    const response = await this.request('/instructors/create', {
       method: 'POST',
       body: JSON.stringify(instructorData),
     });
@@ -580,7 +605,7 @@ class ApiService {
   }
 
   async updateInstructor(id, instructorData) {
-    const response = await this.request(`/professors/update/${id}`, {
+    const response = await this.request(`/instructors/update/${id}`, {
       method: 'PUT',
       body: JSON.stringify(instructorData),
     });
@@ -588,7 +613,7 @@ class ApiService {
   }
 
   async deleteInstructor(id) {
-    const response = await this.request(`/professors/delete/${id}`, {
+    const response = await this.request(`/instructors/delete/${id}`, {
       method: 'DELETE',
     });
     return response.json();
@@ -596,7 +621,7 @@ class ApiService {
 
   async uploadInstructorImage(formData) {
     const accessToken = localStorage.getItem('accessToken');
-    const response = await fetch(`${this.baseURL}/upload/professor-image`, {
+    const response = await fetch(`${this.baseURL}/upload/instructor-image`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

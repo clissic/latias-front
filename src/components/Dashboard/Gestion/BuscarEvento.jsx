@@ -410,8 +410,8 @@ export function BuscarEvento({ onUpdateEvent }) {
               )}
             </Button>
             <Button variant="secondary" onClick={handleReset}>
-              <i className="bi bi-arrow-counterclockwise me-2"></i>
-              Limpiar
+              <i className="bi bi-funnel me-2"></i>
+              Limpiar filtros
             </Button>
           </div>
         </Form>

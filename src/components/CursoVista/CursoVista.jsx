@@ -4,6 +4,7 @@ import { Accordion, OverlayTrigger, Popover, Button, Modal } from "react-bootstr
 import Swal from "sweetalert2";
 import { useAuth } from "../../context/AuthContext";
 import { apiService } from "../../services/apiService";
+import { generateCertificatePdf } from "../../utils/certificatePdf";
 import { FadeIn } from "../FadeIn/FadeIn";
 import "./CursoVista.css";
 
@@ -21,6 +22,7 @@ export function CursoVista() {
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
+  const [instructorInfo, setInstructorInfo] = useState(null);
   const [expandedModuleId, setExpandedModuleId] = useState(null);
   const [activeLessonKey, setActiveLessonKey] = useState(null);
   const [selectedModuleId, setSelectedModuleId] = useState(null);
@@ -189,6 +191,26 @@ export function CursoVista() {
 
   const handleAccordionSelect = (key) => {
     if (key == null || enabledLessonKeys.has(key)) setActiveLessonKey(key);
+  };
+
+  const handleVerCertificado = async () => {
+    const userId = user?.id ?? user?._id;
+    if (!userId || !courseId) return;
+    try {
+      const res = await apiService.getCourseCertificate(userId, courseId);
+      if (res?.status === "success" && res?.payload) {
+        const item = {
+          courseId,
+          courseName: course?.courseName ?? userCourse?.course?.courseName ?? "",
+          difficulty: course?.difficulty ?? userCourse?.difficulty ?? "",
+        };
+        await generateCertificatePdf(res.payload, item);
+      }
+    } catch (e) {
+      console.error("Error al obtener certificado:", e);
+    } finally {
+      setShowSummaryModal(false);
+    }
   };
 
   /** Obtiene los datos completos de la lección (videoUrl, lessonDescription) desde el curso. */
@@ -420,6 +442,33 @@ export function CursoVista() {
     });
     return () => { cancelled = true; };
   }, [courseId, hasPurchasedCourse]);
+
+  useEffect(() => {
+    if (!course?.instructor) {
+      setInstructorInfo(null);
+      return;
+    }
+    let cancelled = false;
+    apiService.getInstructorById(course.instructor).then((res) => {
+      if (!cancelled && res.status === "success" && res.payload) setInstructorInfo(res.payload);
+      else if (!cancelled) setInstructorInfo(null);
+    }).catch(() => { if (!cancelled) setInstructorInfo(null); });
+    return () => { cancelled = true; };
+  }, [course?.instructor]);
+
+  // Registrar acceso al curso para "Continúa donde quedaste" (lastAccessedAt)
+  useEffect(() => {
+    const userId = user?.id ?? user?._id;
+    if (!courseId || !userId || !hasPurchasedCourse) return;
+    apiService.recordCourseAccess(userId, courseId).then(() => refreshUser?.()).catch(() => {});
+  }, [courseId, user?.id, user?._id, hasPurchasedCourse, refreshUser]);
+
+  // Al entrar a la vista, dejar el primer módulo abierto con las lecciones desplegadas en el sidebar
+  useEffect(() => {
+    if (displayModules.length > 0 && expandedModuleId == null) {
+      setExpandedModuleId(displayModules[0].moduleId);
+    }
+  }, [displayModules, expandedModuleId]);
 
   /** Módulo en índice i está habilitado si es el primero o si el anterior tiene al menos un intento de prueba realizado. */
   const isModuleEnabled = (modIndex) =>
@@ -656,13 +705,13 @@ export function CursoVista() {
               <h1 className="curso-vista-banner-title">
                 {(course?.courseName || course?.name || "").toUpperCase()}
               </h1>
-              {course?.professor?.[0] && (
+              {instructorInfo && (
                 <div className="curso-vista-banner-instructor-wrap">
                   <p className="curso-vista-banner-instructor">
-                    por {[course.professor[0].firstName, course.professor[0].lastName].filter(Boolean).join(" ")}
+                    por {[instructorInfo.firstName, instructorInfo.lastName].filter(Boolean).join(" ")}
                   </p>
-                  {course.professor[0].profession && (
-                    <p className="curso-vista-banner-instructor-profession">{course.professor[0].profession}</p>
+                  {instructorInfo.profession && (
+                    <p className="curso-vista-banner-instructor-profession">{instructorInfo.profession}</p>
                   )}
                 </div>
               )}
@@ -1225,7 +1274,7 @@ export function CursoVista() {
                 <Button
                   variant="success"
                   className="mt-3"
-                  onClick={() => { setShowSummaryModal(false); navigate(`/dashboard/certificados?course=${courseId}`); }}
+                  onClick={handleVerCertificado}
                 >
                   <i className="bi bi-award-fill me-2" />
                   Ver certificado
@@ -1254,6 +1303,17 @@ export function CursoVista() {
                     <>No se alcanzaron los requisitos mínimos para aprobar. Deberá recursar el curso.</>
                   )}
                 </p>
+                <Button
+                  variant="warning"
+                  className="btn mt-3 btn-orange"
+                  onClick={() => {
+                    setShowSummaryModal(false);
+                    navigate(`/course/buy/${courseId}`);
+                  }}
+                >
+                  <i className="bi bi-arrow-repeat me-2" />
+                  Cursar nuevamente
+                </Button>
               </div>
             )}
           </Modal.Body>

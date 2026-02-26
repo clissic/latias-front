@@ -41,7 +41,6 @@
 .camarote-card:hover {
   background-color: rgba(0, 0, 0, 0.5);
   border-color: #082b55ac;
-  transform: translateY(-5px);
   box-shadow: 0 10px 20px #051933a0;
 }
 

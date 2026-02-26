@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Pagination } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
@@ -102,7 +102,7 @@ export function Eventos() {
   };
 
   // Paginación
-  const totalPages = Math.ceil(eventos.length / eventosPerPage);
+  const totalPages = Math.max(1, Math.ceil(eventos.length / eventosPerPage));
   const indexOfLastEvento = currentPage * eventosPerPage;
   const indexOfFirstEvento = indexOfLastEvento - eventosPerPage;
   const currentEventos = eventos.slice(indexOfFirstEvento, indexOfLastEvento);
@@ -121,9 +121,11 @@ export function Eventos() {
     return pageNumbers;
   };
 
+  const eventosListRef = useRef(null);
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    eventosListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -248,15 +250,29 @@ export function Eventos() {
         </div>
         <div className="col-12 d-flex flex-column gap-4 eventos-content">
           {eventos.length === 0 ? (
-            <div className="text-center my-5 d-flex flex-column align-items-center col-11">
-              <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
-              <h3>¡No hay eventos próximos!</h3>
-              <p className="fst-italic">
-                ¡Estamos a la espera de que te animes a participar en uno!
-              </p>
-            </div>
+            <>
+              <div className="text-center my-5 d-flex flex-column align-items-center col-11">
+                <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
+                <h3>¡No hay eventos próximos!</h3>
+                <p className="fst-italic">
+                  ¡Estamos a la espera de que te animes a participar en uno!
+                </p>
+              </div>
+              <div className="d-flex flex-column align-items-center mt-4 mb-4">
+                <Pagination className="mb-0">
+                  <Pagination.First disabled className="custom-pagination-item" />
+                  <Pagination.Prev disabled className="custom-pagination-item" />
+                  <Pagination.Item active disabled className="custom-pagination-item">1</Pagination.Item>
+                  <Pagination.Next disabled className="custom-pagination-item" />
+                  <Pagination.Last disabled className="custom-pagination-item" />
+                </Pagination>
+                <div className="text-white mt-2">
+                  Página 1 de 1 (0 eventos)
+                </div>
+              </div>
+            </>
           ) : (
-            <div className="d-flex flex-column gap-4">
+            <div ref={eventosListRef} className="d-flex flex-column gap-4">
               {currentEventos.map((evento) => (
                 <div
                   key={evento._id || evento.eventId}
@@ -339,9 +355,8 @@ export function Eventos() {
                 </div>
               ))}
               {/* Paginación */}
-              {eventos.length > 0 && (
-                <div className="d-flex flex-column align-items-center mt-4">
-                  <Pagination className="mb-0">
+              <div className="d-flex flex-column align-items-center mt-4 mb-4">
+                <Pagination className="mb-0">
                     <Pagination.First
                       onClick={() => handlePageChange(1)}
                       disabled={currentPage === 1 || totalPages === 0}
@@ -379,11 +394,10 @@ export function Eventos() {
                       className="custom-pagination-item"
                     />
                   </Pagination>
-                  <div className="text-white mt-2">
-                    Página {currentPage} de {totalPages || 1} ({eventos.length} eventos)
-                  </div>
+                <div className="text-white mt-2">
+                  Página {currentPage} de {totalPages || 1} ({eventos.length} eventos)
                 </div>
-              )}
+              </div>
             </div>
           )}
         </div>

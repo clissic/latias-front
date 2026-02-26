@@ -68,6 +68,7 @@ export function ActualizarEvento({ event }) {
         price: event.price || 0,
         currency: event.currency || "USD",
         description: event.description || "",
+        image: event.image || "",
         tickets: {
           availableTickets: event.tickets?.availableTickets || 0,
           soldTickets: event.tickets?.soldTickets || 0,
@@ -87,6 +88,7 @@ export function ActualizarEvento({ event }) {
         },
         active: event.active !== undefined ? event.active : true
       });
+      setImagePreview(event.image || "");
     }
   }, [event]);
 
@@ -244,7 +246,11 @@ export function ActualizarEvento({ event }) {
         }
       };
 
-      const response = await apiService.updateEvent(event.eventId, finalEventData);
+      const eventIdentifier = event.eventId || event._id;
+      if (!eventIdentifier) {
+        throw new Error("No se pudo identificar el evento (falta eventId o _id).");
+      }
+      const response = await apiService.updateEvent(eventIdentifier, finalEventData);
       
       if (response.status === "success") {
         Swal.fire({
@@ -390,7 +396,7 @@ export function ActualizarEvento({ event }) {
             {imagePreview && (
               <div className="mt-3 position-relative" style={{ maxWidth: "300px" }}>
                 <img
-                  src={imagePreview.startsWith('data:') || imagePreview.startsWith('http') ? imagePreview : `${window.location.origin}${imagePreview}`}
+                  src={imagePreview.startsWith('data:') || imagePreview.startsWith('http') ? imagePreview : imagePreview.startsWith('/api') ? imagePreview : imagePreview.startsWith('/') ? `/api${imagePreview}` : `${window.location.origin}${imagePreview}`}
                   alt="Preview"
                   className="img-thumbnail"
                   style={{ width: "100%", height: "auto" }}
@@ -554,11 +560,11 @@ export function ActualizarEvento({ event }) {
             {isLoading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "#082b55", borderRightColor: "transparent" }}></span>
-                PROCESANDO...
+                Actualizando...
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle-fill me-2"></i> ACTUALIZAR
+                <i className="bi bi-check-circle-fill me-2"></i> Actualizar
               </>
             )}
           </Button>

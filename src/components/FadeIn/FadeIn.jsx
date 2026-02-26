@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSpring, animated } from "@react-spring/web";
 
-export function FadeIn({ children }) {
+export function FadeIn({ children, inline }) {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef(null);
 
@@ -14,7 +14,7 @@ export function FadeIn({ children }) {
           }, 200);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     if (elementRef.current) {
@@ -34,19 +34,19 @@ export function FadeIn({ children }) {
     config: { tension: 200, friction: 20 },
   });
 
+  const baseStyle = {
+    ...fadeInUp,
+    width: '100%',
+    maxWidth: '100%',
+  };
+
+  const wrapperStyle = inline
+    ? { ...baseStyle, display: 'block' }
+    : { ...baseStyle, display: 'flex', flexDirection: 'column', alignItems: 'center' };
+
   return (
-    <animated.div 
-      ref={elementRef} 
-      style={{
-        ...fadeInUp,
-        width: '100%',
-        maxWidth: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}
-    >
+    <animated.div ref={elementRef} style={wrapperStyle}>
       {children}
     </animated.div>
   );
-};
+}

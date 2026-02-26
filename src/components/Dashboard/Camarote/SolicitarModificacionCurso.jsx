@@ -89,33 +89,35 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
       const skuParts = splitSku(course.sku);
       
       // Manejar instructor: puede ser un array o un objeto
-      // También verificar si viene como 'professor' (legacy) o 'instructor' (nuevo)
       let instructorData = {
         firstName: "",
         lastName: "",
         profession: ""
       };
       
-      const instructorSource = course.instructor || course.professor;
-      
+      const instructorSource = course.instructor;
+      let initialSelectedInstructorId = "";
+
       if (instructorSource) {
-        if (Array.isArray(instructorSource) && instructorSource.length > 0) {
-          // Si es un array, tomar el primer elemento
+        if (typeof instructorSource === "string") {
+          initialSelectedInstructorId = instructorSource;
+        } else if (Array.isArray(instructorSource) && instructorSource.length > 0) {
           instructorData = {
             firstName: instructorSource[0].firstName || "",
             lastName: instructorSource[0].lastName || "",
             profession: instructorSource[0].profession || ""
           };
-        } else if (typeof instructorSource === 'object') {
-          // Si es un objeto, usarlo directamente
+        } else if (typeof instructorSource === "object" && instructorSource !== null && !instructorSource._id) {
           instructorData = {
             firstName: instructorSource.firstName || "",
             lastName: instructorSource.lastName || "",
             profession: instructorSource.profession || ""
           };
+        } else if (instructorSource && typeof instructorSource === "object" && instructorSource._id) {
+          initialSelectedInstructorId = instructorSource._id;
         }
       }
-      
+
       setCourseData({
         courseId: course.courseId || course._id,
         skuPart1: skuParts.part1,
@@ -133,7 +135,7 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
         difficulty: course.difficulty || "",
         category: course.category || "",
         instructor: instructorData,
-        selectedInstructorId: "",
+        selectedInstructorId: initialSelectedInstructorId,
         modules: course.modules && course.modules.length > 0 ? course.modules : [
           {
             moduleName: "",
@@ -1202,11 +1204,11 @@ export function SolicitarModificacionCurso({ course, instructor, onBack }) {
               {isLoading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "#082b55", borderRightColor: "transparent" }}></span>
-                  PROCESANDO...
+                  Procesando...
                 </>
               ) : (
                 <>
-                  <i className="bi bi-send me-2"></i> SOLICITAR MODIFICACIÓN
+                  <i className="bi bi-send-fill me-2"></i> Solicitar modificación
                 </>
               )}
             </Button>

@@ -1,3 +1,4 @@
+/* GestionarMisCursos - Contenedor */
 .gestionar-mis-cursos-container {
   width: 100%;
 }
@@ -6,16 +7,17 @@
   white-space: nowrap;
 }
 
-/* Filtros (mismo estilo que Portafolio) */
+/* ========== Filtros (mismo estándar que Flota / Gestion / Certificados) ========== */
 .gestionar-mis-cursos-container .portafolio-filters {
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid #082b557c;
   border-radius: 1rem;
   padding: 1rem;
   backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 1rem;
 }
 
@@ -59,7 +61,7 @@
   padding: 0.75rem 1rem;
   font-size: 0.8rem;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   margin-bottom: 0;
 }
 
@@ -89,49 +91,74 @@
   font-weight: 500;
 }
 
-/* Cartas de cursos (mismo formato que Trabajos asignados en Mi gestor) */
-.gestionar-mis-cursos-container .flota-certificates-cards {
+.gestionar-mis-cursos-container .flota-filters-actions {
+  margin-bottom: 0;
+}
+
+/* Rango de precio: dos inputs en una sola fila al 50% */
+.gestionar-mis-cursos-container .camarote-filter-precio-range {
   display: flex;
-  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.gestionar-mis-cursos-container .camarote-filter-precio-range input {
+  flex: 1 1 50%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ========== Tarjetas de cursos (estilo acorde a Mi Flota / Gestión) ========== */
+.gestionar-mis-cursos-container .camarote-course-cards {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1rem;
   width: 100%;
 }
 
+@media (min-width: 768px) {
+  .gestionar-mis-cursos-container .camarote-course-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (min-width: 992px) {
-  .gestionar-mis-cursos-container .flota-certificates-cards {
-    display: grid;
+  .gestionar-mis-cursos-container .camarote-course-cards {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card {
-  width: 100%;
-  background-color: rgba(8, 43, 85, 0.5);
-  border: 1px solid rgba(255, 165, 0, 0.3);
+.gestionar-mis-cursos-container .camarote-course-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
   border-radius: 10px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card:hover {
-  border-color: rgba(255, 165, 0, 0.6);
-  box-shadow: 0 4px 8px rgba(255, 165, 0, 0.2);
+.gestionar-mis-cursos-container .camarote-course-card:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-color: #082b55ac;
+  box-shadow: 0 10px 20px rgba(5, 25, 51, 0.4);
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card-body {
+.gestionar-mis-cursos-container .camarote-course-card-body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem;
   width: 100%;
   min-width: 0;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card-main {
+.gestionar-mis-cursos-container .camarote-course-card-main {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -141,13 +168,13 @@
   min-width: 0;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-field {
+.gestionar-mis-cursos-container .camarote-course-field {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-label {
+.gestionar-mis-cursos-container .camarote-course-label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -155,13 +182,13 @@
   font-weight: 600;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-value {
+.gestionar-mis-cursos-container .camarote-course-value {
   color: #ffffff;
   font-size: 0.95rem;
   word-break: break-word;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card-actions {
+.gestionar-mis-cursos-container .camarote-course-card-actions {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -170,30 +197,31 @@
   flex-shrink: 0;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card-actions .action-link {
+.gestionar-mis-cursos-container .camarote-action-link {
   white-space: nowrap;
   cursor: pointer;
   color: rgba(255, 165, 0, 0.9);
   text-decoration: none;
+  font-size: 0.9rem;
 }
 
-.gestionar-mis-cursos-container .flota-certificate-card-actions .action-link:hover {
+.gestionar-mis-cursos-container .camarote-action-link:hover {
   color: #ffa500;
   text-decoration: underline;
 }
 
 @media (max-width: 767.98px) {
-  .gestionar-mis-cursos-container .flota-certificate-card-body {
+  .gestionar-mis-cursos-container .camarote-course-card-body {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .gestionar-mis-cursos-container .flota-certificate-card-main {
+  .gestionar-mis-cursos-container .camarote-course-card-main {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .gestionar-mis-cursos-container .flota-certificate-card-actions {
+  .gestionar-mis-cursos-container .camarote-course-card-actions {
     justify-content: flex-start;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 0.75rem;

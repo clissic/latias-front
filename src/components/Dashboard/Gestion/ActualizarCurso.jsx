@@ -24,11 +24,6 @@ export function ActualizarCurso({ course }) {
     price: 0,
     difficulty: "",
     category: "",
-    instructor: {
-      firstName: "",
-      lastName: "",
-      profession: ""
-    },
     selectedInstructorId: "",
     modules: [
       {
@@ -38,8 +33,7 @@ export function ActualizarCurso({ course }) {
           {
             lessonName: "",
             lessonDescription: "",
-            videoUrl: "",
-            completed: false
+            videoUrl: ""
           }
         ],
         questionBank: [
@@ -70,40 +64,48 @@ export function ActualizarCurso({ course }) {
   });
 
   // Estado para la lista de instructores
-  const [professors, setProfessors] = useState([]);
-  const [loadingProfessors, setLoadingProfessors] = useState(false);
+  const [instructors, setInstructors] = useState([]);
+  const [loadingInstructors, setLoadingInstructors] = useState(false);
   
   // Estado para el loading del formulario
   const [isLoading, setIsLoading] = useState(false);
 
   // Cargar instructores al montar el componente
   useEffect(() => {
-    const loadProfessors = async () => {
-      setLoadingProfessors(true);
+    let cancelled = false;
+    const loadInstructors = async () => {
+      setLoadingInstructors(true);
       try {
         const response = await apiService.getInstructors();
-        if (response.status === "success" && response.payload) {
-          setProfessors(response.payload);
+        if (cancelled) return;
+        const list = Array.isArray(response?.payload) ? response.payload : [];
+        setInstructors(list);
+        if (response?.status !== "success" && list.length === 0) {
+          console.warn("getInstructors:", response?.msg || "Sin instructores");
         }
       } catch (error) {
-        console.error("Error al cargar instructores:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudieron cargar los instructores",
-          confirmButtonText: "Aceptar",
-          background: "#082b55",
-          color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
-        });
+        if (!cancelled) {
+          console.error("Error al cargar instructores:", error);
+          setInstructors([]);
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "No se pudieron cargar los instructores",
+            confirmButtonText: "Aceptar",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: {
+              confirmButton: "custom-swal-button",
+            },
+          });
+        }
       } finally {
-        setLoadingProfessors(false);
+        if (!cancelled) setLoadingInstructors(false);
       }
     };
 
-    loadProfessors();
+    loadInstructors();
+    return () => { cancelled = true; };
   }, []);
 
   // Función para dividir SKU en partes
@@ -122,34 +124,17 @@ export function ActualizarCurso({ course }) {
     if (course) {
       const skuParts = splitSku(course.sku);
       
-      // Manejar instructor: puede ser un array o un objeto
-      // También verificar si viene como 'professor' (legacy) o 'instructor' (nuevo)
-      let instructorData = {
-        firstName: "",
-        lastName: "",
-        profession: ""
-      };
-      
-      const instructorSource = course.instructor || course.professor;
-      
+      // Instructor: solo guardamos el ID (string o course.instructor._id si viene poblado)
+      let initialSelectedInstructorId = "";
+      const instructorSource = course.instructor;
       if (instructorSource) {
-        if (Array.isArray(instructorSource) && instructorSource.length > 0) {
-          // Si es un array, tomar el primer elemento
-          instructorData = {
-            firstName: instructorSource[0].firstName || "",
-            lastName: instructorSource[0].lastName || "",
-            profession: instructorSource[0].profession || ""
-          };
-        } else if (typeof instructorSource === 'object') {
-          // Si es un objeto, usarlo directamente
-          instructorData = {
-            firstName: instructorSource.firstName || "",
-            lastName: instructorSource.lastName || "",
-            profession: instructorSource.profession || ""
-          };
+        if (typeof instructorSource === "string") {
+          initialSelectedInstructorId = instructorSource;
+        } else if (instructorSource && typeof instructorSource === "object" && instructorSource._id) {
+          initialSelectedInstructorId = instructorSource._id;
         }
       }
-      
+
       setCourseData({
         courseId: course.courseId || course._id,
         skuPart1: skuParts.part1,
@@ -166,9 +151,16 @@ export function ActualizarCurso({ course }) {
         price: course.price || 0,
         difficulty: course.difficulty || "",
         category: course.category || "",
-        instructor: instructorData,
-        selectedInstructorId: "",
-        modules: course.modules && course.modules.length > 0 ? course.modules : [
+        selectedInstructorId: initialSelectedInstructorId,
+        modules: course.modules && course.modules.length > 0 ? course.modules.map((mod) => ({
+          ...mod,
+          lessons: (mod.lessons || []).map((lesson) => ({
+            lessonId: lesson.lessonId,
+            lessonName: lesson.lessonName || "",
+            lessonDescription: lesson.lessonDescription || "",
+            videoUrl: lesson.videoUrl || ""
+          }))
+        })) : [
           {
             moduleName: "",
             moduleDescription: "",
@@ -176,8 +168,7 @@ export function ActualizarCurso({ course }) {
               {
                 lessonName: "",
                 lessonDescription: "",
-                videoUrl: "",
-                completed: false
+                videoUrl: ""
               }
             ],
             questionBank: [
@@ -202,21 +193,18 @@ export function ActualizarCurso({ course }) {
     }
   }, [course]);
 
-  // Buscar el instructor seleccionado cuando se carguen los instructores y los datos del curso
+  // Sincronizar selectedInstructorId cuando carguen los instructores y el curso tenga instructor (id)
   useEffect(() => {
-    if (professors.length > 0 && courseData.instructor.firstName && courseData.instructor.lastName) {
-      const foundInstructor = professors.find(p => 
-        p.firstName === courseData.instructor.firstName && 
-        p.lastName === courseData.instructor.lastName
-      );
-      if (foundInstructor) {
-        setCourseData(prev => ({
-          ...prev,
-          selectedInstructorId: foundInstructor._id
-        }));
-      }
+    if (instructors.length === 0 || !course || courseData.selectedInstructorId) return;
+    const instructorId = typeof course.instructor === "string"
+      ? course.instructor
+      : course.instructor?._id;
+    if (!instructorId) return;
+    const found = instructors.find((p) => String(p._id) === String(instructorId));
+    if (found) {
+      setCourseData((prev) => ({ ...prev, selectedInstructorId: String(instructorId) }));
     }
-  }, [professors, courseData.instructor.firstName, courseData.instructor.lastName]);
+  }, [instructors, course, courseData.selectedInstructorId]);
 
   // Manejar cambios en datos básicos del curso
   const handleBasicChange = (e) => {
@@ -254,32 +242,13 @@ export function ActualizarCurso({ course }) {
     }));
   };
 
-  // Manejar cambios en la selección del instructor
+  // Manejar cambios en la selección del instructor (solo guardamos el ID)
   const handleInstructorChange = (e) => {
-    const selectedId = e.target.value;
-    const selectedInstructor = professors.find(p => p._id === selectedId);
-    
-    if (selectedInstructor) {
-      setCourseData(prev => ({
-        ...prev,
-        selectedInstructorId: selectedId,
-        professor: {
-          firstName: selectedProfessor.firstName || "",
-          lastName: selectedProfessor.lastName || "",
-          profession: selectedProfessor.profession || ""
-        }
-      }));
-    } else {
-      setCourseData(prev => ({
-        ...prev,
-        selectedInstructorId: "",
-        professor: {
-          firstName: "",
-          lastName: "",
-          profession: ""
-        }
-      }));
-    }
+    const selectedId = e.target.value || "";
+    setCourseData(prev => ({
+      ...prev,
+      selectedInstructorId: selectedId
+    }));
   };
 
   // Manejar cambios en archivos de imagen
@@ -376,8 +345,7 @@ export function ActualizarCurso({ course }) {
             {
               lessonName: "",
               lessonDescription: "",
-              videoUrl: "",
-              completed: false
+              videoUrl: ""
             }
           ],
           questionBank: [
@@ -428,8 +396,7 @@ export function ActualizarCurso({ course }) {
                 {
                   lessonName: "",
                   lessonDescription: "",
-                  videoUrl: "",
-                  completed: false
+                  videoUrl: ""
                 }
               ]
             }
@@ -629,20 +596,18 @@ export function ActualizarCurso({ course }) {
       // Mantener los IDs existentes del curso
       modules: data.modules.map((module, moduleIndex) => ({
         ...module,
-        // Mantener moduleId existente o generar uno si no existe
         moduleId: module.moduleId || `module_${moduleIndex}`,
         lessons: module.lessons.map((lesson, lessonIndex) => ({
-          ...lesson,
-          // Mantener lessonId existente o generar uno si no existe
-          lessonId: lesson.lessonId || `lesson_${moduleIndex}_${lessonIndex}`
+          lessonId: lesson.lessonId || `lesson_${moduleIndex}_${lessonIndex}`,
+          lessonName: lesson.lessonName || "",
+          lessonDescription: lesson.lessonDescription || "",
+          videoUrl: lesson.videoUrl || ""
         })),
         questionBank: module.questionBank.map((question, questionIndex) => ({
           ...question,
-          // Mantener questionId existente o generar uno si no existe
           questionId: question.questionId || `question_${moduleIndex}_${questionIndex}`,
           options: question.options.map((option, optionIndex) => ({
             ...option,
-            // Mantener optionId existente o generar uno si no existe
             optionId: option.optionId || `option_${moduleIndex}_${questionIndex}_${optionIndex}`
           }))
         }))
@@ -768,9 +733,10 @@ export function ActualizarCurso({ course }) {
         }
       }
 
-      // Mantener IDs existentes y agregar las rutas de imágenes
+      // Mantener IDs existentes; enviar instructor como _id para el backend
       const processedData = maintainExistingIds({
         ...courseData,
+        instructor: courseData.selectedInstructorId || undefined,
         bannerUrl: uploadedImages.bannerUrl,
         image: uploadedImages.image,
         shortImage: uploadedImages.shortImage
@@ -1089,21 +1055,25 @@ export function ActualizarCurso({ course }) {
             <Form.Select
               value={courseData.selectedInstructorId}
               onChange={handleInstructorChange}
-              disabled={loadingProfessors}
+              disabled={loadingInstructors}
             >
               <option value="">Seleccione un instructor</option>
-              {professors.map((instructor) => (
-                <option key={instructor._id} value={instructor._id}>
-                  {instructor.firstName} {instructor.lastName} - CI: {instructor.ci}
-                </option>
-              ))}
+              {instructors.map((instructor) => {
+                const id = instructor?._id ?? instructor?.id;
+                if (!id) return null;
+                return (
+                  <option key={id} value={id}>
+                    {instructor.firstName} {instructor.lastName} - CI: {instructor.ci}
+                  </option>
+                );
+              })}
             </Form.Select>
-            {loadingProfessors && (
+            {loadingInstructors && (
               <Form.Text className="text-muted">
                 Cargando instructores...
               </Form.Text>
             )}
-            {!loadingProfessors && professors.length === 0 && (
+            {!loadingInstructors && instructors.length === 0 && (
               <Form.Text className="text-muted">
                 No hay instructores disponibles. Crea un instructor primero.
               </Form.Text>
@@ -1327,11 +1297,11 @@ export function ActualizarCurso({ course }) {
             {isLoading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "#082b55", borderRightColor: "transparent" }}></span>
-                PROCESANDO...
+                Actualizando...
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle-fill me-2"></i> ACTUALIZAR
+                <i className="bi bi-check-circle-fill me-2"></i> Actualizar
               </>
             )}
           </Button>

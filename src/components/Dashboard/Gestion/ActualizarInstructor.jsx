@@ -224,34 +224,58 @@ export function ActualizarInstructor({ instructor }) {
   };
 
   const addCourse = () => {
-    const courseId = prompt("Ingrese el ID del curso (número):");
-    if (courseId && !isNaN(courseId)) {
-      const courseIdNum = parseInt(courseId);
-      if (!instructorData.courses.includes(courseIdNum)) {
-        setInstructorData(prev => ({
-          ...prev,
-          courses: [...prev.courses, courseIdNum]
-        }));
-      } else {
-        Swal.fire({
-          icon: "warning",
-          title: "Curso ya agregado",
-          text: "Este curso ya está en la lista",
-          confirmButtonText: "Aceptar",
-          background: "#082b55",
-          color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
-        });
+    Swal.fire({
+      title: "Agregar curso",
+      text: "Ingrese el ID del curso (o el courseId) que desea asignar al instructor:",
+      input: "text",
+      inputPlaceholder: "ID del curso",
+      inputAttributes: {
+        "aria-label": "ID del curso",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Agregar",
+      cancelButtonText: "Cancelar",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: {
+        confirmButton: "custom-swal-button",
+        cancelButton: "custom-swal-button",
+        input: "bg-dark text-white border-secondary",
+      },
+      inputValidator: (value) => {
+        const idStr = value ? String(value).trim() : "";
+        if (!idStr) return "Debe ingresar el ID del curso";
+        const normalized = instructorData.courses.map(String);
+        if (normalized.includes(idStr)) return "Este curso ya está en la lista";
+        return null;
+      },
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const idStr = String(result.value).trim();
+        if (idStr) {
+          setInstructorData(prev => ({
+            ...prev,
+            courses: [...prev.courses.map(String), idStr],
+          }));
+          Swal.fire({
+            icon: "success",
+            title: "Curso agregado",
+            text: "El curso se agregó a la lista del instructor.",
+            confirmButtonText: "Aceptar",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: { confirmButton: "custom-swal-button" },
+          });
+        }
       }
-    }
+    });
   };
 
   const removeCourse = (courseId) => {
+    const idStr = String(courseId);
     setInstructorData(prev => ({
       ...prev,
-      courses: prev.courses.filter(id => id !== courseId)
+      courses: prev.courses.filter(id => String(id) !== idStr)
     }));
   };
 
@@ -316,10 +340,11 @@ export function ActualizarInstructor({ instructor }) {
 
       const processedData = {
         ...instructorData,
-        ci: parseInt(instructorData.ci),
+        ci: parseInt(instructorData.ci, 10),
         profileImage: uploadedImagePath,
         certifications: instructorData.certifications.filter(cert => cert.trim() !== ""),
-        achievements: instructorData.achievements.filter(ach => ach.trim() !== "")
+        achievements: instructorData.achievements.filter(ach => ach.trim() !== ""),
+        courses: (instructorData.courses || []).map(id => String(id)).filter(Boolean)
       };
 
       const response = await apiService.updateInstructor(instructor._id, processedData);
@@ -328,7 +353,7 @@ export function ActualizarInstructor({ instructor }) {
         Swal.fire({
           icon: "success",
           title: "Instructor actualizado",
-          text: response.msg || "El instructor se ha actualizado exitosamente",
+          text: "El instructor se ha actualizado exitosamente",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -419,7 +444,7 @@ export function ActualizarInstructor({ instructor }) {
             {imagePreview && (
               <div className="mt-2">
                 <img 
-                  src={imagePreview} 
+                  src={imagePreview.startsWith("/api") ? imagePreview : imagePreview.startsWith("/") ? `/api${imagePreview}` : imagePreview} 
                   alt="Preview perfil" 
                   onClick={removeImage}
                   style={{ 
@@ -474,7 +499,7 @@ export function ActualizarInstructor({ instructor }) {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Certificaciones:</h5>
           <Button variant="success" size="sm" onClick={addCertification}>
-            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Certificación
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar certificación
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -507,7 +532,7 @@ export function ActualizarInstructor({ instructor }) {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Logros:</h5>
           <Button variant="success" size="sm" onClick={addAchievement}>
-            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Logro
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar logro
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -540,7 +565,7 @@ export function ActualizarInstructor({ instructor }) {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 mt-4 gap-2 gap-md-0">
           <h5 className="text-orange mb-0">Cursos asignados:</h5>
           <Button variant="success" size="sm" onClick={addCourse}>
-            <i className="bi bi-plus-circle-fill me-1"></i> Agregar Curso
+            <i className="bi bi-plus-circle-fill me-1"></i> Agregar curso
           </Button>
         </div>
         <div className="div-border-color my-3"></div>
@@ -649,7 +674,7 @@ export function ActualizarInstructor({ instructor }) {
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
           <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle-fill me-2"></i> ACTUALIZAR INSTRUCTOR
+            <i className="bi bi-check-circle-fill me-2"></i> Actualizar
           </Button>
         </div>
       </div>

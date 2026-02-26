@@ -129,7 +129,6 @@
 }
 
 .portafolio-client-card:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -245,6 +244,15 @@
 .portafolio-flag-char .twemoji-flag {
   width: 1em;
   height: 1em;
+  vertical-align: middle;
+}
+
+/* Bandera en tarjeta de cliente (32x32) */
+.portafolio-card-flag img,
+.portafolio-card-flag .twemoji-flag {
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-block;
   vertical-align: middle;
 }
 
@@ -471,6 +479,17 @@
   }
 }
 
+/* Modal certificados: en mobile, botón "Agregar certificado" debajo del título y a ancho completo */
+@media (max-width: 767.98px) {
+  .portafolio-certificates-modal-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .portafolio-certificates-modal-header .portafolio-certificates-add-btn {
+    width: 100%;
+  }
+}
+
 .portafolio-modal-filters {
   border-radius: 0.5rem;
   padding: 0.75rem 1rem;
@@ -506,6 +525,14 @@
   font-weight: 500;
 }
 
+.portafolio-modal-filter-date-range {
+  min-width: 0;
+}
+.portafolio-modal-filter-date-range .form-control {
+  flex: 1;
+  min-width: 0;
+}
+
 .portafolio-modal-pagination {
   min-width: 0;
   margin-top: 0.75rem;
@@ -513,6 +540,14 @@
 
 .portafolio-modal-pagination .pagination {
   flex-wrap: wrap;
+}
+
+/* Enlaces de acciones en modal certificados: se oscurecen al hover */
+.portafolio-cert-actions a {
+  transition: filter 0.15s ease;
+}
+.portafolio-cert-actions a:hover {
+  filter: brightness(0.8);
 }
 
 /* Botón outline naranja */
@@ -582,6 +617,24 @@
   margin-bottom: 1rem;
 }
 
+/* En mobile: centrar las cartas de clientes en pantalla */
+@media (max-width: 767.98px) {
+  .portafolio-root .gestion-cards-container {
+    justify-content: center;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    box-sizing: border-box;
+  }
+
+  .portafolio-root .gestion-cards-container > [class*="col-"] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    max-width: 100%;
+  }
+}
+
 .portafolio-root .gestion-card-content p {
   margin-bottom: 0.75rem;
 }
@@ -623,7 +676,6 @@
 .boat-card-minimal:hover {
   background-color: rgba(0, 0, 0, 0.5);
   border-color: #082b55ac;
-  transform: translateY(-5px);
   box-shadow: 0 10px 20px #051933a0;
 }
 

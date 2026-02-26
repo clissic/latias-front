@@ -5,9 +5,12 @@ import { FadeIn } from "../../FadeIn/FadeIn";
 import { useAuth } from "../../../context/AuthContext";
 import { apiService } from "../../../services/apiService";
 import { getCountryFlag, getCountry, getJurisdictions } from "../../../utils/countries";
+import { getRankByApprovedCourses } from "../../../utils/ranks";
 import "./General.css";
 
 const jurisdictions = getJurisdictions();
+const PARTIAL_AVG_MIN = 60;
+const FINAL_TEST_MIN = 70;
 
 // Misma estrategia que en Flota: Twemoji convierte el emoji de bandera en SVG
 const TwemojiFlag = ({ emoji, className = "", size = "24x24" }) => {
@@ -116,31 +119,70 @@ export function General({ user }) {
 
   // Asegurar que purchasedCourses sea un array
   const purchasedCourses = Array.isArray(user.purchasedCourses) ? user.purchasedCourses : [];
-  const approvedCourses = Array.isArray(user.approvedCourses) ? user.approvedCourses : [];
   const statistics = user.statistics || {};
   const eventsAttended = Array.isArray(statistics.eventsAttended) ? statistics.eventsAttended : [];
-  const firstCourse = purchasedCourses[0] || null;
 
-  const progress = firstCourse && Array.isArray(firstCourse.modulesCompleted)
-    ? (() => {
-        const totalLessons = firstCourse.modulesCompleted.reduce(
-          (acc, module) => acc + (module.lessons?.length || 0),
-          0
-        );
-        const completedLessons = firstCourse.modulesCompleted.reduce(
-          (acc, module) =>
-            acc + (module.lessons?.filter((lesson) => lesson.completed).length || 0),
-          0
-        );
-        return totalLessons > 0
-          ? Math.round((completedLessons / totalLessons) * 100)
-          : 0;
-      })()
-    : 0;
+  // Para "Continúa donde quedaste": último curso al que se accedió (lastAccessedAt) o, si no existe, el último asignado/inscrito (dateEnrolled más reciente)
+  const continueCourse = (() => {
+    if (purchasedCourses.length === 0) return null;
+    const withDates = purchasedCourses
+      .map((c) => ({
+        course: c,
+        lastAccessed: c.lastAccessedAt ? new Date(c.lastAccessedAt).getTime() : null,
+        dateEnrolled: c.dateEnrolled ? new Date(c.dateEnrolled).getTime() : 0,
+      }))
+      .filter((x) => x.dateEnrolled > 0 || x.lastAccessed != null);
+    if (withDates.length === 0) return purchasedCourses[0] || null;
+    withDates.sort((a, b) => {
+      const aVal = a.lastAccessed ?? a.dateEnrolled;
+      const bVal = b.lastAccessed ?? b.dateEnrolled;
+      return bVal - aVal;
+    });
+    return withDates[0].course;
+  })();
 
-  const rankImg = `/ranks/${user.rank?.title?.toLowerCase() || "default"}.webp`;
-  const purchasedCount = purchasedCourses.length;
-  const approvedCount = approvedCourses.length;
+  const getCourseProgress = (course) => {
+    const modules = Array.isArray(course?.modulesCompleted) ? course.modulesCompleted : [];
+    const totalLessons = modules.reduce(
+      (acc, module) => acc + (module.lessons?.length || 0),
+      0
+    );
+    const completedLessons = modules.reduce(
+      (acc, module) =>
+        acc + (module.lessons?.filter((lesson) => lesson.completed).length || 0),
+      0
+    );
+    const totalItems = totalLessons + 1;
+    const completedItems = completedLessons + (course?.finalTestLastScore != null ? 1 : 0);
+    return totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+  };
+
+  const progress = continueCourse ? getCourseProgress(continueCourse) : 0;
+
+  /** True solo si el curso está aprobado (100% progreso + promedio parciales >= 60% y prueba final >= 70%). */
+  const isCourseApproved = (course) => {
+    if (getCourseProgress(course) < 100) return false;
+    const modules = Array.isArray(course?.modulesCompleted) ? course.modulesCompleted : [];
+    const partialModules = modules.filter((m) => String(m?.moduleId) !== "final");
+    const scoresOnly = partialModules
+      .map((m) => m?.lastTestScore ?? null)
+      .filter((s) => s != null && typeof s === "number");
+    const avgPartial =
+      scoresOnly.length > 0
+        ? Math.round((scoresOnly.reduce((a, b) => a + b, 0) / scoresOnly.length) * 10) / 10
+        : null;
+    const finalScore = course?.finalTestLastScore ?? null;
+    return (
+      avgPartial != null &&
+      finalScore != null &&
+      avgPartial >= PARTIAL_AVG_MIN &&
+      finalScore >= FINAL_TEST_MIN
+    );
+  };
+
+  const approvedCount = purchasedCourses.filter(isCourseApproved).length;
+  const currentRank = getRankByApprovedCourses(approvedCount);
+  const purchasedCount = purchasedCourses.filter((c) => getCourseProgress(c) < 100).length;
 
   return (
     <FadeIn>
@@ -157,7 +199,7 @@ export function General({ user }) {
           <div className="d-flex justify-content-between"><p>Email:</p><strong>{user.email}</strong></div>
           <div className="d-flex justify-content-between"><p>N° teléfono:</p><strong>{user.phone || "No definido"}</strong></div>
           <div className="d-flex justify-content-between"><p>Dirección:</p><strong>{user.address?.street || "No definido"} {user.address?.number || ""}, {user.address?.city || "No definido"}</strong></div>
-          <div className="d-flex justify-content-between"><p>Estado:</p><strong>{user.status || "Estudiante"}</strong></div>
+          <div className="d-flex justify-content-between"><p>Estado:</p><strong className="text-end">{Array.isArray(user.category) && user.category.length > 0 ? user.category.join(", ") : "Estudiante"}</strong></div>
           <div className="d-flex justify-content-between align-items-center">
             <p className="mb-0">Gestor:</p>
             {hasGestor ? (
@@ -187,13 +229,13 @@ export function General({ user }) {
           <h3 className="mb-3 text-orange">Tu rango actual es:</h3>
           <div className="d-flex gap-3">
             <div className="w-50">
-              <img className="img-fluid rounded-circle" src={rankImg} alt={user.rank?.title || "Rango"} />
+              <img className="img-fluid rounded-circle" src={currentRank.imagePath} alt={currentRank.title} />
             </div>
             <div>
-              <h4><i className="bi bi-trophy-fill"></i> {user.rank?.title || "Grumete"}</h4>
-              <h6 className="fst-italic text-justify">{user.rank?.description || "Recién embarcado en la travesía del aprendizaje, aprendiendo lo básico."}</h6>
+              <h4><i className="bi bi-trophy-fill"></i> {currentRank.title}</h4>
+              <h6 className="fst-italic text-justify">{currentRank.description}</h6>
               <p>
-                Tienes <strong>{purchasedCount}</strong> curso/s activo/s y <strong>{approvedCount}</strong> curso/s aprobado/s.
+                Tienes <strong>{purchasedCount}</strong> cursos activos y <strong>{approvedCount}</strong> cursos aprobados.
               </p>
             </div>
           </div>
@@ -206,21 +248,21 @@ export function General({ user }) {
           <div className="container d-flex flex-column flex-lg-row align-items-center justify-content-between">
             <Stat icon="bi-stopwatch-fill" value={((statistics.timeConnected || 0) / 60).toFixed(1)} label="Horas conectado/a" />
             <Stat icon="bi-calendar-event-fill" value={eventsAttended.length} label="Eventos atendidos" />
-            <Stat icon="bi-award-fill" value={statistics.certificatesQuantity || 0} label="Certificados obtenidos" />
+            <Stat icon="bi-award-fill" value={statistics.certificatesQuantity ?? 0} label="Certificados obtenidos" />
           </div>
           <div className="div-border-color my-4"></div>
         </div>
 
-        {/* Continúa donde quedaste */}
+        {/* Continúa donde quedaste: último curso accedido o último asignado/inscrito */}
         <div className="text-white dashboard-item-build-general col-12">
           <h3 className="mb-3 text-orange">¡Continúa donde quedaste!</h3>
-          {firstCourse ? (
+          {continueCourse ? (
             <div className="d-flex flex-column flex-lg-row gap-4 px-2 align-items-center justify-content-between container">
               <div className="course-image">
-                <img className="img-fluid" src={firstCourse.bannerUrl} alt={firstCourse.courseName} />
+                <img className="img-fluid" src={continueCourse.bannerUrl} alt={continueCourse.courseName} />
               </div>
               <div className="col-12 col-lg-6 text-center text-lg-start">
-                <h2>{firstCourse.courseName}</h2>
+                <h2>{continueCourse.courseName}</h2>
                 <p className="d-flex align-items-center justify-content-center justify-content-lg-start gap-2">
                   <i className="bi bi-bar-chart-fill"></i> Progreso: {progress}%
                 </p>
@@ -228,7 +270,7 @@ export function General({ user }) {
                   <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
                 </div>
               </div>
-              <Link to={`/course/${firstCourse.courseId}/learn`} className="btn btn-warning col-6 col-lg-2">
+              <Link to={`/course/${continueCourse.courseId}/learn`} className="btn btn-warning col-6 col-lg-2">
                 Ir al curso
               </Link>
             </div>

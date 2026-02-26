@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Table, Pagination } from "react-bootstrap";
 import { apiService } from "../../../services/apiService";
 import Swal from "sweetalert2";
@@ -22,6 +22,7 @@ export function GestionPagos() {
     currency: "",
   });
   const [filtersApplied, setFiltersApplied] = useState({});
+  const pagosListRef = useRef(null);
 
   useEffect(() => {
     loadPayments();
@@ -145,14 +146,17 @@ export function GestionPagos() {
     return <span className={`badge bg-${c}`}>{status || "—"}</span>;
   };
 
+  const effectiveTotalPages = Math.max(1, totalPages);
+
   const handlePageChange = (p) => {
-    setPage(p);
+    setPage(Math.max(1, Math.min(p, effectiveTotalPages)));
+    pagosListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const getPageNumbers = () => {
     const max = 5;
     let start = Math.max(1, page - Math.floor(max / 2));
-    let end = Math.min(totalPages, start + max - 1);
+    let end = Math.min(effectiveTotalPages, start + max - 1);
     if (end - start < max - 1) start = Math.max(1, end - max + 1);
     const arr = [];
     for (let i = start; i <= end; i++) arr.push(i);
@@ -224,7 +228,7 @@ export function GestionPagos() {
         </div>
       ) : (
         <>
-          <div className="table-responsive">
+          <div ref={pagosListRef} className="table-responsive">
             <Table striped bordered hover variant="dark" className="table-dark">
               <thead>
                 <tr>
@@ -281,17 +285,23 @@ export function GestionPagos() {
             </Table>
           </div>
 
-          <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap gap-2">
+          <div className="d-flex flex-column align-items-center mt-4 mb-4">
             <Pagination className="mb-0">
-              <Pagination.First onClick={() => handlePageChange(1)} disabled={page === 1 || totalPages === 0} className="custom-pagination-item" />
-              <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1 || totalPages === 0} className="custom-pagination-item" />
-              {(getPageNumbers().length ? getPageNumbers() : [1]).map((n) => (
-                <Pagination.Item key={n} active={n === page} onClick={() => handlePageChange(n)} className="custom-pagination-item">{n}</Pagination.Item>
-              ))}
-              <Pagination.Next onClick={() => handlePageChange(page + 1)} disabled={page === totalPages || totalPages === 0} className="custom-pagination-item" />
-              <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={page === totalPages || totalPages === 0} className="custom-pagination-item" />
+              <Pagination.First onClick={() => handlePageChange(1)} disabled={page === 1 || effectiveTotalPages === 0} className="custom-pagination-item" />
+              <Pagination.Prev onClick={() => handlePageChange(page - 1)} disabled={page === 1 || effectiveTotalPages === 0} className="custom-pagination-item" />
+              {effectiveTotalPages > 0 ? (
+                getPageNumbers().map((n) => (
+                  <Pagination.Item key={n} active={n === page} onClick={() => handlePageChange(n)} className="custom-pagination-item">{n}</Pagination.Item>
+                ))
+              ) : (
+                <Pagination.Item active disabled className="custom-pagination-item">1</Pagination.Item>
+              )}
+              <Pagination.Next onClick={() => handlePageChange(page + 1)} disabled={page === effectiveTotalPages || effectiveTotalPages === 0} className="custom-pagination-item" />
+              <Pagination.Last onClick={() => handlePageChange(effectiveTotalPages || 1)} disabled={page === (effectiveTotalPages || 1) || effectiveTotalPages === 0} className="custom-pagination-item" />
             </Pagination>
-            <span className="text-white ms-2 small">Página {page} de {totalPages || 1} ({totalDocs} registros)</span>
+            <div className="text-white mt-2">
+              Página {page} de {effectiveTotalPages || 1} ({totalDocs} registros)
+            </div>
           </div>
         </>
       )}

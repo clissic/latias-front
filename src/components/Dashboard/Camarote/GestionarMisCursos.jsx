@@ -14,6 +14,7 @@ export function GestionarMisCursos({ user, onBack }) {
   const [filterCourseId, setFilterCourseId] = useState("");
   const [filterDifficulty, setFilterDifficulty] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [filterCurrency, setFilterCurrency] = useState("");
   const [filterPriceMin, setFilterPriceMin] = useState("");
   const [filterPriceMax, setFilterPriceMax] = useState("");
 
@@ -21,30 +22,22 @@ export function GestionarMisCursos({ user, onBack }) {
     const loadMyCourses = async () => {
       setLoading(true);
       try {
-        // Primero obtener el instructor por CI
         const instructorResponse = await apiService.getInstructorByCi(user.ci);
-        
         if (instructorResponse.status === "success" && instructorResponse.payload) {
           const instructorData = instructorResponse.payload;
           setInstructor(instructorData);
           const courseIds = instructorData.courses || [];
-
           if (courseIds.length === 0) {
             setCourses([]);
             setLoading(false);
             return;
           }
-
-          // Obtener todos los cursos y filtrar por los IDs asignados
           const allCoursesResponse = await apiService.getCourses();
-          
           if (allCoursesResponse.status === "success" && allCoursesResponse.payload) {
             const allCourses = allCoursesResponse.payload;
-            // Los courseIds del instructor son strings (courseId del curso), buscar por courseId
-            const myCourses = allCourses.filter(course => {
-              // Comparar el courseId del curso con los IDs en el array courses del instructor
+            const myCourses = allCourses.filter((course) => {
               const courseIdToCompare = course.courseId ? String(course.courseId) : null;
-              return courseIdToCompare && courseIds.some(id => String(id) === courseIdToCompare);
+              return courseIdToCompare && courseIds.some((id) => String(id) === courseIdToCompare);
             });
             setCourses(myCourses);
           } else {
@@ -55,9 +48,7 @@ export function GestionarMisCursos({ user, onBack }) {
               confirmButtonText: "Aceptar",
               background: "#082b55",
               color: "#ffffff",
-              customClass: {
-                confirmButton: "custom-swal-button",
-              },
+              customClass: { confirmButton: "custom-swal-button" },
             });
           }
         } else {
@@ -68,9 +59,7 @@ export function GestionarMisCursos({ user, onBack }) {
             confirmButtonText: "Aceptar",
             background: "#082b55",
             color: "#ffffff",
-            customClass: {
-              confirmButton: "custom-swal-button",
-            },
+            customClass: { confirmButton: "custom-swal-button" },
           });
         }
       } catch (error) {
@@ -82,20 +71,16 @@ export function GestionarMisCursos({ user, onBack }) {
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
+          customClass: { confirmButton: "custom-swal-button" },
         });
       } finally {
         setLoading(false);
       }
     };
-
     loadMyCourses();
   }, [user.ci]);
 
   const handleViewMetrics = (course) => {
-    // TODO: Implementar vista de métricas
     Swal.fire({
       icon: "info",
       title: "Métricas",
@@ -103,9 +88,7 @@ export function GestionarMisCursos({ user, onBack }) {
       confirmButtonText: "Aceptar",
       background: "#082b55",
       color: "#ffffff",
-      customClass: {
-        confirmButton: "custom-swal-button",
-      },
+      customClass: { confirmButton: "custom-swal-button" },
     });
   };
 
@@ -138,37 +121,30 @@ export function GestionarMisCursos({ user, onBack }) {
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
-        customClass: {
-          confirmButton: "custom-swal-button",
-        },
+        customClass: { confirmButton: "custom-swal-button" },
       });
     }
   };
 
   const formatPrice = (price, currency) => {
-    const currencySymbols = {
-      'USD': '$',
-      'UYU': '$U',
-      'EUR': '€',
-      'ARS': '$'
-    };
-    const symbol = currencySymbols[currency] || currency;
-    return `${symbol} ${price.toLocaleString()}`;
+    const symbols = { USD: "$", UYU: "$U", EUR: "€", ARS: "$" };
+    return `${symbols[currency] || currency} ${price.toLocaleString()}`;
   };
 
   const filteredCourses = courses.filter((course) => {
     if (filterName && !(course.courseName || "").toLowerCase().includes(filterName.toLowerCase())) return false;
-    if (filterCourseId && !(String(course.courseId || "")).toLowerCase().includes(filterCourseId.toLowerCase())) return false;
+    if (filterCourseId && !String(course.courseId || "").toLowerCase().includes(filterCourseId.toLowerCase())) return false;
     if (filterDifficulty && (course.difficulty || "") !== filterDifficulty) return false;
     if (filterCategory && !(course.category || "").toLowerCase().includes(filterCategory.toLowerCase())) return false;
+    if (filterCurrency.trim() && !(course.currency || "").toUpperCase().includes(filterCurrency.trim().toUpperCase())) return false;
     const price = course.price != null && course.price !== "" ? Number(course.price) : null;
     if (filterPriceMin.trim() !== "") {
       const min = Number(filterPriceMin);
-      if (!Number.isFinite(min) || (price == null || price < min)) return false;
+      if (!Number.isFinite(min) || price == null || price < min) return false;
     }
     if (filterPriceMax.trim() !== "") {
       const max = Number(filterPriceMax);
-      if (!Number.isFinite(max) || (price == null || price > max)) return false;
+      if (!Number.isFinite(max) || price == null || price > max) return false;
     }
     return true;
   });
@@ -178,6 +154,7 @@ export function GestionarMisCursos({ user, onBack }) {
     setFilterCourseId("");
     setFilterDifficulty("");
     setFilterCategory("");
+    setFilterCurrency("");
     setFilterPriceMin("");
     setFilterPriceMax("");
   };
@@ -193,10 +170,9 @@ export function GestionarMisCursos({ user, onBack }) {
     );
   }
 
-  // Si hay un curso seleccionado, mostrar el formulario de solicitud
   if (selectedCourse) {
     return (
-      <SolicitarModificacionCurso 
+      <SolicitarModificacionCurso
         course={selectedCourse}
         instructor={instructor}
         onBack={handleBackToTable}
@@ -206,9 +182,6 @@ export function GestionarMisCursos({ user, onBack }) {
 
   return (
     <div className="gestionar-mis-cursos-container">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4 className="text-orange mb-0">Gestionar mis cursos asignados</h4>
-      </div>
 
       {courses.length === 0 ? (
         <div className="text-center text-white py-5">
@@ -217,57 +190,107 @@ export function GestionarMisCursos({ user, onBack }) {
         </div>
       ) : (
         <>
+          {/* Filtros: mismo markup que Flota / Gestion / Certificados */}
           <div className="portafolio-filters col-12 mb-4">
             <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
             <div className="row g-2 portafolio-modal-filters">
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
                 <label className="portafolio-modal-filter-label">Nombre</label>
-                <input type="text" className="form-control portafolio-input form-control-sm" value={filterName} onChange={(e) => setFilterName(e.target.value)} />
+                <input
+                  type="text"
+                  className="form-control portafolio-input form-control-sm"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                />
               </div>
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
                 <label className="portafolio-modal-filter-label">ID curso</label>
-                <input type="text" className="form-control portafolio-input form-control-sm" value={filterCourseId} onChange={(e) => setFilterCourseId(e.target.value)} />
+                <input
+                  type="text"
+                  className="form-control portafolio-input form-control-sm"
+                  value={filterCourseId}
+                  onChange={(e) => setFilterCourseId(e.target.value)}
+                />
               </div>
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
                 <label className="portafolio-modal-filter-label">Dificultad</label>
-                <select className="form-select portafolio-input form-control-sm" value={filterDifficulty} onChange={(e) => setFilterDifficulty(e.target.value)}>
+                <select
+                  className="form-select portafolio-input form-control-sm"
+                  value={filterDifficulty}
+                  onChange={(e) => setFilterDifficulty(e.target.value)}
+                >
                   <option value="">Todas</option>
                   <option value="Principiante">Principiante</option>
                   <option value="Intermedio">Intermedio</option>
                   <option value="Avanzado">Avanzado</option>
                 </select>
               </div>
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
                 <label className="portafolio-modal-filter-label">Categoría</label>
-                <input type="text" className="form-control portafolio-input form-control-sm" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} />
+                <input
+                  type="text"
+                  className="form-control portafolio-input form-control-sm"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                />
               </div>
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                <label className="portafolio-modal-filter-label">Precio desde</label>
-                <input type="number" className="form-control portafolio-input form-control-sm" value={filterPriceMin} onChange={(e) => setFilterPriceMin(e.target.value)} min={0} step={1} placeholder="Mín" />
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Moneda</label>
+                <input
+                  type="text"
+                  className="form-control portafolio-input form-control-sm"
+                  value={filterCurrency}
+                  onChange={(e) => setFilterCurrency(e.target.value)}
+                  placeholder="USD, UYU, etc..."
+                />
               </div>
-              <div className="col-12 col-sm-6 col-md-4 portafolio-modal-filter-item">
-                <label className="portafolio-modal-filter-label">Precio hasta</label>
-                <input type="number" className="form-control portafolio-input form-control-sm" value={filterPriceMax} onChange={(e) => setFilterPriceMax(e.target.value)} min={0} step={1} placeholder="Máx" />
+              <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">
+                <label className="portafolio-modal-filter-label">Precio (desde - hasta)</label>
+                <div className="camarote-filter-precio-range">
+                  <input
+                    type="number"
+                    className="form-control portafolio-input form-control-sm"
+                    value={filterPriceMin}
+                    onChange={(e) => setFilterPriceMin(e.target.value)}
+                    min={0}
+                    step={1}
+                    placeholder="Mín"
+                  />
+                  <input
+                    type="number"
+                    className="form-control portafolio-input form-control-sm"
+                    value={filterPriceMax}
+                    onChange={(e) => setFilterPriceMax(e.target.value)}
+                    min={0}
+                    step={1}
+                    placeholder="Máx"
+                  />
+                </div>
               </div>
             </div>
-            <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3">
+            <div className="d-flex flex-wrap align-items-center justify-content-lg-end gap-2 mt-3 flota-filters-actions">
               <button type="button" className="btn btn-outline-orange btn-sm" onClick={clearFilters}>
-                <i className="bi bi-funnel me-1"></i>Borrar filtros
+                <i className="bi bi-funnel me-1"></i>Limpiar filtros
               </button>
             </div>
           </div>
 
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="text-orange mb-0">Gestionar mis cursos asignados:</h4>
+          </div>
+
+
           {filteredCourses.length === 0 ? (
             <div className="text-center text-white py-4 text-white-50">No hay cursos que coincidan con los filtros.</div>
           ) : (
-            <div className="flota-certificates-cards">
+            <div className="camarote-course-cards">
               {filteredCourses.map((course) => (
-                <div key={course._id || course.courseId} className="flota-certificate-card">
-                  <div className="flota-certificate-card-body">
-                    <div className="flota-certificate-card-main">
-                      <div className="flota-certificate-field">
-                        <span className="flota-certificate-label">ID</span>
-                        <span className="flota-certificate-value d-flex align-items-center gap-2">
+                <div key={course._id || course.courseId} className="camarote-course-card">
+                  <div className="camarote-course-card-body">
+                    <div className="camarote-course-card-main">
+                      <div className="camarote-course-field">
+                        <span className="camarote-course-label">ID</span>
+                        <span className="camarote-course-value d-flex align-items-center gap-2">
                           {course.courseId ? (
                             <>
                               <i
@@ -283,40 +306,42 @@ export function GestionarMisCursos({ user, onBack }) {
                           )}
                         </span>
                       </div>
-                      <div className="flota-certificate-field">
-                        <span className="flota-certificate-label">Nombre</span>
-                        <span className="flota-certificate-value">{course.courseName || "—"}</span>
+                      <div className="camarote-course-field">
+                        <span className="camarote-course-label">Nombre</span>
+                        <span className="camarote-course-value">{course.courseName || "—"}</span>
                       </div>
-                      <div className="flota-certificate-field">
-                        <span className="flota-certificate-label">Dificultad</span>
-                        <span className="flota-certificate-value">
-                          <span className={`badge ${
-                            course.difficulty === "Principiante" ? "bg-success" :
-                            course.difficulty === "Intermedio" ? "bg-warning" :
-                            course.difficulty === "Avanzado" ? "bg-danger" :
-                            "bg-secondary"
-                          }`}>
+                      <div className="camarote-course-field">
+                        <span className="camarote-course-label">Dificultad</span>
+                        <span className="camarote-course-value">
+                          <span
+                            className={`badge ${
+                              course.difficulty === "Principiante" ? "bg-success" :
+                              course.difficulty === "Intermedio" ? "bg-warning text-dark" :
+                              course.difficulty === "Avanzado" ? "bg-danger" :
+                              "bg-secondary"
+                            }`}
+                          >
                             {course.difficulty || "—"}
                           </span>
                         </span>
                       </div>
-                      <div className="flota-certificate-field">
-                        <span className="flota-certificate-label">Categoría</span>
-                        <span className="flota-certificate-value">{course.category || "—"}</span>
+                      <div className="camarote-course-field">
+                        <span className="camarote-course-label">Categoría</span>
+                        <span className="camarote-course-value">{course.category || "—"}</span>
                       </div>
-                      <div className="flota-certificate-field">
-                        <span className="flota-certificate-label">Precio</span>
-                        <span className="flota-certificate-value fw-bold">
+                      <div className="camarote-course-field">
+                        <span className="camarote-course-label">Precio</span>
+                        <span className="camarote-course-value fw-bold">
                           {course.price != null ? formatPrice(course.price, course.currency || "UYU") : "—"}
                         </span>
                       </div>
                     </div>
-                    <div className="flota-certificate-card-actions">
-                      <span className="action-link" onClick={() => handleViewMetrics(course)} title="Métricas">
+                    <div className="camarote-course-card-actions">
+                      <span className="camarote-action-link" onClick={() => handleViewMetrics(course)} title="Métricas">
                         <i className="bi bi-bar-chart-line-fill me-1"></i>
                         Métricas
                       </span>
-                      <span className="action-link" onClick={() => handleModifyCourse(course)} title="Modificar">
+                      <span className="camarote-action-link" onClick={() => handleModifyCourse(course)} title="Modificar">
                         <i className="bi bi-pencil-fill me-1"></i>
                         Modificar
                       </span>
@@ -328,13 +353,9 @@ export function GestionarMisCursos({ user, onBack }) {
           )}
         </>
       )}
-      
+
       <div className="mt-4 d-flex justify-content-end">
-        <Button 
-          variant="outline"
-          onClick={onBack}
-          className="btn-outline-orange"
-        >
+        <Button variant="outline" onClick={onBack} className="btn-outline-orange">
           <i className="bi bi-arrow-left-circle-fill me-2"></i>
           Volver
         </Button>

@@ -142,10 +142,12 @@ export function Flota() {
   const [loadingCertificates, setLoadingCertificates] = useState(false);
   const [showCertificateForm, setShowCertificateForm] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const flotaListRef = useRef(null);
+  const flotaCertificadosSectionRef = useRef(null);
   const boatsPerPage = 4;
   const [filterRegistro, setFilterRegistro] = useState("");
   const [filterBandera, setFilterBandera] = useState("");
-  const [filterBanderaSearch, setFilterBanderaSearch] = useState("");
+  const [filterBanderaSearch, setFilterBanderaSearch] = useState("Todas");
   const [showBanderaFilterDropdown, setShowBanderaFilterDropdown] = useState(false);
   const [filterPuertoReg, setFilterPuertoReg] = useState("");
   const [filterUbicacion, setFilterUbicacion] = useState("");
@@ -483,14 +485,22 @@ export function Flota() {
     country.code.toLowerCase().includes(countrySearch.toLowerCase())
   );
 
-  const filteredCountriesForBandera = countries.filter(country =>
-    country.name.toLowerCase().includes(filterBanderaSearch.toLowerCase()) ||
-    country.code.toLowerCase().includes(filterBanderaSearch.toLowerCase())
-  );
+  const filteredCountriesForBandera = (!filterBanderaSearch.trim() || filterBanderaSearch.trim().toLowerCase() === "todas")
+    ? countries
+    : countries.filter(country =>
+        country.name.toLowerCase().includes(filterBanderaSearch.toLowerCase()) ||
+        country.code.toLowerCase().includes(filterBanderaSearch.toLowerCase())
+      );
 
   const handleFilterBanderaSelect = (country) => {
     setFilterBandera(country.code);
     setFilterBanderaSearch(`${country.flag} ${country.name} (${country.code})`);
+    setShowBanderaFilterDropdown(false);
+  };
+
+  const handleFilterBanderaSelectTodas = () => {
+    setFilterBandera("");
+    setFilterBanderaSearch("Todas");
     setShowBanderaFilterDropdown(false);
   };
 
@@ -1165,7 +1175,7 @@ export function Flota() {
   const clearFilters = () => {
     setFilterRegistro("");
     setFilterBandera("");
-    setFilterBanderaSearch("");
+    setFilterBanderaSearch("Todas");
     setShowBanderaFilterDropdown(false);
     setFilterPuertoReg("");
     setFilterUbicacion("");
@@ -1177,7 +1187,7 @@ export function Flota() {
   };
 
   // Funciones de paginación
-  const totalPages = Math.ceil(filteredFleet.length / boatsPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredFleet.length / boatsPerPage));
   const indexOfLastBoat = currentPage * boatsPerPage;
   const indexOfFirstBoat = indexOfLastBoat - boatsPerPage;
   const currentBoats = filteredFleet.slice(indexOfFirstBoat, indexOfLastBoat);
@@ -1200,7 +1210,7 @@ export function Flota() {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    flotaListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   // Resetear página cuando cambia la flota o los filtros
@@ -1213,7 +1223,7 @@ export function Flota() {
     setCurrentCertPage(1);
   }, [boatCertificates.length]);
 
-  const totalCertPages = Math.ceil(boatCertificates.length / certsPerPage);
+  const totalCertPages = Math.max(1, Math.ceil(boatCertificates.length / certsPerPage));
   const indexOfLastCert = currentCertPage * certsPerPage;
   const indexOfFirstCert = indexOfLastCert - certsPerPage;
   const currentCertificates = boatCertificates.slice(indexOfFirstCert, indexOfLastCert);
@@ -1232,6 +1242,7 @@ export function Flota() {
 
   const handleCertPageChange = (page) => {
     setCurrentCertPage(page);
+    flotaCertificadosSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   if (loading) {
@@ -1241,7 +1252,7 @@ export function Flota() {
           <div className="spinner-border text-orange mb-3" role="status">
             <span className="visually-hidden">Cargando flota...</span>
           </div>
-          <p className="text-white mb-0 display-6">Cargando su flota...</p>
+          <p className="text-white mt-2 mb-0">Cargando tu flota...</p>
         </div>
       </FadeIn>
     );
@@ -1251,11 +1262,11 @@ export function Flota() {
     <>
       <FadeIn>
         <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
-          <div className="col-12 d-flex justify-content-between align-items-center">
+          <div className="col-12 d-flex justify-content-between align-items-center flota-title-row">
             <h2 className="mb-0 text-orange">Mi Flota:</h2>
             {!showAddForm && !selectedBoat && (
               <button
-                className="btn btn-warning"
+                className="btn btn-warning flota-add-boat-btn"
                 onClick={handleOpenAddForm}
               >
                 <i className="bi bi-plus-circle-fill me-2"></i>
@@ -1269,7 +1280,7 @@ export function Flota() {
             // Vista de detalles del barco
             <div className="col-12">
               <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0 text-orange"><i className="bi bi-postcard-fill me-2 text-orange"></i> {selectedBoat.name} <small className="text-muted">({selectedBoat.registrationNumber})</small></h2>
+                <h2 className="mb-0 text-orange">{selectedBoat.name} <small className="text-muted">({selectedBoat.registrationNumber})</small></h2>
               </div>
               
               {/* Datos del barco */}
@@ -1300,10 +1311,10 @@ export function Flota() {
                       <strong className="text-orange">Número de Registro:</strong> <span className="text-white">{selectedBoat.registrationNumber}</span>
                     </p>
                   </div>
-                  <div className="col-12 col-md-6">
-                    <p className="mb-2">
+                  <div className="col-12 col-md-6 d-flex align-items-center">
+                    <p className="mb-2 d-flex align-items-center f-row">
                       <i className="bi bi-flag-fill me-2 text-orange"></i>
-                      <strong className="text-orange">Bandera:</strong> <span className="text-white"><CountryFlag countryCode={selectedBoat.registrationCountry} /></span>
+                      <strong className="text-orange">Bandera:</strong> <span className="text-white d-flex align-items-center"><CountryFlag countryCode={selectedBoat.registrationCountry} /></span>
                     </p>
                   </div>
                   <div className="col-12 col-md-6">
@@ -1368,15 +1379,15 @@ export function Flota() {
               </div>
 
               {/* Certificados del barco: título y botón fuera, tarjetas debajo */}
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h4 className="text-orange mb-0">Certificados del barco:</h4>
+              <div ref={flotaCertificadosSectionRef} className="d-flex justify-content-between mb-3 flota-certificados-header">
+                <h4 className="text-orange mb-0 me-2">Certificados del barco:</h4>
                 {selectedBoat.fleetItem?.status === 'approved' && (
                   <button
-                    className="btn btn-warning"
+                    className="btn btn-warning flota-add-boat-btn"
                     onClick={() => handleAddCertificate(selectedBoat._id)}
                   >
                     <i className="bi bi-plus-circle-fill me-2"></i>
-                    Agregar Certificado
+                    Agregar certificado
                   </button>
                 )}
               </div>
@@ -1388,7 +1399,7 @@ export function Flota() {
                   </div>
                 </div>
               ) : boatCertificates.length === 0 ? (
-                <div className="flota-certificates-empty text-center py-5">
+                <div className="text-center py-5">
                   <i className="bi bi-file-earmark-x-fill text-orange mb-3" style={{ fontSize: "4rem" }}></i>
                   <p className="text-white">Este barco no tiene certificados registrados</p>
                 </div>
@@ -1551,13 +1562,13 @@ export function Flota() {
               {showCertificateForm && (
                 <div className="flota-form-container mt-4">
                   <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h4 className="text-orange mb-0">{editingCertificateId ? "Modificar Certificado" : "Agregar Certificado"}</h4>
+                    <h4 className="text-orange mb-0">{editingCertificateId ? "Modificar certificado" : "Agregar certificado"}</h4>
                     <button
                       type="button"
                       className="btn btn-sm btn-secondary"
                       onClick={handleCancelCertificateForm}
                     >
-                      <i className="bi bi-x-lg"></i>
+                      <i className="bi bi-x-lg" style={{width: "auto"}}></i>
                     </button>
                   </div>
                   <div className="div-border-color my-3"></div>
@@ -1663,7 +1674,7 @@ export function Flota() {
                     <div className="d-flex justify-content-end gap-3">
                       <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-danger"
                         onClick={handleCancelCertificateForm}
                         disabled={submittingCertificate}
                       >
@@ -1712,7 +1723,7 @@ export function Flota() {
                     className="btn btn-sm btn-secondary"
                     onClick={handleCancelForm}
                   >
-                    <i className="bi bi-x-lg"></i>
+                    <i className="bi bi-x-lg" style={{width: "auto"}}></i>
                   </button>
                 </div>
                 <div className="div-border-color my-3"></div>
@@ -1919,7 +1930,7 @@ export function Flota() {
                   <div className="d-flex justify-content-end gap-3">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-danger"
                       onClick={handleCancelForm}
                       disabled={submitting}
                     >
@@ -1933,11 +1944,11 @@ export function Flota() {
                       {submitting ? (
                         <>
                           <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", borderColor: "#082b55", borderRightColor: "transparent" }}></span>
-                          PROCESANDO...
+                          Procesando...
                         </>
                       ) : (
                         <>
-                          <i className="bi bi-check-circle-fill me-2"></i> SOLICITAR REGISTRO
+                          <i className="bi bi-check-circle-fill me-2"></i> Solicitar registro
                         </>
                       )}
                     </button>
@@ -1987,6 +1998,12 @@ export function Flota() {
                         )}
                         {showBanderaFilterDropdown && (
                           <div className="country-dropdown">
+                            <div
+                              className="country-option"
+                              onClick={handleFilterBanderaSelectTodas}
+                            >
+                              <span className="country-name text-white-50">Todas</span>
+                            </div>
                             {filteredCountriesForBandera.length > 0 ? (
                               filteredCountriesForBandera.map((country) => (
                                 <div
@@ -2055,8 +2072,12 @@ export function Flota() {
                   </div>
                 </div>
 
+                <div ref={flotaListRef}>
                 {filteredFleet.length === 0 ? (
-                  <div className="text-center text-white py-4 text-white-50">No hay barcos que coincidan con los filtros.</div>
+                  <div className="text-center text-white py-5">
+                    <i className="bi bi-inbox-fill text-orange" style={{ fontSize: "4rem" }}></i>
+                    <p className="mt-3">No hay barcos que coincidan con los filtros.</p>
+                  </div>
                 ) : (
                 <div className="row g-3">
                   {currentBoats.map((fleetItem, index) => {
@@ -2065,6 +2086,7 @@ export function Flota() {
 
                   return (
                     <div key={fleetItem._id || index} className="col-12 col-lg-6">
+                      <FadeIn inline>
                       <div className="boat-card-minimal">
                         {boat.image && (
                           <div className="boat-card-image">
@@ -2085,9 +2107,9 @@ export function Flota() {
                                 </p>
                               </div>
                               <div className="col-6">
-                                <p className="mb-1">
+                                <p className="mb-1 d-flex align-items-center">
                                   <i className="bi bi-flag-fill me-1 text-orange"></i>
-                                  <small><strong>Bandera:</strong> <CountryFlag countryCode={boat.registrationCountry} /></small>
+                                  <small class="d-flex align-items-center"><strong>Bandera:</strong> <CountryFlag countryCode={boat.registrationCountry} /></small>
                                 </p>
                               </div>
                               <div className="col-6">
@@ -2148,30 +2170,31 @@ export function Flota() {
                           </div>
                           <div className="boat-card-actions mt-3 d-flex gap-2">
                             <button
-                              className="btn btn-sm btn-warning flex-fill"
+                              className="btn btn-sm btn-warning boat-card-btn-details"
                               onClick={() => handleShowDetails(boat._id || fleetItem.boatId, fleetItem)}
                             >
                               <i className="bi bi-info-circle-fill me-2"></i>
                               Más detalles
                             </button>
                             <button
-                              className="btn btn-sm btn-danger flex-fill"
+                              className="btn btn-sm btn-danger boat-card-btn-remove"
                               onClick={() => handleRemoveBoat(boat._id || fleetItem.boatId)}
                             >
-                              <i className="bi bi-trash-fill me-2"></i>
-                              Remover
+                              <i className="bi bi-trash-fill"></i>
                             </button>
                           </div>
                         </div>
                       </div>
+                      </FadeIn>
                     </div>
                   );
                   })}
                 </div>
                 )}
+                </div>
 
                 {/* Paginación */}
-                <div className="d-flex flex-column align-items-center mt-4">
+                <div className="d-flex flex-column align-items-center mt-4 mb-4">
                   <Pagination className="mb-0">
                     <Pagination.First
                       onClick={() => handlePageChange(1)}
@@ -2265,7 +2288,7 @@ export function Flota() {
           </Modal.Body>
           <Modal.Footer className="general-modal-footer">
             <Button
-              variant="secondary"
+              variant="danger"
               onClick={() => setShowCertificateTypeModal(false)}
               disabled={submittingCertificateRequest}
             >

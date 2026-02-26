@@ -8,16 +8,47 @@
   padding: 0;
 }
 
+/* Wrapper de la imagen para posicionar la badge */
+.cursos-card-image-wrapper {
+  flex-shrink: 0;
+}
+
 /* Imagen arriba, rectangular como en CartaCurso (sin redondear) */
 .cursos-card-image-wrap {
   width: 100%;
   height: 180px;
   min-height: 180px;
-  flex-shrink: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Badge de estado sobre la imagen (arriba a la derecha) */
+.cursos-card-status-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.cursos-card-status-badge--aprobado {
+  background-color: #198754;
+}
+
+.cursos-card-status-badge--reprobado {
+  background-color: #dc3545;
+}
+
+.cursos-card-status-badge--en_curso {
+  background-color: #0d6efd;
 }
 
 .cursos-card-body {
@@ -114,8 +145,55 @@
   background-color: orange;
 }
 
-.cursos-progreso-pagination {
-  padding-bottom: 1rem;
+/* Paginación: mismo estilo que Flota */
+.custom-pagination-item {
+  margin: 0 2px !important;
+}
+
+.custom-pagination-item a,
+.custom-pagination-item.page-link {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid #082b557c !important;
+  color: #ffffff !important;
+  padding: 0.5rem 0.75rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-pagination-item:hover:not(.disabled) a,
+.custom-pagination-item:focus:not(.disabled) a,
+.custom-pagination-item:hover:not(.disabled) .page-link,
+.custom-pagination-item:focus:not(.disabled) .page-link {
+  background-color: rgba(255, 165, 0, 0.2) !important;
+  border-color: rgba(255, 165, 0, 0.5) !important;
+  color: #ffa500 !important;
+  transform: translateY(-2px) !important;
+}
+
+.custom-pagination-item.active a,
+.custom-pagination-item.active .page-link {
+  background-color: rgba(255, 165, 0, 0.8) !important;
+  border-color: rgba(255, 165, 0, 0.8) !important;
+  color: #082b55 !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 4px rgba(255, 165, 0, 0.3) !important;
+}
+
+.custom-pagination-item.disabled a,
+.custom-pagination-item.disabled .page-link {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  cursor: not-allowed !important;
+  opacity: 0.5 !important;
+}
+
+.custom-pagination-item.disabled:hover a,
+.custom-pagination-item.disabled:hover .page-link {
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(8, 43, 85, 0.3) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+  opacity: 0.5 !important;
 }
 
 /* Filtros: mismo estilo que Mi flota (portafolio-filters) */
@@ -202,4 +280,58 @@
 
 .d-flex.flota-filters-actions {
   margin-top: 0.75rem;
+}
+
+/* Modal de resumen del curso (mismo estilo que CursoVista) */
+.curso-vista-summary-modal .modal-content,
+.curso-vista-summary-modal-content {
+  background: linear-gradient(180deg, #0a1628 0%, #082b55 100%);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 0.5rem;
+  color: #fff;
+}
+.curso-vista-summary-modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1rem 1.25rem;
+}
+.curso-vista-summary-modal-header .btn-close {
+  filter: invert(1);
+}
+.curso-vista-summary-modal-body {
+  padding: 1.25rem 1.5rem;
+}
+.curso-vista-summary-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.curso-vista-summary-list li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.curso-vista-summary-list li:last-child {
+  border-bottom: none;
+}
+.curso-vista-summary-verdict.passed {
+  padding: 0.75rem;
+  background: rgba(25, 135, 84, 0.15);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(25, 135, 84, 0.4);
+}
+.curso-vista-summary-verdict.failed {
+  padding: 0.75rem;
+  background: rgba(220, 53, 69, 0.12);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(220, 53, 69, 0.4);
+}
+
+.curso-vista-summary-modal .btn-orange {
+  background-color: #ffa500;
+  border-color: #ffa500;
+  color: #082b55;
+}
+.curso-vista-summary-modal .btn-orange:hover {
+  background-color: #ff8c00;
+  border-color: #ff8c00;
+  color: #082b55;
 }

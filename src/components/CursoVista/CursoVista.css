@@ -653,3 +653,14 @@
   border-radius: 0.5rem;
   border: 1px solid rgba(220, 53, 69, 0.4);
 }
+
+.curso-vista-summary-modal .btn-orange {
+  background-color: #ffa500;
+  border-color: #ffa500;
+  color: #082b55;
+}
+.curso-vista-summary-modal .btn-orange:hover {
+  background-color: #ff8c00;
+  border-color: #ff8c00;
+  color: #082b55;
+}

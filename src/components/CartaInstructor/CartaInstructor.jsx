@@ -1,5 +1,13 @@
 import "./CartaInstructor.css";
 
+// Las imágenes de instructor están en el backend; path relativo debe pedirse vía /api para el proxy
+function instructorImageSrc(img) {
+  if (!img) return "";
+  if (img.startsWith("http") || img.startsWith("data:")) return img;
+  if (img.startsWith("/api")) return img; // ya tiene /api, no duplicar
+  return img.startsWith("/") ? `/api${img}` : `/api/${img}`;
+}
+
 export function CartaInstructor({
   id,
   profileImage,
@@ -30,7 +38,7 @@ export function CartaInstructor({
     <div key={(firstName || "") + (id || "")} className="card cartaInstructor bg-transparent text-white">
       {profileImage && (
         <div className="overflow-hidden">
-          <img src={profileImage} className="card-img-top" alt={(firstName || "") + " profile pic"} />
+          <img src={instructorImageSrc(profileImage)} className="card-img-top" alt={(firstName || "") + " profile pic"} />
         </div>
       )}
       <div className="card-body d-flex flex-column justify-content-between">

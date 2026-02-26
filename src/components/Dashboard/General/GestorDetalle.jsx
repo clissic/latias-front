@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Modal, Pagination } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
@@ -229,7 +229,7 @@ export function GestorDetalle({ user: userProp }) {
     setFilterShip("");
   };
 
-  const totalRequestPages = Math.ceil(filteredRequests.length / requestsPerPage);
+  const totalRequestPages = Math.max(1, Math.ceil(filteredRequests.length / requestsPerPage));
   const indexOfLastRequest = currentRequestPage * requestsPerPage;
   const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
   const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
@@ -246,8 +246,11 @@ export function GestorDetalle({ user: userProp }) {
     return pageNumbers;
   };
 
+  const gestorDetalleListRef = useRef(null);
+
   const handleRequestPageChange = (page) => {
     setCurrentRequestPage(page);
+    gestorDetalleListRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const managerCountryName = getCountry(user?.manager?.address?.country)?.name ?? user?.manager?.address?.country ?? "No definido";
@@ -479,10 +482,10 @@ export function GestorDetalle({ user: userProp }) {
           <h2 className="mb-0 text-orange">Mi gestor:</h2>
           <Button
             variant="warning"
-            className="btn btn-warning"
+            className="btn btn-warning gestor-detalle-btn-solicitud-especial"
             onClick={handleOpenSpecialRequestModal}
           >
-            <i className="bi bi-plus-circle-fill me-2"></i>Realizar solicitud especial
+            <i className="bi bi-plus-circle-fill me-2"></i>Solicitud especial
           </Button>
         </div>
         <div className="col-12"><div className="div-border-color my-4"></div></div>
@@ -578,13 +581,15 @@ export function GestorDetalle({ user: userProp }) {
                 <div className="spinner-border text-warning" role="status" />
                 <p className="mt-2 mb-0 text-white">Cargando solicitudes...</p>
               </div>
-            ) : filteredRequests.length === 0 ? (
+            ) : (
+              <>
+                <div ref={gestorDetalleListRef}>
+            {filteredRequests.length === 0 ? (
               <div className="gestor-detalle-empty">
                 <i className="bi bi-inbox-fill d-block"></i>
                 <p className="mb-0">No hay solicitudes que coincidan con los filtros.</p>
               </div>
             ) : (
-              <>
                 <div className="flota-certificates-cards">
                   {currentRequests.map((req) => (
                   <div key={req._id} className="flota-certificate-card">
@@ -653,9 +658,11 @@ export function GestorDetalle({ user: userProp }) {
                   </div>
                   ))}
                 </div>
+            )}
+                </div>
                 {/* Paginación solicitudes (siempre visible) */}
                 {!loading && (
-                  <div className="d-flex flex-column align-items-center mt-4 flota-certificates-pagination">
+                  <div className="d-flex flex-column align-items-center mt-4 mb-4 flota-certificates-pagination">
                     <Pagination className="mb-0">
                       <Pagination.First
                         onClick={() => handleRequestPageChange(1)}

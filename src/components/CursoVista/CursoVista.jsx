@@ -463,6 +463,29 @@ export function CursoVista() {
     apiService.recordCourseAccess(userId, courseId).then(() => refreshUser?.()).catch(() => {});
   }, [courseId, user?.id, user?._id, hasPurchasedCourse, refreshUser]);
 
+  // Contador de tiempo conectado: sumar minutos mientras el usuario está en la vista del curso
+  useEffect(() => {
+    const userId = user?.id ?? user?._id;
+    if (!courseId || !userId || !hasPurchasedCourse) return;
+
+    let intervalId = null;
+
+    const tick = async () => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      try {
+        await apiService.addConnectedTime(1); // 1 minuto
+      } catch (e) {
+        console.error("Error al actualizar tiempo conectado:", e);
+      }
+    };
+
+    intervalId = setInterval(tick, 60_000);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [courseId, user?.id, user?._id, hasPurchasedCourse]);
+
   // Al entrar a la vista, dejar el primer módulo abierto con las lecciones desplegadas en el sidebar
   useEffect(() => {
     if (displayModules.length > 0 && expandedModuleId == null) {

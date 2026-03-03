@@ -142,7 +142,7 @@ export function CursoDetalle() {
             <FadeIn>
                 <div className="row">
                     <div className="col-12 col-lg-4">
-                        <h5 className="text-orange mb-4">Detalles del curso:</h5>
+                        <h5 className="text-orange mb-3">Detalles del curso:</h5>
                         <div className="d-flex flex-column flex-sm-row flex-lg-column justify-content-between">
                             <div className="d-flex gap-3 align-items-center mb-3">
                                 <i className="display-6 text-orange bi bi-calendar-week-fill"></i>
@@ -168,7 +168,7 @@ export function CursoDetalle() {
                         </div>
                     </div>
                     <div className="col-12 col-sm-6 col-lg-4">
-                        <h5 className="text-orange mb-4">Descripción:</h5>
+                        <h5 className="text-orange mb-3">Descripción:</h5>
                         <p className="text-white text-justify">{course.longDescription}</p>
                     </div>
                     <div className="col-12 col-sm-6 col-lg-4">
@@ -180,7 +180,7 @@ export function CursoDetalle() {
                 <div className="row gap-4 mt-5 justify-content-between">
                     {(course.instructor && (instructor || loadingInstructor)) && (
                         <div className="col-12 col-sm-4 col-lg-3">
-                            <h5 className="text-orange mb-4">Instructor:</h5>
+                            <h5 className="text-orange mb-3">Instructor:</h5>
                             {loadingInstructor ? (
                                 <div className="card cartaInstructor bg-transparent text-white border-secondary">
                                     <div className="card-body d-flex align-items-center justify-content-center py-4">
@@ -204,7 +204,7 @@ export function CursoDetalle() {
                         </div>
                     )}
                     <div className="col-12 col-sm-7 col-lg-4">
-                        <h5 className="text-orange mb-4">Programa:</h5>
+                        <h5 className="text-orange mb-3">Programa:</h5>
                         <div className="text-white">
                             {course.modules && course.modules.length > 0 ? (
                                 <ProgramaCurso
@@ -228,11 +228,11 @@ export function CursoDetalle() {
                     </div>
                     <div className="col-12 col-lg-4">
                         <div>
-                            <h5 className="text-orange mb-4">Modalidad:</h5>
-                            <p className="text-white text-justify">El curso se desarrolla con clases pregrabadas, permitiendo flexibilidad en el aprendizaje. A lo largo del programa, los estudiantes completarán pruebas intermedias para evaluar su progreso. Al finalizar, deberán aprobar un examen final. Al completar el 100% del curso, se emitirá un certificado oficial de finalización.</p>
+                            <h5 className="text-orange mb-3">Modalidad:</h5>
+                            <p className="text-white text-justify mb-4">El curso se desarrolla con clases pregrabadas, permitiendo flexibilidad en el aprendizaje. A lo largo del programa, los estudiantes completarán pruebas intermedias para evaluar su progreso. Al finalizar, deberán aprobar un examen final. Al completar el 100% del curso, se emitirá un certificado oficial de finalización.</p>
                         </div>
                         <div>
-                            <h5 className="text-orange mb-4">Certificación:</h5>
+                            <h5 className="text-orange mb-3">Certificación:</h5>
                             <p className="text-white text-justify">Al finalizar el curso habiendo cumplido con todas las exigencias, se hace entrega de un certificado.</p>
                             <img className="img-fluid rounded" src="/Certificado-muestra.webp" alt="cert" />
                         </div>

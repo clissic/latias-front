@@ -153,6 +153,15 @@ class ApiService {
     return response.json();
   }
 
+  /** Incrementa statistics.timeConnected (minutos) del usuario autenticado. */
+  async addConnectedTime(minutes) {
+    const response = await this.request("/users/statistics/time-connected", {
+      method: "POST",
+      body: JSON.stringify({ minutes }),
+    });
+    return response.json();
+  }
+
   /** Actualiza el progreso de una lección (marcar completada). Recalcula el progreso del curso. */
   async updateUserLessonProgress(userId, courseId, moduleId, lessonId, completed) {
     const response = await this.request(

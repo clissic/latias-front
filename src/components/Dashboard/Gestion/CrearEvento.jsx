@@ -293,6 +293,7 @@ export function CrearEvento() {
               value={eventData.title}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -304,6 +305,7 @@ export function CrearEvento() {
               value={eventData.date}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -315,6 +317,7 @@ export function CrearEvento() {
               value={eventData.hour}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -327,6 +330,7 @@ export function CrearEvento() {
               onChange={handleChange}
               min="0"
               step="0.01"
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -336,6 +340,7 @@ export function CrearEvento() {
               name="currency"
               value={eventData.currency}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             >
               <option value="USD">USD</option>
               <option value="UYU">UYU</option>
@@ -362,6 +367,7 @@ export function CrearEvento() {
               name="image"
               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
               onChange={handleImageChange}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">
               Formatos aceptados: JPG, PNG, GIF, WEBP. Tamaño recomendado: 500x500px. Tamaño máximo: 5MB.
@@ -402,6 +408,7 @@ export function CrearEvento() {
               onChange={handleAvailableTicketsChange}
               min="0"
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -414,6 +421,7 @@ export function CrearEvento() {
               onChange={handleChange}
               min="0"
               disabled
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">Se inicializa en 0</Form.Text>
           </Form.Group>
@@ -427,6 +435,7 @@ export function CrearEvento() {
               onChange={handleChange}
               min="0"
               disabled
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">Se calcula automáticamente</Form.Text>
           </Form.Group>
@@ -445,6 +454,7 @@ export function CrearEvento() {
               name="location.city"
               value={eventData.location.city}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -455,6 +465,7 @@ export function CrearEvento() {
               name="location.country"
               value={eventData.location.country}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -465,6 +476,7 @@ export function CrearEvento() {
               name="location.address"
               value={eventData.location.address}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -482,6 +494,7 @@ export function CrearEvento() {
               name="speaker.firstName"
               value={eventData.speaker.firstName}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -492,6 +505,7 @@ export function CrearEvento() {
               name="speaker.lastName"
               value={eventData.speaker.lastName}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -502,6 +516,7 @@ export function CrearEvento() {
               name="speaker.ci"
               value={eventData.speaker.ci}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -512,6 +527,7 @@ export function CrearEvento() {
               name="speaker.profession"
               value={eventData.speaker.profession}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -522,6 +538,7 @@ export function CrearEvento() {
               name="speaker.position"
               value={eventData.speaker.position}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -532,9 +549,7 @@ export function CrearEvento() {
         <div className="d-flex justify-content-end">
           <Button 
             variant="warning" 
-            type="submit" 
-            size="lg" 
-            className="px-5"
+            type="submit"
             disabled={isLoading}
           >
             {isLoading ? (

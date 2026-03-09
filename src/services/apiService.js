@@ -244,6 +244,15 @@ class ApiService {
     return response.json();
   }
 
+  /** Crear preferencia de pago para plan premium (gestoría). planId: 'basico' | 'navegante' | 'capitan'. Redirigir a payload.initPoint o payload.sandboxInitPoint. */
+  async createPremiumPreference(planId, userId) {
+    const response = await this.request('/mercadopago/create-premium-preference', {
+      method: 'POST',
+      body: JSON.stringify({ planId, userId }),
+    });
+    return response.json();
+  }
+
   async getPaymentMethods() {
     const response = await this.request('/mercadopago/payment-methods', {
       method: 'GET',
@@ -265,7 +274,43 @@ class ApiService {
     return response.json();
   }
 
-  /** Pagos procesados (solo Administrador). Params: page, limit, paymentId, courseId, courseName, userEmail, userId, paymentStatus, currency */
+  /**
+   * [SOLO DESARROLLO] Simula la activación de un plan premium sin pasar por Mercado Pago.
+   * Activa el plan en el usuario. Redirigir a /payment/success?dev=1&type=premium.
+   */
+  async devCompletePremium(planId, userId) {
+    const response = await this.request('/mercadopago/dev-complete-premium', {
+      method: 'POST',
+      body: JSON.stringify({ planId, userId }),
+    });
+    return response.json();
+  }
+
+  /**
+   * [SOLO DESARROLLO] Simula el pago del trámite de flota sin pasar por Mercado Pago.
+   * Crea el ship-request, registra el pago y redirige a /payment/success?dev=1&type=procedure.
+   */
+  async devCompleteProcedure(pendingId, userId) {
+    const response = await this.request('/mercadopago/dev-complete-procedure', {
+      method: 'POST',
+      body: JSON.stringify({ pendingId, userId }),
+    });
+    return response.json();
+  }
+
+  /**
+   * Canjear curso gratuito (plan gestoría). Verifica freeCourses en backend, asigna curso y resta 1.
+   * Redirigir a /payment/success?free=1 tras éxito.
+   */
+  async redeemFreeCourse(courseId, userId) {
+    const response = await this.request('/mercadopago/redeem-free-course', {
+      method: 'POST',
+      body: JSON.stringify({ courseId, userId }),
+    });
+    return response.json();
+  }
+
+  /** Pagos procesados (solo Administrador). Params: page, limit, paymentId, courseId, courseName, itemType, userEmail, userId, paymentStatus, currency */
   async getProcessedPayments(params = {}) {
     const query = new URLSearchParams(params).toString();
     const url = query ? `/mercadopago/processed-payments?${query}` : '/mercadopago/processed-payments';
@@ -473,6 +518,54 @@ class ApiService {
   async getTicketLogs(limit = 100) {
     const response = await this.request(`/events/logs?limit=${limit}`, {
       method: 'GET',
+    });
+    return response.json();
+  }
+
+  // ========== CÓDIGOS DE DESCUENTO (Administrador) ==========
+
+  async getAllDiscountCodes() {
+    const response = await this.request('/discount-codes', { method: 'GET' });
+    return response.json();
+  }
+
+  async getDiscountCodeById(id) {
+    const response = await this.request(`/discount-codes/id/${id}`, { method: 'GET' });
+    return response.json();
+  }
+
+  async getDiscountCodeByCode(code) {
+    const response = await this.request(`/discount-codes/code/${encodeURIComponent(code)}`, { method: 'GET' });
+    return response.json();
+  }
+
+  async createDiscountCode(data) {
+    const response = await this.request('/discount-codes/create', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+
+  async updateDiscountCode(id, data) {
+    const response = await this.request(`/discount-codes/update/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  }
+
+  async deleteDiscountCode(id) {
+    const response = await this.request(`/discount-codes/delete/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  }
+
+  async applyDiscountCode(code) {
+    const response = await this.request('/discount-codes/apply', {
+      method: 'POST',
+      body: JSON.stringify({ code: String(code).trim() }),
     });
     return response.json();
   }
@@ -800,6 +893,27 @@ class ApiService {
     const response = await this.request('/ship-requests/certificate', {
       method: 'POST',
       body: JSON.stringify({ shipId, certificate, types, notes: notes || undefined }),
+    });
+    return response.json();
+  }
+
+  /**
+   * Solicitud de trámite de flota (Mi gestor). Si procedures > 0 descuenta 1 y envía email al gestor.
+   * Si procedures === 0 devuelve { requiresPayment: true, initPoint } para redirigir al checkout (30 USD).
+   * @param {string} shipId
+   * @param {Object} certificate - { certificateType, number, issueDate, expirationDate }
+   * @param {string[]} procedureTypes - ["Emisión inicial", "Renovación por vencimiento", "Inspección intermedia", "Asesoramiento técnico/legal"]
+   * @param {string} [notes]
+   */
+  async createFlotaProcedureRequest(shipId, certificate, procedureTypes, notes = null) {
+    const response = await this.request('/ship-requests/flota', {
+      method: 'POST',
+      body: JSON.stringify({
+        shipId,
+        certificate,
+        procedureTypes,
+        notes: notes && String(notes).trim() ? String(notes).trim() : undefined,
+      }),
     });
     return response.json();
   }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Pagination, Modal, Form, Button } from "react-bootstrap";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { apiService } from "../../../services/apiService";
@@ -516,13 +517,17 @@ export function Flota() {
   const handleSubmitBoatRequest = async (e) => {
     e.preventDefault();
     
-    // Validar campos requeridos
+    // Validar campos requeridos (incl. Puerto actual, Calado y Desplazamiento)
+    const hasCurrentPort = formData.currentPort != null && String(formData.currentPort).trim() !== "";
+    const hasDepth = formData.depth != null && formData.depth !== "";
+    const hasDisplacement = formData.displacement != null && formData.displacement !== "";
     if (!formData.name || !formData.registrationNumber || !formData.registrationCountry || 
-        !formData.registrationPort || !formData.boatType || !formData.lengthOverall || !formData.beam) {
+        !formData.registrationPort || !hasCurrentPort || !formData.boatType || !formData.lengthOverall || !formData.beam ||
+        !hasDepth || !hasDisplacement) {
       Swal.fire({
         icon: "warning",
         title: "Campos requeridos",
-        text: "Por favor completa todos los campos obligatorios",
+        text: "Por favor completa todos los campos obligatorios (incl. Puerto actual, Calado y Desplazamiento)",
         confirmButtonText: "Aceptar",
         background: "#082b55",
         color: "#ffffff",
@@ -731,7 +736,7 @@ export function Flota() {
       number: "",
       issueDate: "",
       expirationDate: "",
-      annualInspection: "no_realizada",
+      annualInspection: "No corresponde",
       observations: "",
       pdfFile: "",
     });
@@ -1245,6 +1250,27 @@ export function Flota() {
     flotaCertificadosSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  if (!user?.premium?.isActive) {
+    return (
+      <FadeIn>
+        <div className="text-white col-12 col-lg-11 d-flex flex-column align-items-between container">
+          <div className="col-12">
+            <h2 className="mb-0 text-orange">Flota:</h2>
+          </div>
+          <div className="div-border-color my-4"></div>
+          <div className="text-center my-5 d-flex flex-column align-items-center col-12">
+            <i className="bi bi-water mb-4 custom-display-1 text-orange" aria-hidden="true" />
+            <h3>Debes comprar un plan de gestoría para utilizar esta sección.</h3>
+            <p className="fst-italic">Tu flota espera órdenes.</p>
+            <Link to="/gestoria#planes" className="btn btn-warning my-3">
+              Ver planes
+            </Link>
+          </div>
+        </div>
+      </FadeIn>
+    );
+  }
+
   if (loading) {
     return (
       <FadeIn>
@@ -1341,7 +1367,7 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <p className="mb-2">
                         <i className="bi bi-rulers me-2 text-orange"></i>
-                        <strong className="text-orange">Eslora:</strong> <span className="text-white">{selectedBoat.lengthOverall}m</span>
+                        <strong className="text-orange">Eslora:</strong> <span className="text-white">{selectedBoat.lengthOverall} mts.</span>
                       </p>
                     </div>
                   )}
@@ -1349,7 +1375,7 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <p className="mb-2">
                         <i className="bi bi-rulers me-2 text-orange"></i>
-                        <strong className="text-orange">Manga:</strong> <span className="text-white">{selectedBoat.beam}m</span>
+                        <strong className="text-orange">Manga:</strong> <span className="text-white">{selectedBoat.beam} mts.</span>
                       </p>
                     </div>
                   )}
@@ -1357,7 +1383,7 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <p className="mb-2">
                         <i className="bi bi-rulers me-2 text-orange"></i>
-                        <strong className="text-orange">Puntal:</strong> <span className="text-white">{selectedBoat.depth}m</span>
+                        <strong className="text-orange">Puntal:</strong> <span className="text-white">{selectedBoat.depth} mts.</span>
                       </p>
                     </div>
                   )}
@@ -1365,7 +1391,7 @@ export function Flota() {
                     <div className="col-12 col-md-6">
                       <p className="mb-2">
                         <i className="bi bi-speedometer me-2 text-orange"></i>
-                        <strong className="text-orange">Desplazamiento:</strong> <span className="text-white">{selectedBoat.displacement} Tons.</span>
+                        <strong className="text-orange">Desplazamiento:</strong> <span className="text-white">{selectedBoat.displacement} tons.</span>
                       </p>
                     </div>
                   )}
@@ -1636,9 +1662,9 @@ export function Flota() {
                           onChange={handleCertificateInputChange}
                           required
                         >
-                          <option value="no_realizada">No realizada</option>
-                          <option value="realizada">Realizada</option>
-                          <option value="no_corresponde">No corresponde</option>
+                          <option value="No corresponde">No corresponde</option>
+                          <option value="No realizada">No realizada</option>
+                          <option value="Realizada">Realizada</option>
                         </select>
                       </div>
                       <div className="col-12 col-md-6">
@@ -1821,13 +1847,14 @@ export function Flota() {
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Puerto Actual</label>
+                      <label className="flota-form-label">Puerto Actual <span className="text-danger">*</span></label>
                       <input
                         type="text"
                         className="form-control flota-form-control"
                         name="currentPort"
                         value={formData.currentPort}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                     <div className="col-12 col-md-6">
@@ -1846,7 +1873,7 @@ export function Flota() {
                       </select>
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Eslora (metros) <span className="text-danger">*</span></label>
+                      <label className="flota-form-label">Eslora (mts.) <span className="text-danger">*</span></label>
                       <input
                         type="number"
                         step="0.01"
@@ -1859,7 +1886,7 @@ export function Flota() {
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Manga (metros) <span className="text-danger">*</span></label>
+                      <label className="flota-form-label">Manga (mts.) <span className="text-danger">*</span></label>
                       <input
                         type="number"
                         step="0.01"
@@ -1872,7 +1899,7 @@ export function Flota() {
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Calado (metros)</label>
+                      <label className="flota-form-label">Calado (mts.) <span className="text-danger">*</span></label>
                       <input
                         type="number"
                         step="0.01"
@@ -1881,10 +1908,11 @@ export function Flota() {
                         name="depth"
                         value={formData.depth}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="flota-form-label">Desplazamiento (Tons.)</label>
+                      <label className="flota-form-label">Desplazamiento (tons.) <span className="text-danger">*</span></label>
                       <input
                         type="number"
                         step="0.01"
@@ -1893,6 +1921,7 @@ export function Flota() {
                         name="displacement"
                         value={formData.displacement}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                     <div className="col-12 col-md-6">
@@ -1956,7 +1985,7 @@ export function Flota() {
                 </form>
               </div>
             ) : fleet.length === 0 ? (
-              <div className="text-center my-5 d-flex flex-column align-items-center col-11">
+              <div className="text-center my-5 d-flex flex-column align-items-center col-12">
                 <i className="bi bi-water mb-4 custom-display-1 text-orange"></i>
                 <h3>Tu flota está vacía</h3>
                 <p className="fst-italic">
@@ -2134,7 +2163,7 @@ export function Flota() {
                                 <div className="col-6">
                                   <p className="mb-1">
                                     <i className="bi bi-rulers me-1 text-orange"></i>
-                                    <small><strong>Eslora:</strong> {boat.lengthOverall}m</small>
+                                    <small><strong>Eslora:</strong> {boat.lengthOverall} mts.</small>
                                   </p>
                                 </div>
                               )}
@@ -2142,7 +2171,7 @@ export function Flota() {
                                 <div className="col-6">
                                   <p className="mb-1">
                                     <i className="bi bi-rulers me-1 text-orange"></i>
-                                    <small><strong>Manga:</strong> {boat.beam}m</small>
+                                    <small><strong>Manga:</strong> {boat.beam} mts.</small>
                                   </p>
                                 </div>
                               )}
@@ -2150,14 +2179,14 @@ export function Flota() {
                                 <div className="col-6">
                                   <p className="mb-1">
                                     <i className="bi bi-rulers me-1 text-orange"></i>
-                                    <small><strong>Puntal:</strong> {boat.depth}m</small>
+                                    <small><strong>Puntal:</strong> {boat.depth} mts.</small>
                                   </p>
                                 </div>
                               )}
                               <div className="col-6">
                                 <p className="mb-1">
                                   <i className="bi bi-speedometer me-1 text-orange"></i>
-                                  <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} Tons.` : "—"}</small>
+                                  <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} tons.` : "—"}</small>
                                 </p>
                               </div>
                               <div className="col-6">

@@ -71,6 +71,7 @@ export function CrearCurso() {
   // Estado para la lista de instructores
   const [instructors, setInstructors] = useState([]);
   const [loadingInstructors, setLoadingInstructors] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Cargar instructores al montar el componente
   useEffect(() => {
@@ -607,6 +608,7 @@ export function CrearCurso() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       // Subir imágenes si hay archivos
       let uploadedImages = {
@@ -743,6 +745,8 @@ export function CrearCurso() {
           confirmButton: "custom-swal-button",
         },
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -766,6 +770,7 @@ export function CrearCurso() {
                 maxLength={3}
                 style={{ textTransform: 'uppercase' }}
                 required
+                className="bg-dark text-white border-secondary"
               />
               <span className="text-white">-</span>
               <Form.Control
@@ -777,6 +782,7 @@ export function CrearCurso() {
                 maxLength={3}
                 style={{ textTransform: 'uppercase' }}
                 required
+                className="bg-dark text-white border-secondary"
               />
               <span className="text-white">-</span>
               <Form.Control
@@ -788,6 +794,7 @@ export function CrearCurso() {
                 maxLength={3}
                 pattern="[0-9]*"
                 required
+                className="bg-dark text-white border-secondary"
               />
             </div>
             <Form.Text className="text-muted">
@@ -803,6 +810,7 @@ export function CrearCurso() {
               value={courseData.courseName}
               onChange={handleBasicChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -816,6 +824,7 @@ export function CrearCurso() {
               min="0"
               step="0.01"
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -825,6 +834,7 @@ export function CrearCurso() {
               name="currency"
               value={courseData.currency}
               onChange={handleBasicChange}
+              className="bg-dark text-white border-secondary"
             >
               <option value="UYU" disabled>UYU</option>
               <option value="USD">USD</option>
@@ -839,6 +849,7 @@ export function CrearCurso() {
               value={courseData.category}
               onChange={handleBasicChange}
               required
+              className="bg-dark text-white border-secondary"
             >
               <option value="">Seleccione una categoría</option>
               <option value="Astronómica">Astronómica</option>
@@ -853,6 +864,7 @@ export function CrearCurso() {
               name="difficulty"
               value={courseData.difficulty}
               onChange={handleBasicChange}
+              className="bg-dark text-white border-secondary"
             >
               <option value="">Seleccione dificultad</option>
               <option value="Principiante">Principiante</option>
@@ -872,6 +884,7 @@ export function CrearCurso() {
                 min="0"
                 step="0.5"
                 placeholder="0"
+                className="bg-dark text-white border-secondary"
               />
               <span className="text-white">horas</span>
             </div>
@@ -886,6 +899,7 @@ export function CrearCurso() {
               value={courseData.shortDescription}
               onChange={handleBasicChange}
               maxLength={SHORT_DESCRIPTION_MAX}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted text-end d-block">
               {SHORT_DESCRIPTION_MAX - (courseData.shortDescription?.length || 0)} caracteres restantes
@@ -901,6 +915,7 @@ export function CrearCurso() {
               value={courseData.longDescription}
               onChange={handleBasicChange}
               maxLength={LONG_DESCRIPTION_MAX}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted text-end d-block">
               {LONG_DESCRIPTION_MAX - (courseData.longDescription?.length || 0)} caracteres restantes
@@ -914,6 +929,7 @@ export function CrearCurso() {
               accept="image/*"
               data-image-type="bannerUrl"
               onChange={(e) => handleImageChange('bannerUrl', e)}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted d-block mb-2">
               Resolución óptima: 1920x1080px
@@ -961,6 +977,7 @@ export function CrearCurso() {
               accept="image/*"
               data-image-type="image"
               onChange={(e) => handleImageChange('image', e)}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted d-block mb-2">
               Resolución óptima: 800x600px
@@ -1008,6 +1025,7 @@ export function CrearCurso() {
               accept="image/*"
               data-image-type="shortImage"
               onChange={(e) => handleImageChange('shortImage', e)}
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted d-block mb-2">
               Resolución óptima: 400x300px
@@ -1124,6 +1142,7 @@ export function CrearCurso() {
                   value={module.moduleName}
                   onChange={(e) => handleModuleChange(moduleIndex, e)}
                   required
+                  className="bg-dark text-white border-secondary"
                 />
               </Form.Group>
 
@@ -1135,6 +1154,7 @@ export function CrearCurso() {
                   name="moduleDescription"
                   value={module.moduleDescription}
                   onChange={(e) => handleModuleChange(moduleIndex, e)}
+                  className="bg-dark text-white border-secondary"
                 />
               </Form.Group>
             </div>
@@ -1175,6 +1195,7 @@ export function CrearCurso() {
                         value={lesson.lessonName}
                         onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, e)}
                         required
+                        className="bg-dark text-white border-secondary"
                       />
                     </Form.Group>
                     <Form.Group className="col-12 col-md-6">
@@ -1184,6 +1205,7 @@ export function CrearCurso() {
                         name="lessonDescription"
                         value={lesson.lessonDescription}
                         onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, e)}
+                        className="bg-dark text-white border-secondary"
                       />
                     </Form.Group>
                     <Form.Group className="col-12 col-md-6">
@@ -1193,6 +1215,7 @@ export function CrearCurso() {
                         name="videoUrl"
                         value={lesson.videoUrl}
                         onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, e)}
+                        className="bg-dark text-white border-secondary"
                       />
                     </Form.Group>
                   </div>
@@ -1237,6 +1260,7 @@ export function CrearCurso() {
                       value={question.questionText}
                       onChange={(e) => handleQuestionChange(moduleIndex, questionIndex, e)}
                       required
+                      className="bg-dark text-white border-secondary"
                     />
                   </Form.Group>
 
@@ -1263,6 +1287,7 @@ export function CrearCurso() {
                               value={option.optionText}
                               onChange={(e) => handleOptionChange(moduleIndex, questionIndex, optionIndex, e)}
                               required
+                              className="bg-dark text-white border-secondary"
                             />
                           </Form.Group>
                           <Form.Group className="col-12 col-md-auto d-flex align-items-end">
@@ -1301,8 +1326,17 @@ export function CrearCurso() {
       <div className="form-section mt-4">
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
-          <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle-fill me-2"></i> CREAR CURSO
+          <Button variant="warning" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                Creando...
+              </>
+            ) : (
+              <>
+                <i className="bi bi-check-circle-fill me-2"></i> CREAR CURSO
+              </>
+            )}
           </Button>
         </div>
       </div>

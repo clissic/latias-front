@@ -1,10 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FadeIn } from "../FadeIn/FadeIn";
 import { apiService } from "../../services/apiService";
+import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import "./Gestoria.css";
 
 export function Gestoria() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +22,21 @@ export function Gestoria() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleContratarPlan = (planId) => {
+    if (!user?.id && !user?._id) {
+      Swal.fire({
+        icon: "warning",
+        title: "Inicia sesión",
+        text: "Debes iniciar sesión para contratar un plan.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+      });
+      return;
+    }
+    navigate(`/gestoria/buy/${planId}`);
   };
 
   const handleSubmit = async (e) => {
@@ -251,6 +270,143 @@ export function Gestoria() {
         </div>
       </div>
       <FadeIn>
+        <div className="gestoria-planes-section container mb-5">
+          <h2 className="gestoria-planes-title text-white mb-5" id="planes">
+            <i className="bi bi-stars me-2 text-orange" aria-hidden="true" />
+            PLANES
+          </h2>
+          <div className="row g-5 gestoria-planes-grid w-100 mx-0">
+            <div className="col-12 col-lg-4">
+              <div className="gestoria-plan-card">
+                <div>
+                  <i className="bi bi-briefcase-fill color-bronze icon-gestoria-plan" aria-hidden="true" />
+                  <h2 className="">BÁSICO</h2>
+                  <p className="gestoria-plan-card-title">Control náutico</p>
+                  <div className="mt-3 d-flex align-items-center justify-content-center frow gap-2 flex-wrap">
+                    <h1 className="text-orange gestoria-plan-card-price">249</h1>
+                    <div className="d-flex flex-column justify-content-start">
+                      <h5 className="text-white-50 mb-0">USD $</h5>
+                      <h6 className="text-white-50 mb-0">/ año</h6>
+                    </div>
+                  </div>
+                  <p className="text-white-50">IVA Inc.</p>
+                  <div className="gestoria-plan-incluye mt-3 text-center w-100">
+                    <h6 className="text-orange mb-2">Incluye:</h6>
+                    <ul className="gestoria-plan-list mb-0">
+                      <li className="mb-2">Contratación de gestor</li>
+                      <li className="mb-2">Registro de hasta dos embarcaciones</li>
+                      <li className="mb-2">Dos trámites anuales incluidos*</li>
+                      <li className="mb-2">Monitoreo de vencimientos</li>
+                      <li className="mb-2">Recordatorios automáticos</li>
+                      <li className="mb-2">Preparación de inspecciones</li>
+                      <li className="mb-2">Asesoramiento legal y técnico</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Atención preferencial</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Cursos gratis a elección</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Gestión de incidentes marítimos</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Asistencia en caso de infracciones</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-center my-3">
+                  <button
+                    type="button"
+                    className="btn btn-orange fw-bold"
+                    onClick={() => handleContratarPlan("basico")}
+                  >
+                    CONTRATAR
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-lg-4">
+              <div className="gestoria-plan-card">
+                <div>
+                  <i className="bi bi-briefcase-fill color-silver icon-gestoria-plan" aria-hidden="true" />
+                  <h2 className="">NAVEGANTE</h2>
+                  <p className="gestoria-plan-card-title">Gestión activa</p>
+                  <div className="mt-3 d-flex align-items-center justify-content-center frow gap-2 flex-wrap">
+                    <h1 className="text-orange gestoria-plan-card-price">359</h1>
+                    <div className="d-flex flex-column justify-content-start">
+                      <h5 className="text-white-50 mb-0">USD $</h5>
+                      <h6 className="text-white-50 mb-0">/ año</h6>
+                    </div>
+                  </div>
+                  <p className="text-white-50">IVA Inc.</p>
+                  <div className="gestoria-plan-incluye mt-3 text-center w-100">
+                    <h6 className="text-orange mb-2">Incluye:</h6>
+                    <ul className="gestoria-plan-list mb-0">
+                      <li className="mb-2">Contratación de gestor</li>
+                      <li className="mb-2">Registro de hasta cinco embarcaciones</li>
+                      <li className="mb-2">Cinco trámites anuales incluidos*</li>
+                      <li className="mb-2">Monitoreo de vencimientos</li>
+                      <li className="mb-2">Recordatorios automáticos</li>
+                      <li className="mb-2">Preparación de inspecciones</li>
+                      <li className="mb-2">Asesoramiento legal y técnico</li>
+                      <li className="mb-2">Atención preferencial</li>
+                      <li className="mb-2">Un curso gratis a elección</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Gestión de incidentes marítimos</li>
+                      <li className="mb-2 text-white-50 text-decoration-line-through">Asistencia en caso de infracciones</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-center my-3">
+                  <button
+                    type="button"
+                    className="btn btn-orange fw-bold"
+                    onClick={() => handleContratarPlan("navegante")}
+                  >
+                    CONTRATAR
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-lg-4">
+              <div className="gestoria-plan-card">
+                <div>
+                  <i className="bi bi-briefcase-fill color-gold icon-gestoria-plan" aria-hidden="true" />
+                  <h2 className="">CAPITÁN</h2>
+                  <p className="gestoria-plan-card-title">Gestión total</p>
+                  <div className="mt-3 d-flex align-items-center justify-content-center frow gap-2 flex-wrap">
+                    <h1 className="text-orange gestoria-plan-card-price">699</h1>
+                    <div className="d-flex flex-column justify-content-start">
+                      <h5 className="text-white-50 mb-0">USD $</h5>
+                      <h6 className="text-white-50 mb-0">/ año</h6>
+                    </div>
+                  </div>
+                  <p className="text-white-50">IVA Inc.</p>
+                  <div className="gestoria-plan-incluye mt-3 text-center w-100">
+                    <h6 className="text-orange mb-2">Incluye:</h6>
+                    <ul className="gestoria-plan-list mb-0">
+                      <li className="mb-2">Contratación de gestor</li>
+                      <li className="mb-2">Registro de hasta ocho embarcaciones</li>
+                      <li className="mb-2">Diez trámites anuales incluidos*</li>
+                      <li className="mb-2">Monitoreo de vencimientos</li>
+                      <li className="mb-2">Recordatorios automáticos</li>
+                      <li className="mb-2">Preparación de inspecciones</li>
+                      <li className="mb-2">Asesoramiento legal y técnico</li>
+                      <li className="mb-2">Dos cursos gratis a elección</li>
+                      <li className="mb-2">Atención preferencial y prioritaria</li>
+                      <li className="mb-2">Gestión de incidentes marítimos</li>
+                      <li className="mb-2">Asistencia en caso de infracciones</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="d-flex justify-content-center my-3">
+                  <button
+                    type="button"
+                    className="btn btn-orange fw-bold"
+                    onClick={() => handleContratarPlan("capitan")}
+                  >
+                    CONTRATAR
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="text-white-50 text-center my-2">*Una vez utilizados los trámites incluidos en el plan, los siguientes trámites se abonarán individualmente.</p>
+      </FadeIn>
+      <FadeIn>
         <div id="contact">
           <h2 className="text-orange my-5">CONTACTANOS</h2>
           <div className="contact-div row">
@@ -259,11 +415,13 @@ export function Gestoria() {
               onSubmit={handleSubmit}
             >
               <div className="input-v1">
-                <label htmlFor="name">Nombre: </label>
+                <label htmlFor="gestoria-contact-name">Nombre: </label>
                 <input
+                  id="gestoria-contact-name"
                   className="text-white"
                   type="text"
                   name="name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   required
@@ -271,11 +429,13 @@ export function Gestoria() {
                 />
               </div>
               <div className="input-v1">
-                <label htmlFor="email">Email: </label>
+                <label htmlFor="gestoria-contact-email">Email: </label>
                 <input
+                  id="gestoria-contact-email"
                   className="text-white"
                   type="email"
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
@@ -283,10 +443,12 @@ export function Gestoria() {
                 />
               </div>
               <div className="input-textarea">
-                <label htmlFor="body">Texto: </label>
+                <label htmlFor="gestoria-contact-body">Texto: </label>
                 <textarea
+                  id="gestoria-contact-body"
                   className="text-white"
                   name="body"
+                  autoComplete="off"
                   cols="80"
                   rows="2"
                   placeholder="Quiero saber más sobre..."

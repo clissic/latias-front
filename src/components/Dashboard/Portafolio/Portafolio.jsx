@@ -835,8 +835,7 @@ export function Portafolio({ user }) {
             <div className="col-12">
               <h4 className="text-orange mb-2">Datos:</h4>
               <div className="text-white row g-2 mb-0 portafolio-detail-row">
-                <div className="col-12 col-md-6"><span className="text-white-50">Nombre:</span> {selectedClient.firstName || "—"}</div>
-                <div className="col-12 col-md-6"><span className="text-white-50">Apellido:</span> {selectedClient.lastName || "—"}</div>
+                <div className="col-12 col-md-6"><span className="text-white-50">Nombre:</span> {selectedClient.firstName || "—"} {selectedClient.lastName || "—"}</div>
                 <div className="col-12 col-md-6 d-flex align-items-center"><span className="text-white-50">País:</span> {countryClient ? <><TwemojiFlag emoji={countryClient.flag} className="mx-1 portafolio-flag-char align-items-center" size="16x16" />{countryClient.name}</> : (selectedClient.address?.country || "—")}</div>
                 <div className="col-12 col-md-6"><span className="text-white-50">Email:</span> {selectedClient.email || "—"}</div>
                 <div className="col-12 col-md-6"><span className="text-white-50">Teléfono:</span> {selectedClient.phone || "—"}</div>
@@ -1009,7 +1008,7 @@ export function Portafolio({ user }) {
                                 <div className="col-6">
                                   <p className="mb-1">
                                     <i className="bi bi-speedometer me-1 text-orange"></i>
-                                    <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} Tons.` : "—"}</small>
+                                    <small><strong>Desplazamiento:</strong> {boat.displacement != null && boat.displacement !== "" ? `${boat.displacement} tons.` : "—"}</small>
                                   </p>
                                 </div>
                                 <div className="col-6">
@@ -1324,9 +1323,9 @@ export function Portafolio({ user }) {
                         onChange={handleCertificateInputChangePortafolio}
                         required
                       >
-                        <option value="no_realizada">No realizada</option>
-                        <option value="realizada">Realizada</option>
-                        <option value="no_corresponde">No corresponde</option>
+                        <option value="No corresponde">No corresponde</option>
+                        <option value="No realizada">No realizada</option>
+                        <option value="Realizada">Realizada</option>
                       </select>
                     </div>
                     <div className="col-12 col-md-6">

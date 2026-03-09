@@ -26,7 +26,20 @@ const TwemojiFlag = ({ emoji, className = "", size = "22x22" }) => {
 };
 
 const STATUS_OPTIONS = ["", "Pendiente", "En progreso", "Completado", "Rechazado"];
-const TYPE_OPTIONS = ["", "Renovación", "Preparación", "Asesoramiento", "Solicitud especial"];
+const TYPE_OPTIONS = ["", "Renovación", "Preparación", "Asesoramiento", "Solicitud especial", "Solicitud de flota"];
+const REQUEST_TYPE_OPTIONS = [
+  { value: "", label: "Selecciona el tipo de solicitud" },
+  { value: "Solicitud de flota", label: "Solicitud de flota" },
+  { value: "Solicitud de gente de mar", label: "Solicitud de gente de mar" },
+  { value: "Solicitud especial", label: "Solicitud especial" },
+];
+const PROCEDURE_MAIN_OPTIONS = [
+  "Emisión inicial",
+  "Renovación por vencimiento",
+  "Inspección intermedia",
+  "Otro",
+];
+const PROCEDURE_ASESORAMIENTO = "Asesoramiento técnico/legal";
 
 function formatDate(dateStr) {
   if (!dateStr) return "—";
@@ -50,10 +63,20 @@ export function GestorDetalle({ user: userProp }) {
   const [detailModal, setDetailModal] = useState(null);
   const [currentRequestPage, setCurrentRequestPage] = useState(1);
   const requestsPerPage = 2;
-  const [showSpecialRequestModal, setShowSpecialRequestModal] = useState(false);
-  const [submittingSpecialRequest, setSubmittingSpecialRequest] = useState(false);
+  const [showSolicitarTramiteModal, setShowSolicitarTramiteModal] = useState(false);
+  const [requestType, setRequestType] = useState(""); // "Solicitud de flota" | "Solicitud de gente de mar" | "Solicitud especial"
+  const [submittingTramite, setSubmittingTramite] = useState(false);
   const [fleet, setFleet] = useState([]);
   const [loadingFleet, setLoadingFleet] = useState(false);
+  const [certificatesForBoat, setCertificatesForBoat] = useState([]);
+  const [loadingCertificates, setLoadingCertificates] = useState(false);
+  const [flotaForm, setFlotaForm] = useState({
+    shipId: "",
+    certificateId: "",
+    certificate: null,
+    procedureTypes: [],
+    notes: "",
+  });
   const [specialRequestForm, setSpecialRequestForm] = useState({
     shipId: "",
     body: "",
@@ -91,15 +114,162 @@ export function GestorDetalle({ user: userProp }) {
     }
   };
 
-  const handleOpenSpecialRequestModal = () => {
-    setShowSpecialRequestModal(true);
+  const handleOpenSolicitarTramiteModal = () => {
+    setShowSolicitarTramiteModal(true);
+    setRequestType("");
+    setFlotaForm({ shipId: "", certificateId: "", certificate: null, procedureTypes: [], notes: "" });
+    setCertificatesForBoat([]);
     setSpecialRequestForm({ shipId: "", body: "" });
     loadFleet();
   };
 
-  const handleCloseSpecialRequestModal = () => {
-    setShowSpecialRequestModal(false);
+  const handleCloseSolicitarTramiteModal = () => {
+    setShowSolicitarTramiteModal(false);
+    setRequestType("");
+    setFlotaForm({ shipId: "", certificateId: "", certificate: null, procedureTypes: [], notes: "" });
+    setCertificatesForBoat([]);
     setSpecialRequestForm({ shipId: "", body: "" });
+  };
+
+  useEffect(() => {
+    if (!flotaForm.shipId || requestType !== "Solicitud de flota") {
+      setCertificatesForBoat([]);
+      setFlotaForm((f) => ({ ...f, certificateId: "", certificate: null }));
+      return;
+    }
+    let cancelled = false;
+    setLoadingCertificates(true);
+    apiService.getCertificatesByBoat(flotaForm.shipId).then((response) => {
+      if (cancelled) return;
+      setLoadingCertificates(false);
+      if (response.status === "success" && Array.isArray(response.payload)) {
+        setCertificatesForBoat(response.payload);
+      } else {
+        setCertificatesForBoat([]);
+      }
+      setFlotaForm((f) => ({ ...f, certificateId: "", certificate: null }));
+    }).catch(() => {
+      if (!cancelled) setLoadingCertificates(false);
+      setCertificatesForBoat([]);
+    });
+    return () => { cancelled = true; };
+  }, [flotaForm.shipId, requestType]);
+
+  const setMainProcedure = (main) => {
+    setFlotaForm((f) => ({
+      ...f,
+      procedureTypes: main
+        ? [main].concat((f.procedureTypes || []).includes(PROCEDURE_ASESORAMIENTO) ? [PROCEDURE_ASESORAMIENTO] : [])
+        : (f.procedureTypes || []).filter((p) => p === PROCEDURE_ASESORAMIENTO),
+    }));
+  };
+
+  const setAsesoramientoChecked = (checked) => {
+    setFlotaForm((f) => {
+      const current = f.procedureTypes || [];
+      const main = PROCEDURE_MAIN_OPTIONS.find((p) => current.includes(p));
+      return {
+        ...f,
+        procedureTypes: (main ? [main] : []).concat(checked ? [PROCEDURE_ASESORAMIENTO] : []),
+      };
+    });
+  };
+
+  const handleFlotaSubmit = async () => {
+    if (!flotaForm.shipId) {
+      Swal.fire({
+        title: "Error",
+        text: "Selecciona el barco",
+        icon: "error",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (!flotaForm.certificate || !flotaForm.certificateId) {
+      Swal.fire({
+        title: "Error",
+        text: "Selecciona el certificado",
+        icon: "error",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (!flotaForm.procedureTypes || flotaForm.procedureTypes.length === 0) {
+      Swal.fire({
+        title: "Error",
+        text: "Selecciona al menos un tipo de trámite",
+        icon: "error",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+
+    setSubmittingTramite(true);
+    try {
+      const cert = flotaForm.certificate;
+      const certificatePayload = {
+        certificateType: cert.certificateType,
+        number: cert.number,
+        issueDate: cert.issueDate,
+        expirationDate: cert.expirationDate,
+      };
+      const res = await apiService.createFlotaProcedureRequest(
+        flotaForm.shipId,
+        certificatePayload,
+        flotaForm.procedureTypes,
+        flotaForm.notes?.trim() || null
+      );
+
+      if (res.status === "success") {
+        if (res.requiresPayment && res.preferenceId) {
+          handleCloseSolicitarTramiteModal();
+          navigate("/payment/procedure", {
+            state: {
+              preferenceId: res.preferenceId,
+              requestId: res.requestId,
+            },
+          });
+          return;
+        }
+        Swal.fire({
+          title: "Solicitud enviada",
+          text: "Tu solicitud de trámite de flota ha sido enviada a tu gestor.",
+          icon: "success",
+          timer: 2000,
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+        handleCloseSolicitarTramiteModal();
+        loadRequests();
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: res.msg || "No se pudo enviar la solicitud",
+          icon: "error",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Error",
+        text: e?.message || "Error al enviar la solicitud",
+        icon: "error",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } finally {
+      setSubmittingTramite(false);
+    }
   };
 
   const handleSpecialRequestSubmit = async () => {
@@ -110,9 +280,7 @@ export function GestorDetalle({ user: userProp }) {
         icon: "error",
         background: "#082b55",
         color: "#ffffff",
-        customClass: {
-          confirmButton: "custom-swal-button",
-        },
+        customClass: { confirmButton: "custom-swal-button" },
       });
       return;
     }
@@ -123,14 +291,12 @@ export function GestorDetalle({ user: userProp }) {
         icon: "error",
         background: "#082b55",
         color: "#ffffff",
-        customClass: {
-          confirmButton: "custom-swal-button",
-        },
+        customClass: { confirmButton: "custom-swal-button" },
       });
       return;
     }
 
-    setSubmittingSpecialRequest(true);
+    setSubmittingTramite(true);
     try {
       const notes = `${specialRequestForm.body.trim()}`;
       const res = await apiService.createShipRequest({
@@ -148,11 +314,9 @@ export function GestorDetalle({ user: userProp }) {
           timer: 2000,
           background: "#082b55",
           color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
+          customClass: { confirmButton: "custom-swal-button" },
         });
-        handleCloseSpecialRequestModal();
+        handleCloseSolicitarTramiteModal();
         loadRequests();
       } else {
         Swal.fire({
@@ -161,9 +325,7 @@ export function GestorDetalle({ user: userProp }) {
           icon: "error",
           background: "#082b55",
           color: "#ffffff",
-          customClass: {
-            confirmButton: "custom-swal-button",
-          },
+          customClass: { confirmButton: "custom-swal-button" },
         });
       }
     } catch (e) {
@@ -173,12 +335,10 @@ export function GestorDetalle({ user: userProp }) {
         icon: "error",
         background: "#082b55",
         color: "#ffffff",
-        customClass: {
-          confirmButton: "custom-swal-button",
-        },
+        customClass: { confirmButton: "custom-swal-button" },
       });
     } finally {
-      setSubmittingSpecialRequest(false);
+      setSubmittingTramite(false);
     }
   };
 
@@ -483,9 +643,9 @@ export function GestorDetalle({ user: userProp }) {
           <Button
             variant="warning"
             className="btn btn-warning gestor-detalle-btn-solicitud-especial"
-            onClick={handleOpenSpecialRequestModal}
+            onClick={handleOpenSolicitarTramiteModal}
           >
-            <i className="bi bi-plus-circle-fill me-2"></i>Solicitud especial
+            <i className="bi bi-plus-circle-fill me-2"></i>Solicitar trámite
           </Button>
         </div>
         <div className="col-12"><div className="div-border-color my-4"></div></div>
@@ -496,10 +656,7 @@ export function GestorDetalle({ user: userProp }) {
             <h4 className="text-orange mb-2">Datos:</h4>
             <div className="text-white row g-2 mb-0 portafolio-detail-row">
               <div className="col-12 col-md-6">
-                <span className="text-white-50">Nombre:</span> {user.manager?.firstName ?? "—"}
-              </div>
-              <div className="col-12 col-md-6">
-                <span className="text-white-50">Apellido:</span> {user.manager?.lastName ?? "—"}
+                <span className="text-white-50">Nombre:</span> {user.manager?.firstName ?? "—"} {user.manager?.lastName ?? "—"}
               </div>
               <div className="col-12 col-md-6 d-flex align-items-center">
                 <span className="text-white-50">País:</span> 
@@ -819,71 +976,197 @@ export function GestorDetalle({ user: userProp }) {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal Solicitud Especial */}
-      <Modal show={showSpecialRequestModal} onHide={handleCloseSpecialRequestModal} centered className="general-modal-dark" contentClassName="general-modal-content">
+      {/* Modal Solicitar trámite */}
+      <Modal show={showSolicitarTramiteModal} onHide={handleCloseSolicitarTramiteModal} centered className="general-modal-dark" contentClassName="general-modal-content">
         <Modal.Header closeButton className="general-modal-header">
-          <Modal.Title className="text-orange">Realizar solicitud especial</Modal.Title>
+          <Modal.Title className="text-orange">Solicitar trámite</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
-          <p className="mb-4 text-muted">
-            Esta opción es para realizar solicitudes no previstas por la plataforma. Completa el formulario y tu gestor recibirá la solicitud.
-          </p>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Barco</Form.Label>
-              {loadingFleet ? (
-                <div className="text-center py-2">
-                  <div className="spinner-border spinner-border-sm text-warning" role="status" />
-                  <span className="ms-2">Cargando barcos...</span>
-                </div>
-              ) : (
-                <Form.Select
-                  value={specialRequestForm.shipId}
-                  onChange={(e) => setSpecialRequestForm((f) => ({ ...f, shipId: e.target.value }))}
-                  className="flota-form-control"
-                  required
-                >
-                  <option value="">Selecciona un barco</option>
-                  {fleet.map((fleetItem) => {
-                    const boat = fleetItem.boatId || fleetItem;
-                    const boatId = boat?._id || boat || fleetItem._id;
-                    const boatName = boat?.name || "Sin nombre";
-                    const registrationPort = boat?.registrationPort || "Sin puerto";
-                    return (
-                      <option key={boatId} value={boatId}>
-                        {boatName} ({registrationPort})
-                      </option>
-                    );
-                  })}
-                </Form.Select>
+          <p className="mb-3 text-white-50">¿Qué tipo de solicitud quieres hacer?</p>
+          <Form.Group className="mb-4">
+            <Form.Select
+              value={requestType}
+              onChange={(e) => setRequestType(e.target.value)}
+              className="flota-form-control"
+            >
+              {REQUEST_TYPE_OPTIONS.map((opt) => (
+                <option key={opt.value || "empty"} value={opt.value}>{opt.label}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          {requestType === "Solicitud de flota" && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>Selecciona el barco</Form.Label>
+                {loadingFleet ? (
+                  <div className="text-center py-2">
+                    <div className="spinner-border spinner-border-sm text-warning" role="status" />
+                    <span className="ms-2">Cargando barcos...</span>
+                  </div>
+                ) : (
+                  <Form.Select
+                    value={flotaForm.shipId}
+                    onChange={(e) => setFlotaForm((f) => ({ ...f, shipId: e.target.value }))}
+                    className="flota-form-control"
+                  >
+                    <option value="">Selecciona el barco</option>
+                    {fleet.map((fleetItem) => {
+                      const boat = fleetItem.boatId || fleetItem;
+                      const boatId = boat?._id || boat || fleetItem._id;
+                      const boatName = boat?.name || "Sin nombre";
+                      const registrationPort = boat?.registrationPort || boat?.currentPort || "—";
+                      return (
+                        <option key={boatId} value={boatId}>
+                          {boatName} ({registrationPort})
+                        </option>
+                      );
+                    })}
+                  </Form.Select>
+                )}
+              </Form.Group>
+
+              {flotaForm.shipId && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Selecciona el certificado</Form.Label>
+                  {loadingCertificates ? (
+                    <div className="text-center py-2">
+                      <div className="spinner-border spinner-border-sm text-warning" role="status" />
+                      <span className="ms-2">Cargando certificados...</span>
+                    </div>
+                  ) : certificatesForBoat.length === 0 ? (
+                    <p className="text-white-50 mb-0">Este barco aún no tiene certificados registrados.</p>
+                  ) : (
+                    <Form.Select
+                      value={flotaForm.certificateId}
+                      onChange={(e) => {
+                        const id = e.target.value;
+                        const cert = certificatesForBoat.find((c) => String(c._id) === String(id));
+                        setFlotaForm((f) => ({ ...f, certificateId: id, certificate: cert || null }));
+                      }}
+                      className="flota-form-control"
+                    >
+                      <option value="">Selecciona el certificado</option>
+                      {certificatesForBoat.map((cert) => (
+                        <option key={cert._id} value={cert._id}>
+                          {cert.certificateType || "Certificado"} (N° {cert.number || "—"})
+                        </option>
+                      ))}
+                    </Form.Select>
+                  )}
+                </Form.Group>
               )}
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Cuerpo</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={5}
-                value={specialRequestForm.body}
-                onChange={(e) => setSpecialRequestForm((f) => ({ ...f, body: e.target.value }))}
-                className="flota-form-control"
-                placeholder="Describe tu solicitud en detalle..."
-                required
-              />
-            </Form.Group>
-          </Form>
+
+              {flotaForm.certificateId && (
+                <>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="d-block">Tipos de trámite</Form.Label>
+                    <div className="d-flex flex-column gap-2 mb-2">
+                      {PROCEDURE_MAIN_OPTIONS.map((option) => (
+                        <Form.Check
+                          key={option}
+                          type="radio"
+                          name="procedure-main"
+                          id={`proc-main-${option}`}
+                          label={option}
+                          checked={(flotaForm.procedureTypes || []).includes(option)}
+                          onChange={() => setMainProcedure(option)}
+                          className="text-white"
+                        />
+                      ))}
+                    </div>
+                    {(flotaForm.procedureTypes || []).includes("Otro") && (
+                      <p className="text-secondary fst-italic small mb-2">
+                        Aclara en la sección de notas el tipo de trámite requerido.
+                      </p>
+                    )}
+                    <Form.Check
+                      type="checkbox"
+                      id="proc-asesoramiento"
+                      label={PROCEDURE_ASESORAMIENTO}
+                      checked={(flotaForm.procedureTypes || []).includes(PROCEDURE_ASESORAMIENTO)}
+                      onChange={(e) => setAsesoramientoChecked(e.target.checked)}
+                      className="text-white mt-2"
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Notas</Form.Label>
+                    <Form.Control
+                      as="textarea"
+                      rows={3}
+                      value={flotaForm.notes}
+                      onChange={(e) => setFlotaForm((f) => ({ ...f, notes: e.target.value }))}
+                      className="flota-form-control"
+                      placeholder="Escribe aquí notas para tu gestor..."
+                    />
+                  </Form.Group>
+                </>
+              )}
+            </>
+          )}
+
+          {requestType === "Solicitud de gente de mar" && (
+            <p className="text-warning mb-0">Próximamente. Esta opción estará disponible en una actualización futura.</p>
+          )}
+
+          {requestType === "Solicitud especial" && (
+            <>
+              <p className="mb-3 text-white-50">Selecciona un barco y describe tu solicitud.</p>
+              <Form.Group className="mb-3">
+                <Form.Label>Barco</Form.Label>
+                {loadingFleet ? (
+                  <div className="text-center py-2"><div className="spinner-border spinner-border-sm text-warning" role="status" /><span className="ms-2">Cargando barcos...</span></div>
+                ) : (
+                  <Form.Select
+                    value={specialRequestForm.shipId}
+                    onChange={(e) => setSpecialRequestForm((f) => ({ ...f, shipId: e.target.value }))}
+                    className="flota-form-control"
+                  >
+                    <option value="">Selecciona un barco</option>
+                    {fleet.map((fleetItem) => {
+                      const boat = fleetItem.boatId || fleetItem;
+                      const boatId = boat?._id || boat || fleetItem._id;
+                      const boatName = boat?.name || "Sin nombre";
+                      const registrationPort = boat?.registrationPort || "—";
+                      return <option key={boatId} value={boatId}>{boatName} ({registrationPort})</option>;
+                    })}
+                  </Form.Select>
+                )}
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Cuerpo</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={4}
+                  value={specialRequestForm.body}
+                  onChange={(e) => setSpecialRequestForm((f) => ({ ...f, body: e.target.value }))}
+                  className="flota-form-control"
+                  placeholder="Describe tu solicitud en detalle..."
+                />
+              </Form.Group>
+            </>
+          )}
         </Modal.Body>
         <Modal.Footer className="general-modal-footer">
-          <Button variant="secondary" onClick={handleCloseSpecialRequestModal} disabled={submittingSpecialRequest}>Cancelar</Button>
-          <Button variant="warning" onClick={handleSpecialRequestSubmit} disabled={loadingFleet || submittingSpecialRequest}>
-            {submittingSpecialRequest ? (
-              <>
-                <span className="spinner-border me-2" role="status" aria-hidden="true" style={{ width: "1em", height: "1em", borderWidth: "0.15em", verticalAlign: "middle" }} />
-                Enviar
-              </>
-            ) : (
-              "Enviar"
-            )}
-          </Button>
+          <Button variant="secondary" onClick={handleCloseSolicitarTramiteModal} disabled={submittingTramite}>Cancelar</Button>
+          {requestType === "Solicitud de flota" && flotaForm.certificateId && (
+            <Button variant="warning" onClick={handleFlotaSubmit} disabled={loadingFleet || loadingCertificates || submittingTramite}>
+              {submittingTramite ? (
+                <><span className="spinner-border me-2" role="status" style={{ width: "1em", height: "1em", borderWidth: "0.15em", verticalAlign: "middle" }} />Enviar</>
+              ) : (
+                "Confirmar solicitud"
+              )}
+            </Button>
+          )}
+          {requestType === "Solicitud especial" && (
+            <Button variant="warning" onClick={handleSpecialRequestSubmit} disabled={loadingFleet || submittingTramite}>
+              {submittingTramite ? (
+                <><span className="spinner-border me-2" role="status" style={{ width: "1em", height: "1em", borderWidth: "0.15em", verticalAlign: "middle" }} />Enviar</>
+              ) : (
+                "Enviando..."
+              )}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </FadeIn>

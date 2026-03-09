@@ -251,7 +251,7 @@ export function Eventos() {
         <div className="col-12 d-flex flex-column gap-4 eventos-content">
           {eventos.length === 0 ? (
             <>
-              <div className="text-center my-5 d-flex flex-column align-items-center col-11">
+              <div className="text-center my-5 d-flex flex-column align-items-center col-12">
                 <i className="bi bi-binoculars-fill mb-4 custom-display-1 text-orange"></i>
                 <h3>¡No hay eventos próximos!</h3>
                 <p className="fst-italic">

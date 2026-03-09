@@ -154,10 +154,10 @@ export function RejectBoatRegistration() {
                       <p><strong>Puerto de Registro:</strong> {boat.registrationPort}</p>
                       {boat.currentPort && <p><strong>Puerto Actual:</strong> {boat.currentPort}</p>}
                       <p><strong>Tipo:</strong> {boat.boatType}</p>
-                      <p><strong>Eslora:</strong> {boat.lengthOverall}m</p>
-                      <p><strong>Manga:</strong> {boat.beam}m</p>
-                      {boat.depth && <p><strong>Calado:</strong> {boat.depth}m</p>}
-                      {boat.displacement && <p><strong>Desplazamiento:</strong> {boat.displacement} Tons.</p>}
+                      <p><strong>Eslora:</strong> {boat.lengthOverall} mts.</p>
+                      <p><strong>Manga:</strong> {boat.beam} mts.</p>
+                      {boat.depth && <p><strong>Calado:</strong> {boat.depth} mts.</p>}
+                      {boat.displacement && <p><strong>Desplazamiento:</strong> {boat.displacement} tons.</p>}
                       {boat.image && (
                         <div className="mt-3">
                           <p><strong>Imagen del Barco:</strong></p>

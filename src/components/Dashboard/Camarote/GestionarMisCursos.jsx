@@ -127,8 +127,7 @@ export function GestionarMisCursos({ user, onBack }) {
   };
 
   const formatPrice = (price, currency) => {
-    const symbols = { USD: "$", UYU: "$U", EUR: "€", ARS: "$" };
-    return `${symbols[currency] || currency} ${price.toLocaleString()}`;
+    return `$ ${price.toLocaleString()}.00 ${currency} `;
   };
 
   const filteredCourses = courses.filter((course) => {
@@ -191,7 +190,7 @@ export function GestionarMisCursos({ user, onBack }) {
       ) : (
         <>
           {/* Filtros: mismo markup que Flota / Gestion / Certificados */}
-          <div className="portafolio-filters col-12 mb-4">
+          <div className="camarote-filters col-12 mb-4">
             <h4 className="text-orange"><i className="bi bi-funnel-fill me-2"></i>Filtros:</h4>
             <div className="row g-2 portafolio-modal-filters">
               <div className="col-12 col-sm-6 col-lg-4 portafolio-modal-filter-item">

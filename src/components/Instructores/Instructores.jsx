@@ -70,7 +70,7 @@ export function Instructores() {
       </FadeIn>
       <FadeIn>
         <div className="d-flex justify-content-center flex-column gap-5 gap-md-3 custom-margin">
-            <h2 className="text-center mb-4">
+            <h2 className="text-center">
                 ¿Qué destaca a nuestros instructores?
             </h2>
             <div className="d-flex justify-content-center flex-column flex-md-row gap-5 gap-md-3 mt-5">

@@ -8,7 +8,7 @@
 }
 
 /* ========== Filtros (mismo estándar que Flota / Gestion / Certificados) ========== */
-.gestionar-mis-cursos-container .portafolio-filters {
+.camarote-filters {
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid #082b557c;
   border-radius: 1rem;

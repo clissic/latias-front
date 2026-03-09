@@ -119,7 +119,7 @@ export function Certificados({ user }) {
             <p className="text-white mt-2 mb-0">Cargando tus certificados...</p>
           </div>
         ) : certificates.length === 0 ? (
-          <div className="text-center my-5 d-flex flex-column align-items-center col-11">
+          <div className="text-center my-5 d-flex flex-column align-items-center col-12">
             <i className="bi bi-award-fill mb-4 custom-display-1 text-orange"></i>
             <h3>No vemos certificados en tu bitácora.</h3>
             <p className="fst-italic">

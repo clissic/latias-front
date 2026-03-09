@@ -55,6 +55,51 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.color-bronze {
+  font-weight: 600;
+  background-image: linear-gradient(
+    to right bottom,
+    #cd7f32,
+    #b36d27,
+    #9a5b1d,
+    #814a13,
+    #693909
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.color-silver {
+  font-weight: 600;
+  background-image: linear-gradient(
+    to right bottom,
+    #c0c0c0,
+    #a8a8a8,
+    #909090,
+    #787878,
+    #606060
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.color-gold {
+  font-weight: 600;
+  background-image: linear-gradient(
+    to right bottom,
+    #ffd700,
+    #e6c200,
+    #ccad00,
+    #b39900,
+    #998500
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .text-money {
   color: rgb(82, 185, 82);
   font-size: 1.5rem;

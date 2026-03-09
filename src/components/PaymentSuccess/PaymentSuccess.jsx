@@ -36,14 +36,34 @@ export function PaymentSuccess() {
   const collectionId = searchParams.get('collection_id');
   /** Solo desarrollo: dev=1 indica que la compra se simuló con el botón "Comprar (Dev mode)" sin MP */
   const isDevSimulation = searchParams.get('dev') === '1';
+  /** free=1: curso canjeado con cupo gratuito (plan gestoría) */
+  const isFreeRedeem = searchParams.get('free') === '1';
+  /** type=premium: suscripción a plan de gestoría (curso vs premium) */
+  const isPremium = searchParams.get('type') === 'premium';
+  /** type=procedure: pago de trámite de flota */
+  const isProcedure = searchParams.get('type') === 'procedure';
 
   useEffect(() => {
-    // Modo desarrollo: simulación de retorno sin pago real (curso ya asignado por dev-complete-purchase)
+    // Canje gratuito: curso ya asignado por redeem-free-course, actualizar usuario (freeCourses -1)
+    if (isFreeRedeem) {
+      setPaymentInfo({
+        status: 'approved',
+        paymentId: 'Canje gratuito',
+        isFreeRedeem: true,
+      });
+      setLoading(false);
+      refreshUserFromProfile();
+      return;
+    }
+
+    // Modo desarrollo: simulación de retorno sin pago real (curso, premium o trámite ya procesado por dev-complete-*)
     if (isDevSimulation) {
       setPaymentInfo({
         status: 'approved',
         paymentId: 'DEV (simulación)',
         devMode: true,
+        isPremium,
+        isProcedure,
       });
       setLoading(false);
       refreshUserFromProfile();
@@ -139,7 +159,7 @@ export function PaymentSuccess() {
     };
 
     verifyAndProcessPayment();
-  }, [paymentId, collectionId, isDevSimulation, refreshUserFromProfile]);
+  }, [paymentId, collectionId, isDevSimulation, isFreeRedeem, refreshUserFromProfile]);
 
   // Cuando el pago está "pending", hacer polling por si pasa a "approved" (en local el webhook no llega)
   useEffect(() => {
@@ -266,9 +286,20 @@ export function PaymentSuccess() {
                         <span className="badge bg-info">Modo desarrollo (simulación)</span>
                       </div>
                     )}
+                    {paymentInfo?.isFreeRedeem && (
+                      <div className="mt-2">
+                        <span className="badge bg-success">Canje gratuito</span>
+                      </div>
+                    )}
                     <h2 className="text-success mt-3">¡Pago Exitoso!</h2>
                     <p className="text-white mb-4">
-                      Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.
+                      {paymentInfo?.isFreeRedeem
+                        ? '¡Curso canjeado! Has utilizado un cupo gratuito de tu plan. Ya tienes acceso al curso.'
+                        : (paymentInfo?.isPremium || paymentInfo?.premium)
+                          ? 'Tu plan de gestoría ha sido activado correctamente.'
+                          : (paymentInfo?.isProcedure)
+                            ? 'Tu trámite de flota fue registrado. Tu gestor recibirá la solicitud.'
+                            : 'Tu pago ha sido procesado correctamente. Ya tienes acceso al curso.'}
                     </p>
                   </>
                 )}
@@ -296,9 +327,24 @@ export function PaymentSuccess() {
                   <div className="next-steps mt-4">
                     <h5 className="text-orange mb-3">Próximos Pasos:</h5>
                     <ul className="text-white text-start">
-                      <li>Revisa tu email para confirmación del pago</li>
-                      <li>Accede a tu dashboard para ver el curso</li>
-                      <li>Comienza tu aprendizaje inmediatamente</li>
+                      {(paymentInfo?.isPremium || paymentInfo?.premium) ? (
+                        <>
+                          <li>Revisa tu email para confirmación del pago</li>
+                          <li>Accede a Mi Latias para gestionar tus embarcaciones y trámites</li>
+                          <li>Tu plan está activo por 1 año</li>
+                        </>
+                      ) : (paymentInfo?.isProcedure) ? (
+                        <>
+                          <li>Tu gestor recibirá un correo con los datos del trámite</li>
+                          <li>Podés seguir el estado desde Mi gestor en General</li>
+                        </>
+                      ) : (
+                        <>
+                          <li>Revisa tu email para confirmación del pago</li>
+                          <li>Accede a Mi Latias para ver el curso</li>
+                          <li>Comienza tu aprendizaje inmediatamente</li>
+                        </>
+                      )}
                     </ul>
                   </div>
                 )}
@@ -324,10 +370,28 @@ export function PaymentSuccess() {
                   </button>
                   <button 
                     className="btn btn-light" 
-                    onClick={handleGoToCourses}
+                    onClick={() => {
+                      if (paymentInfo?.isProcedure) navigate('/dashboard/general/gestor');
+                      else if (paymentInfo?.isPremium || paymentInfo?.premium) navigate('/gestoria');
+                      else handleGoToCourses();
+                    }}
                   >
-                    <i className="bi bi-book-half me-2"></i>
-                    Ver más cursos
+                    {(paymentInfo?.isProcedure) ? (
+                      <>
+                        <i className="bi bi-person-badge me-2"></i>
+                        Ir a Mi gestor
+                      </>
+                    ) : (paymentInfo?.isPremium || paymentInfo?.premium) ? (
+                      <>
+                        <i className="bi bi-briefcase me-2"></i>
+                        Volver a Gestoría
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-book-half me-2"></i>
+                        Ver más cursos
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

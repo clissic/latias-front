@@ -16,6 +16,9 @@ import { BuscarEvento } from "./BuscarEvento";
 import { ActualizarEvento } from "./ActualizarEvento";
 import { VerLogsCheckin } from "./VerLogsCheckin";
 import { GestionPagos } from "./GestionPagos";
+import { CrearCodigoDescuento } from "./CrearCodigoDescuento";
+import { BuscarCodigoDescuento } from "./BuscarCodigoDescuento";
+import { ActualizarCodigoDescuento } from "./ActualizarCodigoDescuento";
 import { apiService } from "../../../services/apiService";
 import "./Gestion.css";
 
@@ -42,6 +45,7 @@ export function Gestion({ user }) {
   const [instructorToUpdate, setInstructorToUpdate] = useState(null);
   const [userToUpdate, setUserToUpdate] = useState(null);
   const [eventToUpdate, setEventToUpdate] = useState(null);
+  const [discountCodeToUpdate, setDiscountCodeToUpdate] = useState(null);
   const [activeSection, setActiveSection] = useState(null); // null = tarjetas, 'courses'/'instructors'/'users'/'events' = sección activa
   const [isTransitioning, setIsTransitioning] = useState(false);
   
@@ -67,6 +71,7 @@ export function Gestion({ user }) {
   const CERTIFICATES_PER_PAGE = 10;
   const [shipsCount, setShipsCount] = useState(0);
   const [paymentsCount, setPaymentsCount] = useState(0);
+  const [discountCodesCount, setDiscountCodesCount] = useState(0);
   const [managersCount, setManagersCount] = useState(0);
   const [gestoresList, setGestoresList] = useState([]);
   const [loadingGestores, setLoadingGestores] = useState(false);
@@ -130,7 +135,7 @@ export function Gestion({ user }) {
               setCertificatesCount(certRes.payload.length);
             }
           } catch (_) {
-            setCertificatesCount(0);
+        setCertificatesCount(0);
           }
         }
 
@@ -143,6 +148,16 @@ export function Gestion({ user }) {
             const paymentsRes = await apiService.getProcessedPayments({ limit: 1, page: 1 });
             if (paymentsRes.status === "success" && paymentsRes.payload?.totalDocs != null) {
               setPaymentsCount(paymentsRes.payload.totalDocs);
+            }
+          } catch (_) {}
+        }
+
+        // Contador de códigos de descuento (solo Administrador)
+        if (user?.category?.includes?.("Administrador")) {
+          try {
+            const discountRes = await apiService.getAllDiscountCodes();
+            if (discountRes.status === "success" && Array.isArray(discountRes.payload)) {
+              setDiscountCodesCount(discountRes.payload.length);
             }
           } catch (_) {}
         }
@@ -200,6 +215,22 @@ export function Gestion({ user }) {
     };
     loadGestores();
   }, [activeSection]);
+
+  // Refrescar contador de códigos de descuento al abrir la sección
+  useEffect(() => {
+    if (activeSection !== "discounts" || !user?.category?.includes?.("Administrador")) return;
+    const refreshDiscountCodesCount = async () => {
+      try {
+        const res = await apiService.getAllDiscountCodes();
+        if (res.status === "success" && Array.isArray(res.payload)) {
+          setDiscountCodesCount(res.payload.length);
+        }
+      } catch (err) {
+        console.error("Error al refrescar contador de códigos de descuento:", err);
+      }
+    };
+    refreshDiscountCodesCount();
+  }, [activeSection, user?.category]);
 
   // Cargar certificados de curso al abrir la sección (solo Administrador)
   useEffect(() => {
@@ -341,6 +372,11 @@ export function Gestion({ user }) {
     setActiveAccordionKey("11"); // Abrir el acordeón de "Actualizar evento:"
   };
 
+  const handleUpdateDiscountCode = (code) => {
+    setDiscountCodeToUpdate(code);
+    setActiveAccordionKey("discount-2"); // Abrir el acordeón de "Actualizar código de descuento:"
+  };
+
   const handleCardClick = (section) => {
     setIsTransitioning(true);
     setTimeout(() => {
@@ -476,6 +512,23 @@ export function Gestion({ user }) {
               <div className="d-flex align-items-center justify-content-center gap-2">
                 <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
                 <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{managersCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {user?.category?.includes?.("Administrador") && (
+        <div className="col-12 col-md-6 col-lg-4">
+          <div 
+            className={`gestion-card h-100 ${isTransitioning ? 'gestion-card-fade-out' : ''}`}
+            onClick={() => handleCardClick('discounts')}
+          >
+            <div className="gestion-card-content">
+              <i className="bi bi-percent text-orange mb-3" style={{ fontSize: "4rem" }}></i>
+              <h4 className="text-white mb-3">Gestión de descuentos</h4>
+              <div className="d-flex align-items-center justify-content-center gap-2">
+                <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+                <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{discountCodesCount}</span>
               </div>
             </div>
           </div>
@@ -678,7 +731,54 @@ export function Gestion({ user }) {
     </div>
   );
 
-  // Certificados filtrados (course_certificates)
+  // Renderizar sección de códigos de descuento
+  const renderDiscountsSection = () => (
+    <div className={`gestion-section ${activeSection === 'discounts' ? 'gestion-section-active' : ''}`}>
+      <h4 className="col-12 text-orange mb-3">Gestión de descuentos:</h4>
+      <div className="mb-3 d-flex flex-column align-items-center justify-content-center gap-2">
+        <i className="bi bi-percent text-orange" style={{ fontSize: "3rem" }}></i>
+        <div className="d-flex align-items-center gap-3">
+          <span className="text-white" style={{ fontSize: "1.2rem" }}>Total de códigos de descuento:</span>
+          <span className="text-white" style={{ fontSize: "2.5rem", fontWeight: "bold" }}>{discountCodesCount}</span>
+        </div>
+      </div>
+      <Accordion activeKey={activeAccordionKey} onSelect={(e) => setActiveAccordionKey(e)} className="gestion-accordion">
+        <Accordion.Item eventKey="discount-0">
+          <Accordion.Header>Crear código de descuento:</Accordion.Header>
+          <Accordion.Body>
+            <CrearCodigoDescuento />
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="discount-1">
+          <Accordion.Header>Buscar código de descuento:</Accordion.Header>
+          <Accordion.Body>
+            <BuscarCodigoDescuento onUpdateCode={handleUpdateDiscountCode} />
+          </Accordion.Body>
+        </Accordion.Item>
+        <Accordion.Item eventKey="discount-2">
+          <Accordion.Header>Actualizar código de descuento:</Accordion.Header>
+          <Accordion.Body>
+            {discountCodeToUpdate ? (
+              <ActualizarCodigoDescuento discountCode={discountCodeToUpdate} />
+            ) : (
+              <p className="text-white">Busca un código y haz clic en &quot;Actualizar&quot; para cargar sus datos aquí.</p>
+            )}
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+      <div className="mt-4 d-flex justify-content-end">
+        <button 
+          className="btn btn-outline-orange"
+          onClick={handleBackClick}
+        >
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
+          Volver
+        </button>
+      </div>
+    </div>
+  );
+
+  // Certificados filtrados (course-certificates)
   const certificatesFiltered = useMemo(() => {
     let list = [...certificatesList];
     const c = certFilters.course.trim().toLowerCase();
@@ -915,9 +1015,9 @@ export function Gestion({ user }) {
         <>
           <div ref={gestionCertListRef}>
       {certificatesFiltered.length === 0 ? (
-        <div className="text-center text-white p-4">
+      <div className="text-center text-white p-4">
           <p className="mb-0">{certificatesList.length === 0 ? "No hay certificados emitidos." : "No hay resultados con los filtros aplicados."}</p>
-        </div>
+      </div>
       ) : (
           <div className="table-responsive">
             <Table striped bordered hover variant="dark" className="table-dark">
@@ -1346,6 +1446,7 @@ export function Gestion({ user }) {
         {activeSection === 'ships' && renderShipsSection()}
         {activeSection === 'payments' && renderPaymentsSection()}
         {activeSection === 'managers' && renderManagersSection()}
+        {activeSection === 'discounts' && renderDiscountsSection()}
       </div>
 
       {/* Modal listado de clientes del gestor (estilo Historial/Pendientes Portafolio) */}

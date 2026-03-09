@@ -16,6 +16,7 @@ export function GestionPagos() {
     paymentId: "",
     courseId: "",
     courseName: "",
+    itemType: "",
     userEmail: "",
     userId: "",
     paymentStatus: "",
@@ -35,6 +36,7 @@ export function GestionPagos() {
       if (filtersApplied.paymentId?.trim()) params.paymentId = filtersApplied.paymentId.trim();
       if (filtersApplied.courseId?.trim()) params.courseId = filtersApplied.courseId.trim();
       if (filtersApplied.courseName?.trim()) params.courseName = filtersApplied.courseName.trim();
+      if (filtersApplied.itemType?.trim()) params.itemType = filtersApplied.itemType.trim();
       if (filtersApplied.userEmail?.trim()) params.userEmail = filtersApplied.userEmail.trim();
       if (filtersApplied.userId?.trim()) params.userId = filtersApplied.userId.trim();
       if (filtersApplied.paymentStatus?.trim()) params.paymentStatus = filtersApplied.paymentStatus.trim();
@@ -119,6 +121,7 @@ export function GestionPagos() {
       paymentId: "",
       courseId: "",
       courseName: "",
+      itemType: "",
       userEmail: "",
       userId: "",
       paymentStatus: "",
@@ -134,16 +137,91 @@ export function GestionPagos() {
     return isNaN(d.getTime()) ? "—" : d.toLocaleString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
   };
 
-  const formatAmount = (amount, currency) => {
-    if (amount == null) return "—";
+  const formatAmount = (value, currency) => {
+    if (value == null) return "—";
     const sym = { USD: "$", UYU: "$U", EUR: "€", ARS: "$" }[currency] || currency;
-    return `${sym} ${Number(amount).toLocaleString()}`;
+    return `${sym} ${Number(value).toLocaleString()}`;
+  };
+
+  const itemTypeLabel = (type) => {
+    const map = { course: "Curso", subscription: "Suscripción", procedure: "Trámite", service: "Servicio", other: "Otro" };
+    return map[type] || type || "—";
   };
 
   const getStatusBadge = (status) => {
     const map = { approved: "success", pending: "warning", rejected: "danger", cancelled: "secondary", refunded: "info" };
     const c = map[status] || "secondary";
     return <span className={`badge bg-${c}`}>{status || "—"}</span>;
+  };
+
+  /** Etiqueta de tipo de trámite para Concepto (metadata.requestType → Trámite de flota / gente de mar / especial). */
+  const procedureTypeLabel = (requestType) => {
+    const map = {
+      "Solicitud de flota": "Trámite de flota",
+      "Solicitud de gente de mar": "Trámite de gente de mar",
+      "Solicitud especial": "Trámite especial",
+    };
+    return map[requestType] || "Trámite de flota";
+  };
+
+  /** Concepto para procedure: "Trámite de flota - Emisión inicial, Renovación..." (sin "Solicitud"). */
+  const renderItemConcepto = (pay) => {
+    if (pay.item?.type === "procedure") {
+      const meta = pay.metadata || {};
+      const label = procedureTypeLabel(meta.requestType);
+      const types = Array.isArray(meta.procedureTypes) && meta.procedureTypes.length > 0
+        ? meta.procedureTypes.join(", ")
+        : "";
+      return (
+        <div>
+          <strong>{types ? `${label} - ${types}` : label}</strong>
+          {pay.item?.id ? <><br /><small className="text-white-50">{pay.item.id}</small></> : null}
+        </div>
+      );
+    }
+    return (
+      <div>
+        <strong>{pay.item?.name || "—"}</strong>
+        {pay.item?.id ? <><br /><small className="text-white-50">{pay.item.id}</small></> : null}
+      </div>
+    );
+  };
+
+  /** Metadata column: procedure → barco (nombre en blanco + id en gris); course → ya comprado; plan → "—". */
+  const renderMetadata = (pay) => {
+    if (pay.item?.type === "procedure") {
+      const meta = pay.metadata || {};
+      const name = meta.shipName ?? "";
+      const id = meta.shipId ? String(meta.shipId) : "";
+      if (!name && !id) return "—";
+      return (
+        <div>
+          {name}
+          {id ? <><br /><small className="text-white-50">{id}</small></> : null}
+        </div>
+      );
+    }
+    if (pay.item?.type === "course") {
+      const already = pay.metadata?.alreadyPurchased;
+      if (already == null) return "—";
+      return already ? <span className="badge bg-info">Sí</span> : <span className="badge bg-secondary">No</span>;
+    }
+    if (pay.item?.type === "subscription") return "—";
+    return "—";
+  };
+
+  /** Ver recibo: preparado para generar PDF con todos los datos del pago (curso, trámite, usuario, monto, etc.). */
+  const handleVerRecibo = (pay) => {
+    // TODO: generar PDF con pay (user, item, amount, paymentStatus, processedAt, metadata.shipName, metadata.procedureTypes, etc.)
+    Swal.fire({
+      icon: "info",
+      title: "Ver recibo",
+      html: "La generación del recibo en PDF se implementará aquí. Datos disponibles: usuario, concepto, monto, estado y para trámites: barco y tipos de trámite.",
+      confirmButtonText: "Entendido",
+      background: "#082b55",
+      color: "#ffffff",
+      customClass: { confirmButton: "custom-swal-button" },
+    });
   };
 
   const effectiveTotalPages = Math.max(1, totalPages);
@@ -175,12 +253,23 @@ export function GestionPagos() {
             <input type="text" className="form-control portafolio-input form-control-sm" value={filters.paymentId} onChange={(e) => handleFilterChange("paymentId", e.target.value)} placeholder="Mercado Pago ID" />
           </div>
           <div className="col-12 col-sm-6 col-md-4 col-lg-3 portafolio-modal-filter-item">
-            <label className="portafolio-modal-filter-label">ID Curso</label>
-            <input type="text" className="form-control portafolio-input form-control-sm" value={filters.courseId} onChange={(e) => handleFilterChange("courseId", e.target.value)} />
+            <label className="portafolio-modal-filter-label">ID concepto</label>
+            <input type="text" className="form-control portafolio-input form-control-sm" value={filters.courseId} onChange={(e) => handleFilterChange("courseId", e.target.value)} placeholder="ID curso, plan, trámite..." />
           </div>
           <div className="col-12 col-sm-6 col-md-4 col-lg-3 portafolio-modal-filter-item">
-            <label className="portafolio-modal-filter-label">Nombre curso</label>
-            <input type="text" className="form-control portafolio-input form-control-sm" value={filters.courseName} onChange={(e) => handleFilterChange("courseName", e.target.value)} />
+            <label className="portafolio-modal-filter-label">Nombre concepto</label>
+            <input type="text" className="form-control portafolio-input form-control-sm" value={filters.courseName} onChange={(e) => handleFilterChange("courseName", e.target.value)} placeholder="Curso, plan, trámite..." />
+          </div>
+          <div className="col-12 col-sm-6 col-md-4 col-lg-3 portafolio-modal-filter-item">
+            <label className="portafolio-modal-filter-label">Tipo</label>
+            <select className="form-select portafolio-input form-control-sm" value={filters.itemType} onChange={(e) => handleFilterChange("itemType", e.target.value)}>
+              <option value="">Todos</option>
+              <option value="course">Curso</option>
+              <option value="subscription">Suscripción</option>
+              <option value="procedure">Trámite</option>
+              <option value="service">Servicio</option>
+              <option value="other">Otro</option>
+            </select>
           </div>
           <div className="col-12 col-sm-6 col-md-4 col-lg-3 portafolio-modal-filter-item">
             <label className="portafolio-modal-filter-label">Email usuario</label>
@@ -233,12 +322,14 @@ export function GestionPagos() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Curso</th>
+                  <th>Tipo</th>
+                  <th>Concepto</th>
                   <th>Usuario</th>
                   <th>Monto</th>
                   <th>Estado</th>
-                  <th title="¿Ya lo tenía comprado?">Comprado</th>
+                  <th title="Cursos: ¿Ya comprado?">Metadata</th>
                   <th>Procesado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -258,27 +349,32 @@ export function GestionPagos() {
                         ) : null}
                       </span>
                     </td>
+                    <td><span className="badge bg-secondary">{itemTypeLabel(pay.item?.type)}</span></td>
+                    <td>{renderItemConcepto(pay)}</td>
                     <td>
                       <div>
-                        <strong>{pay.courseName || "—"}</strong>
-                        <br /><small className="text-white-50">{pay.courseId}</small>
+                        {pay.user?.firstName} {pay.user?.lastName}
+                        <br /><small className="text-white-50">{pay.user?.email}</small>
+                        {pay.user?.id ? <><br /><small className="text-white-50">{pay.user.id}</small></> : null}
                       </div>
                     </td>
-                    <td>
-                      <div>
-                        {pay.userFirstName} {pay.userLastName}
-                        <br /><small className="text-white-50">{pay.userEmail}</small>
-                        {pay.userId?._id ? (
-                          <>
-                            <br /><small className="text-white-50">{pay.userId._id}</small>
-                          </>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td>{formatAmount(pay.transactionAmount, pay.currency)}</td>
+                    <td>{formatAmount(pay.amount?.value, pay.amount?.currency)}</td>
                     <td>{getStatusBadge(pay.paymentStatus)}</td>
-                    <td>{pay.alreadyPurchased ? <span className="badge bg-info">Sí</span> : <span className="badge bg-secondary">No</span>}</td>
+                    <td>{renderMetadata(pay)}</td>
                     <td><small>{formatDate(pay.processedAt)}</small></td>
+                    <td>
+                      <div className="d-flex flex-column gap-1">
+                        <span
+                          className="action-link"
+                          onClick={() => handleVerRecibo(pay)}
+                          title="Ver recibo (PDF)"
+                          role="button"
+                        >
+                          <i className="bi bi-receipt me-1"></i>
+                          Recibo
+                        </span>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -61,21 +61,24 @@ export function CartaCurso({
         <div className="card-body d-flex flex-column">
           <h5 className="cartaCurso-title">{name}</h5>
           <p className="cartaCurso-desc mb-0">{shortDescription}</p>
+          <div className="d-flex align-items-center justify-content-between mt-2"> 
+            <span className="text-white-50">Precio:</span>
+            <span className={`badge cartaCurso-difficulty-badge ${getDifficultyBadgeClass(difficulty)}`}>
+              {difficultyLabel}
+            </span>
+          </div>
           <div className="cartaCurso-price-row mb-2">
             <p className="cartaCurso-price text-white-50 mb-0">
               {hasPrice ? (
                 <>
-                  <span className="me-1">Precio:</span>
                   <span className="cartaCurso-price-symbol me-1">{currencySymbol}</span>
-                  <span className="cartaCurso-price-value">{Number(price)}</span>
+                  <span className="cartaCurso-price-value me-1">{Number(price)}<span className="cartaCurso-price-value-decimal">.00</span></span>
+                  <span className="cartaCurso-price-symbol">{currency}</span>
                 </>
               ) : (
                 <span className="text-white-50">&nbsp;</span>
               )}
             </p>
-            <span className={`badge cartaCurso-difficulty-badge ${getDifficultyBadgeClass(difficulty)}`}>
-              {difficultyLabel}
-            </span>
           </div>
           <div className="cartaCurso-actions mt-2" onClick={(e) => e.stopPropagation()}>
             {isPurchased ? (

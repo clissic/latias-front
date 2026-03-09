@@ -420,7 +420,8 @@
 
 /* Filtros de gestión (certificados y otros) - mismo estilo que BuscarCurso */
 /* Filtros de gestión de certificados - mismo estilo que Certificados (Dashboard) / Mi Flota */
-.gestion-section .portafolio-filters {
+
+.portafolio-filters {
   background-color: rgba(0, 0, 0, 0.2);
   border: 1px solid #082b557c;
   border-radius: 1rem;

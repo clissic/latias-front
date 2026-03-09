@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, Form, Button } from "react-bootstrap";
+import Swal from "sweetalert2";
 import { FadeIn } from "../../FadeIn/FadeIn";
 import { useAuth } from "../../../context/AuthContext";
 import { apiService } from "../../../services/apiService";
@@ -10,6 +11,19 @@ import "./General.css";
 
 const jurisdictions = getJurisdictions();
 const PARTIAL_AVG_MIN = 60;
+
+/** Formatea una fecha ISO (ej. premium.expires) como dd/mm/aaaa HH:mm */
+function formatVigencia(isoString) {
+  if (!isoString) return "Sin fecha";
+  const d = new Date(isoString);
+  if (Number.isNaN(d.getTime())) return "Sin fecha";
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
 const FINAL_TEST_MIN = 70;
 
 // Misma estrategia que en Flota: Twemoji convierte el emoji de bandera en SVG
@@ -87,6 +101,22 @@ export function General({ user }) {
     : [];
 
   const handleOpenAssignModal = () => {
+    if (!user?.premium?.isActive) {
+      Swal.fire({
+        icon: "info",
+        title: "Plan de gestoría requerido",
+        text: "Para la contratación de un gestor es necesario acceder a un plan de gestoría.",
+        confirmButtonText: "Ver planes",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) navigate("/gestoria#planes");
+      });
+      return;
+    }
     setShowAssignModal(true);
     setSelectedJurisdiction("");
     setSelectedGestorId("");
@@ -201,7 +231,9 @@ export function General({ user }) {
           <div className="d-flex justify-content-between"><p>Dirección:</p><strong>{user.address?.street || "No definido"} {user.address?.number || ""}, {user.address?.city || "No definido"}</strong></div>
           <div className="d-flex justify-content-between"><p>Estado:</p><strong className="text-end">{Array.isArray(user.category) && user.category.length > 0 ? user.category.join(", ") : "Estudiante"}</strong></div>
           <div className="d-flex justify-content-between align-items-center">
-            <p className="mb-0">Gestor:</p>
+            <p className="mb-0">
+              {!user?.premium?.isActive && (<i className="bi bi-gem dashboard-premium-badge"></i>)} Gestor:
+            </p>
             {hasGestor ? (
               <button
                 type="button"
@@ -214,29 +246,49 @@ export function General({ user }) {
             ) : (
               <button
                 type="button"
-                className="btn btn-sm btn-outline-warning general-btn-asignar-gestor"
+                className="btn btn-sm btn-outline-warning general-btn-asignar-gestor d-flex align-items-center gap-2"
                 onClick={handleOpenAssignModal}
               >
+                <i className="bi bi-person-vcard general-btn-asignar-gestor-icon" style={{ fontSize: "1rem" }}></i>
                 Asignar gestor
               </button>
             )}
           </div>
         </div>
 
-        {/* Rango */}
         <div className="text-white col-12 col-sm-11 col-lg-5">
+          <h3 className="mb-3 text-orange">Suscripción:</h3>
+          <div className="d-flex justify-content-between"><p>Plan:</p><strong>{user.premium.subscription || "Gratuito"}</strong></div>
+          <div className="d-flex justify-content-between align-items-center">
+            <p>Estado:</p>
+            {user.premium?.expires && new Date(user.premium.expires) > new Date() ? (
+              <span className="badge bg-success mb-3">Activo</span>
+            ) : (
+              <span className="badge bg-danger mb-3">Inactivo</span>
+            )}
+          </div>
+          <div className="d-flex justify-content-between"><p>Vigencia:</p><strong>{formatVigencia(user.premium?.expires)}</strong></div>
+          <div className="d-flex justify-content-between"><p>Máximo registro de buques:</p><strong>{user.premium.maximumShips || "0"}</strong></div>
+          <div className="d-flex justify-content-between"><p>Cursos gratis restantes:</p><strong>{user.premium.freeCourses || "0"}</strong></div>
+          <div className="d-flex justify-content-between"><p>Trámites gratis restantes:</p><strong>{user.premium.procedures || "0"}</strong></div>
+        </div>
+
+        {/* Rango */}
+        <div className="text-white col-12">
+          <div className="div-border-color my-4"></div>
           <div className="div-border-color my-4 d-lg-none"></div>
           <h3 className="mb-3 text-orange">Tu rango actual es:</h3>
-          <div className="d-flex gap-3">
-            <div className="w-50">
+          <div className="d-flex gap-3 gap-lg-5">
+            <div className="col-3">
               <img className="img-fluid rounded-circle" src={currentRank.imagePath} alt={currentRank.title} />
             </div>
-            <div>
+            <div className="d-flex flex-column justify-content-center col-9">
               <h4><i className="bi bi-trophy-fill"></i> {currentRank.title}</h4>
               <h6 className="fst-italic text-justify">{currentRank.description}</h6>
               <p>
                 Tienes <strong>{purchasedCount}</strong> cursos activos y <strong>{approvedCount}</strong> cursos aprobados.
               </p>
+              <p className="text-white-50 fst-italic mb-0 gamification-explanation-text">El sistema de gamificación es una herramienta que permite a los usuarios motivarse a seguir aprendiendo y completando cursos. Se divide en 5 ligas: bronce, plata, oro, platino y diamante.</p>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import Swal from 'sweetalert2';
 import { FadeIn } from '../FadeIn/FadeIn';
 import { apiService } from '../../services/apiService';
 import { useAuth } from '../../context/AuthContext';
@@ -50,6 +51,9 @@ export function MercadoPagoPayment() {
   /** Solo desarrollo: estado para el botón "Comprar (Dev mode)" que simula el retorno sin MP */
   const [devPurchaseLoading, setDevPurchaseLoading] = useState(false);
   const [devPurchaseError, setDevPurchaseError] = useState(null);
+  const [discountCode, setDiscountCode] = useState('');
+  const [redeemFreeLoading, setRedeemFreeLoading] = useState(false);
+  const freeCoursesCount = user?.premium?.freeCourses ?? 0;
 
   // Función para obtener el símbolo de moneda según el código
   const getCurrencySymbol = (currencyCode) => {
@@ -258,6 +262,21 @@ export function MercadoPagoPayment() {
                 </div>
               </div>
 
+              <div className="payment-summary mb-4">
+                <h5 className="text-orange mb-3">Código de descuento</h5>
+                <div className="payment-details">
+                  <input
+                    id="checkout-discount-code"
+                    type="text"
+                    className="form-control bg-dark text-white border-secondary"
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    autoComplete="off"
+                    aria-label="Código de descuento"
+                  />
+                </div>
+              </div>
+
               <div className="payment-methods mb-4">
                 <h5 className="text-orange mb-3">Métodos de Pago Disponibles</h5>
                 <div 
@@ -333,6 +352,58 @@ export function MercadoPagoPayment() {
                   <div className="mb-4">
                     {/* Wallet Brick: redirige a Checkout Pro con la preferencia creada en el backend */}
                     <Wallet initialization={{ preferenceId }} />
+                    {/* Botón canjear curso gratuito: solo si tiene freeCourses, asigna curso y resta 1 en backend */}
+                    {freeCoursesCount > 0 && course && user && (
+                      <div className="mt-3 w-100">
+                        <button
+                          type="button"
+                          className="btn btn-success w-100"
+                          disabled={redeemFreeLoading}
+                          onClick={async () => {
+                            setRedeemFreeLoading(true);
+                            try {
+                              const id = course.courseId || course._id;
+                              const uid = user?.id ?? user?._id;
+                              const res = await apiService.redeemFreeCourse(id, uid);
+                              if (res.status === 'success') {
+                                navigate('/payment/success?free=1');
+                                return;
+                              }
+                              Swal.fire({
+                                icon: 'warning',
+                                title: 'No se pudo canjear',
+                                text: res.msg || 'Usuario no tiene cursos gratis disponibles para canjear.',
+                                confirmButtonText: 'Aceptar',
+                                background: '#082b55',
+                                color: '#ffffff',
+                                customClass: { confirmButton: 'custom-swal-button' },
+                              });
+                            } catch (err) {
+                              Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: err.message || 'Usuario no tiene cursos gratis disponibles para canjear.',
+                                confirmButtonText: 'Aceptar',
+                                background: '#082b55',
+                                color: '#ffffff',
+                                customClass: { confirmButton: 'custom-swal-button' },
+                              });
+                            } finally {
+                              setRedeemFreeLoading(false);
+                            }
+                          }}
+                        >
+                          {redeemFreeLoading ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                              Canjeando...
+                            </>
+                          ) : (
+                            <>Canjear gratis ({freeCoursesCount} disponible{freeCoursesCount !== 1 ? 's' : ''})</>
+                          )}
+                        </button>
+                      </div>
+                    )}
                     {/* SOLO DESARROLLO: simula compra y retorno a la app sin pasar por MP (sandbox no redirige a localhost).
                         Se muestra si npm run dev (import.meta.env.DEV) o si en .env está VITE_DEV_PAYMENT=true.
                         En producción: no definir VITE_DEV_PAYMENT y el build tendrá DEV=false. */}

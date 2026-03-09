@@ -18,6 +18,11 @@ LATIAS Academia es una plataforma de aprendizaje online enfocada en cursos de n�
 - Pagos con Mercado Pago (con posibilidad de agregar otras pasarelas más adelante).  
 - Panel de administración para gestión de usuarios, cursos, entregables, pagos y gestores.  
 - Gestión de gestor: asignar/desvincular gestor (con motivos y envío de email); gestor puede desvincular clientes (con motivos y email al cliente).  
+- **Estadísticas en General:** el dashboard muestra Horas conectado/a (acumuladas en minutos mientras el usuario está en la vista del curso `/course/:courseId/learn`, mostradas en horas), eventos atendidos y certificados obtenidos; el contador de tiempo se actualiza cada minuto en el backend solo mientras la pestaña está visible.  
+- **Camarote (instructores):** acceso directo desde el menú a "Gestionar mis cursos asignados", con filtros estandarizados (nombre, ID curso, dificultad, categoría, moneda, precio desde–hasta), tarjetas de cursos con estilo unificado al resto de la plataforma, y flujo para solicitar modificación de curso.  
+- **Filtros unificados:** en Portafolio (País de clientes y Bandera en tarjetas de cliente), Gestión de gestores (País) y Mi Flota (Bandera) los desplegables de país/bandera comparten el mismo comportamiento (mostrar opción elegida, al hacer clic borrar solo el texto del input manteniendo el filtro, no restaurar "Todos" al cerrar sin elegir) y estilo (blur, dropdown con búsqueda).  
+- **Checkout de trámites (procedures):** cuando el plan premium del usuario tiene 0 trámites incluidos (`premium.procedures === 0`) y solicita un trámite de flota desde Mi gestor, en lugar de redirigir directamente al checkout de Mercado Pago se muestra un **checkout propio** (ruta `/payment/procedure`), con el mismo estilo que el de cursos y planes: resumen del pago (concepto "Trámite de flota - Solicitud", total 30 USD), elección de método de pago (Mercado Pago, PayPal, transferencia bancaria) y texto de seguridad por método. La ruta está protegida con `ProtectedRoute` y `CheckinRedirect`; el componente `ProcedurePayment` recibe `preferenceId` (y opcionalmente `requestId`) por `location.state` desde GestorDetalle al confirmar la solicitud que requiere pago. Si el usuario no paga, el trámite no se guarda en la base de datos (se usa la colección `pending-procedure-payments` hasta que el pago esté confirmado).
+- **Gestión de pagos (Administrador):** en el dashboard, la sección **Pagos procesados** lista todos los pagos registrados (cursos, suscripciones a planes, trámites de flota). Los datos siguen la estructura unificada del backend: **Tipo** (curso, suscripción, trámite, etc.), **Concepto** (nombre + id del ítem), **Usuario** (nombre, email, id), **Monto** (valor y moneda), **Estado** y **Procesado**. Filtros por ID pago, ID concepto, nombre concepto, **Tipo** (itemType), email usuario, ID usuario, estado de pago y moneda.
 
 ---
 
@@ -43,7 +48,7 @@ El **ROADMAP DE DESARROLLO** completo con los 100 puntos a completar se encuentr
 
 ## Licencia
 
-Copyright (c) 2025 JPC Dev
+Copyright (c) 2026 JPC Dev
 
 Este proyecto está bajo la Licencia MIT.
 Se permite usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del software. 

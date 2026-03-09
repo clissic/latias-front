@@ -91,6 +91,7 @@ export function Dashboard() {
                     to: "/dashboard/flota",
                     icon: "bi-water",
                     label: "Flota",
+                    premiumBadge: true,
                   },
                   {
                     to: "/dashboard/eventos",
@@ -135,15 +136,22 @@ export function Dashboard() {
                     customClass: "mt-5"
                   },
                 ].map((item) => {
-                  const { to, icon, label, customClass, areaTitle } = item;
+                  const { to, icon, label, customClass, areaTitle, premiumBadge } = item;
+                  const showPremiumBadge = premiumBadge && !user?.premium?.isActive;
                   const link = (
                     <NavLink
                       key={to}
                       to={to}
                       className={({ isActive }) => (isActive ? "active" : "")}
                     >
-                      <li className={`dashboard-menu-item custom-lg-size ${customClass}`}>
-                        <i className={`me-2 bi ${icon}`}></i> <span className="d-inline d-md-none d-lg-inline">{label}</span>
+                      <li className={`dashboard-menu-item custom-lg-size ${customClass || ""}`}>
+                        <i className={`me-2 bi ${icon}`}></i>
+                        <span className="d-inline d-md-none d-lg-inline">{label}</span>
+                        {showPremiumBadge && (
+                          <sup className="dashboard-premium-badge ms-1" aria-hidden="true">
+                            <i className="bi bi-gem"></i>
+                          </sup>
+                        )}
                       </li>
                     </NavLink>
                   );

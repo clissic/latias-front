@@ -11,6 +11,11 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
+.cartaCurso-price-value-decimal {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
 /* Contenedor con background-image: dimensiones fijas, no altera el ancho de la carta */
 .cartaCurso-image-wrap {
     position: relative;
@@ -65,7 +70,6 @@
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    margin-top: 0.5rem;
 }
 
 @media (max-width: 1199.98px) {
@@ -110,7 +114,6 @@
 
 .cartaCurso-price-symbol {
     font-size: 1.5rem;
-    font-weight: bold;
     color: #198754;
 }
 

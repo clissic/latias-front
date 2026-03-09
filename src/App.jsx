@@ -16,7 +16,9 @@ import { Instructores } from './components/Instructores/Instructores.jsx'
 import { CursoDetalle } from './components/CursoDetalle/CursoDetalle.jsx'
 import { CursoVista } from './components/CursoVista/CursoVista.jsx'
 import { MercadoPagoPayment } from './components/MercadoPagoPayment/MercadoPagoPayment.jsx'
+import { PremiumPayment } from './components/PremiumPayment/PremiumPayment.jsx'
 import { PaymentSuccess } from './components/PaymentSuccess/PaymentSuccess.jsx'
+import { ProcedurePayment } from './components/ProcedurePayment/ProcedurePayment.jsx'
 import { Dashboard } from './components/Dashboard/Dashboard.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { ProtectedLogin } from './components/ProtectedLogIn/ProtectedLogIn.jsx'
@@ -41,6 +43,7 @@ export function App () {
                             <Route path='/' element={<CheckinRedirect><Bienvenida /></CheckinRedirect>} />
                             <Route path='/instructores' element={<CheckinRedirect><Instructores /></CheckinRedirect>} />
                             <Route path='/gestoria' element={<CheckinRedirect><Gestoria /></CheckinRedirect>} />
+                            <Route path='/gestoria/buy/:planId' element={<ProtectedRoute><CheckinRedirect><PremiumPayment /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/cursos' element={<CheckinRedirect><Cursos /></CheckinRedirect>} />
                             <Route path='/login' element={<ProtectedLogin><LogIn /></ProtectedLogin>} />
                             <Route path='/signup' element={<CheckinRedirect><SignUp /></CheckinRedirect>} />
@@ -50,6 +53,7 @@ export function App () {
                             <Route path='/course/:courseId/learn' element={<ProtectedRoute><CheckinRedirect><CursoVista /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/course/buy/:courseId' element={<ProtectedRoute><CheckinRedirect><MercadoPagoPayment /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/payment/success' element={<ProtectedRoute><CheckinRedirect><PaymentSuccess /></CheckinRedirect></ProtectedRoute>} />
+                            <Route path='/payment/procedure' element={<ProtectedRoute><CheckinRedirect><ProcedurePayment /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                             <Route path="/reset-password" element={<CheckinRedirect><ResetPassword /></CheckinRedirect>} />
                             <Route path="/verify-ticket/:ticketId" element={<CheckinRedirect><VerifyTicket /></CheckinRedirect>} />

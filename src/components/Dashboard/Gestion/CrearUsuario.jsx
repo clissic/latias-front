@@ -16,6 +16,7 @@ export function CrearUsuario() {
     phone: "",
     category: ["Cadete"]
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,6 +71,7 @@ export function CrearUsuario() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const { confirmPassword, ...dataToSend } = userData;
       const response = await apiService.createUser(dataToSend);
@@ -114,6 +116,8 @@ export function CrearUsuario() {
           confirmButton: "custom-swal-button",
         },
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -132,6 +136,7 @@ export function CrearUsuario() {
               value={userData.firstName}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -143,6 +148,7 @@ export function CrearUsuario() {
               value={userData.lastName}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -154,6 +160,7 @@ export function CrearUsuario() {
               value={userData.email}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -165,6 +172,7 @@ export function CrearUsuario() {
               value={userData.ci}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">
               Sin puntos ni guiones
@@ -179,6 +187,7 @@ export function CrearUsuario() {
               value={userData.birth}
               onChange={handleChange}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -189,6 +198,7 @@ export function CrearUsuario() {
               name="phone"
               value={userData.phone}
               onChange={handleChange}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
 
@@ -200,6 +210,7 @@ export function CrearUsuario() {
               value={Array.isArray(userData.category) ? userData.category : [userData.category]}
               onChange={handleCategoryChange}
               required
+              className="bg-dark text-white border-secondary"
             >
               <option value="Cadete">Cadete</option>
               <option value="Instructor">Instructor</option>
@@ -219,6 +230,7 @@ export function CrearUsuario() {
               onChange={handleChange}
               minLength={6}
               required
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">
               Mínimo 6 caracteres
@@ -234,6 +246,7 @@ export function CrearUsuario() {
               onChange={handleChange}
               minLength={6}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -242,8 +255,17 @@ export function CrearUsuario() {
       <div className="form-section mt-4">
         <div className="div-border-color my-3"></div>
         <div className="d-flex justify-content-end">
-          <Button variant="warning" type="submit" size="lg" className="px-5">
-            <i className="bi bi-check-circle-fill me-2"></i> CREAR USUARIO
+          <Button variant="warning" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                Creando...
+              </>
+            ) : (
+              <>
+              <i className="bi bi-check-circle-fill me-2"></i> CREAR USUARIO
+              </>
+            )}
           </Button>
         </div>
       </div>

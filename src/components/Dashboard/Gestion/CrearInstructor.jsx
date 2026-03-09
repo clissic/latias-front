@@ -207,6 +207,7 @@ export function CrearInstructor() {
               onChange={(e) => update("firstName", e.target.value)}
               maxLength={100}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -217,6 +218,7 @@ export function CrearInstructor() {
               onChange={(e) => update("lastName", e.target.value)}
               maxLength={100}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -227,12 +229,13 @@ export function CrearInstructor() {
               value={form.ci}
               onChange={(e) => update("ci", e.target.value.replace(/\D/g, ""))}
               required
+              className="bg-dark text-white border-secondary"
             />
             <Form.Text className="text-muted">Solo números, sin puntos ni guiones.</Form.Text>
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
             <Form.Label>Imagen de perfil</Form.Label>
-            <Form.Control type="file" accept="image/*" data-image-type="profileImage" onChange={handleImageChange} />
+            <Form.Control type="file" accept="image/*" data-image-type="profileImage" onChange={handleImageChange} className="bg-dark text-white border-secondary" />
             {imagePreview && (
               <div className="mt-2">
                 <img
@@ -254,6 +257,7 @@ export function CrearInstructor() {
               onChange={(e) => update("profession", e.target.value)}
               maxLength={200}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12">
@@ -264,6 +268,7 @@ export function CrearInstructor() {
               value={form.experience}
               onChange={(e) => update("experience", e.target.value)}
               maxLength={500}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12">
@@ -274,6 +279,7 @@ export function CrearInstructor() {
               value={form.bio}
               onChange={(e) => update("bio", e.target.value)}
               maxLength={1000}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -294,7 +300,7 @@ export function CrearInstructor() {
               value={cert}
               onChange={(e) => setCertification(index, e.target.value)}
               placeholder="Nombre de la certificación"
-              className="flex-grow-1"
+              className="bg-dark text-white border-secondary flex-grow-1"
             />
             {form.certifications.length > 1 && (
               <Button type="button" variant="danger" size="sm" onClick={() => removeCertification(index)}>
@@ -320,7 +326,7 @@ export function CrearInstructor() {
               value={ach}
               onChange={(e) => setAchievement(index, e.target.value)}
               placeholder="Logro"
-              className="flex-grow-1"
+              className="bg-dark text-white border-secondary flex-grow-1"
             />
             {form.achievements.length > 1 && (
               <Button type="button" variant="danger" size="sm" onClick={() => removeAchievement(index)}>
@@ -347,7 +353,7 @@ export function CrearInstructor() {
               value={courseId}
               onChange={(e) => setCourse(index, e.target.value)}
               placeholder="course_xxx (ID del curso)"
-              className="flex-grow-1"
+              className="bg-dark text-white border-secondary flex-grow-1"
             />
             <Button type="button" variant="danger" size="sm" onClick={() => removeCourse(index)}>
               <i className="bi bi-trash-fill" />
@@ -368,6 +374,7 @@ export function CrearInstructor() {
               onChange={(e) => updateContact("email", e.target.value)}
               maxLength={100}
               required
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -377,6 +384,7 @@ export function CrearInstructor() {
               value={form.contact.phone}
               onChange={(e) => updateContact("phone", e.target.value)}
               maxLength={20}
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -393,6 +401,7 @@ export function CrearInstructor() {
               value={form.socialMedia.linkedin}
               onChange={(e) => updateSocial("linkedin", e.target.value)}
               placeholder="https://linkedin.com/in/..."
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -402,6 +411,7 @@ export function CrearInstructor() {
               value={form.socialMedia.twitter}
               onChange={(e) => updateSocial("twitter", e.target.value)}
               placeholder="https://twitter.com/..."
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -411,6 +421,7 @@ export function CrearInstructor() {
               value={form.socialMedia.instagram}
               onChange={(e) => updateSocial("instagram", e.target.value)}
               placeholder="https://instagram.com/..."
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
           <Form.Group className="col-12 col-md-6">
@@ -420,6 +431,7 @@ export function CrearInstructor() {
               value={form.socialMedia.youtube}
               onChange={(e) => updateSocial("youtube", e.target.value)}
               placeholder="https://youtube.com/..."
+              className="bg-dark text-white border-secondary"
             />
           </Form.Group>
         </div>
@@ -428,7 +440,7 @@ export function CrearInstructor() {
       <div className="form-section mt-4">
         <div className="div-border-color my-3" />
         <div className="d-flex justify-content-end">
-          <Button variant="warning" type="submit" size="lg" className="px-5" disabled={isSubmitting}>
+          <Button variant="warning" type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
@@ -436,7 +448,7 @@ export function CrearInstructor() {
               </>
             ) : (
               <>
-                <i className="bi bi-check-circle-fill me-2" /> Crear instructor
+                <i className="bi bi-check-circle-fill me-2" /> CREAR INSTRUCTOR
               </>
             )}
           </Button>

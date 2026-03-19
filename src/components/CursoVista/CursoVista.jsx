@@ -1102,7 +1102,7 @@ export function CursoVista() {
                                         return url ? (
                                           <li key={i}>
                                             <a href={url} target="_blank" rel="noopener noreferrer" className="curso-vista-ayudas-link">
-                                              <i className="bi bi-file-earmark-arrow-down me-2" />
+                                              <i className="bi bi-file-earmark-arrow-down-fill me-2" />
                                               {label}
                                             </a>
                                           </li>

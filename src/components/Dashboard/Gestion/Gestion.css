@@ -216,6 +216,53 @@
   backdrop-filter: blur(3px);
 }
 
+/* ========== Gestión de retiros (tarjetas) ========== */
+.gestion-withdrawals-container .portafolio-filters {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+}
+
+.withdrawals-cards-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.withdrawal-card {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  min-height: 170px;
+}
+
+.withdrawal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.withdrawal-card-body p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 0.5rem 0;
+}
+
+.withdrawal-card-footer {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+  .withdrawals-cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 .gestion-pagos-container .portafolio-filters h4 {
   margin-bottom: 0.75rem;
 }

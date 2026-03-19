@@ -1,0 +1,92 @@
+.admin-withdrawal-process-card {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid #082b557c;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+  width: 100%;
+}
+
+.admin-withdrawal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-withdrawal-panel {
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.admin-withdrawal-panel-wide {
+  grid-column: 1 / -1;
+}
+
+.admin-withdrawal-highlight {
+  background: linear-gradient(135deg, rgba(8, 43, 85, 0.65), rgba(255, 165, 0, 0.12));
+  border: 1px solid rgba(255, 165, 0, 0.2);
+  border-radius: 0.85rem;
+  padding: 1rem;
+}
+
+.admin-withdrawal-data p {
+  margin-bottom: 0.6rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.admin-withdrawal-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.admin-withdrawal-status.status-pending {
+  background-color: rgba(255, 193, 7, 0.16);
+  color: #ffc107;
+}
+
+.admin-withdrawal-status.status-processing {
+  background-color: rgba(13, 202, 240, 0.16);
+  color: #0dcaf0;
+}
+
+.admin-withdrawal-status.status-completed {
+  background-color: rgba(25, 135, 84, 0.16);
+  color: #41d38a;
+}
+
+.admin-withdrawal-status.status-rejected,
+.admin-withdrawal-status.status-expired {
+  background-color: rgba(220, 53, 69, 0.16);
+  color: #ff7f8c;
+}
+
+.admin-withdrawal-note {
+  background-color: rgba(3, 22, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.85rem;
+  padding: 0.9rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 991.98px) {
+  .admin-withdrawal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-withdrawal-panel-wide {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .admin-withdrawal-process-card {
+    padding: 1rem;
+  }
+}

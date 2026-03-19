@@ -3,8 +3,222 @@
   width: 100%;
 }
 
+.camarote-instructor-summary {
+  padding: 0.25rem 0.25rem 0.5rem 0.25rem;
+}
+
+.camarote-instructor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.camarote-instructor-wallet-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 165, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.camarote-instructor-wallet-badge .label {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.camarote-instructor-wallet-badge .value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffd27f;
+}
+
+.camarote-instructor-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.camarote-instructor-info {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.camarote-instructor-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-left: 1rem;
+}
+
+.camarote-instructor-wallet-panel {
+  border-radius: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgb(0, 60, 5);
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.camarote-instructor-wallet-panel:hover {
+  translate: 0 -5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(3, 30, 3, 0.4);
+  cursor: pointer;
+}
+
+.camarote-wallet-main-amount {
+  font-size: 0.95rem;
+}
+
+.camarote-wallet-main-amount .amount {
+  font-weight: 600;
+  color: #ffd27f;
+}
+
+.camarote-instructor-main h4 {
+  font-size: 1.1rem;
+}
+
+.camarote-instructor-main p {
+  font-size: 0.9rem;
+}
+
+.camarote-instructor-avatar-wrapper {
+  flex-shrink: 0;
+}
+
+.camarote-instructor-avatar {
+  width: 96px;
+  height: 100%;
+  max-height: 140px;
+  border-radius: 5px;
+  object-fit: cover;
+  border: none;
+}
+
+.camarote-instructor-summary .text-white-50 strong {
+  font-weight: 600;
+}
+
+.wallet-popover {
+  background-color: #031637;
+  border-color: #031637;
+}
+
+.wallet-popover .popover-body {
+  background-color: #031637;
+  color: #ffffff;
+}
+
+.wallet-hover-area .wallet-hover-hint {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.wallet-hover-area:hover .wallet-hover-hint {
+  opacity: 1;
+}
+
+.custom-modal .modal-content {
+  background-color: #082b55;
+  color: white;
+}
+
+.custom-modal .modal-title {
+  color: orange;
+}
+
+.custom-modal .modal-body {
+  background-color: #082b55;
+  color: white;
+}
+
+.custom-modal .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.custom-modal .btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.custom-modal .btn-close {
+  filter: invert(1);
+}
+
+.camarote-withdrawal-account-box {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.camarote-withdrawal-link {
+  color: #ffd27f;
+  text-decoration: underline;
+}
+
+.camarote-withdrawal-link:hover {
+  color: #ffffff;
+}
+
+@media (max-width: 767.98px) {
+  .camarote-instructor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .camarote-instructor-wallet-badge {
+    align-items: flex-start;
+  }
+
+  .camarote-instructor-layout {
+    flex-direction: column;
+  }
+
+  .camarote-instructor-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .camarote-instructor-main {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .camarote-instructor-avatar-wrapper {
+    width: 75%;
+    max-width: 220px;
+    margin-bottom: 1rem;
+  }
+
+  .camarote-instructor-avatar {
+    width: 100%;
+    max-height: none;
+    height: auto;
+  }
+
+  .camarote-instructor-main p {
+    text-align: left;
+  }
+}
+
 .gestionar-mis-cursos-container .btn {
   white-space: nowrap;
+}
+
+/* Retiro de fondos: igualar altura de botones y evitar saltos visuales */
+.custom-modal .modal-footer .withdrawal-action-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ========== Filtros (mismo estándar que Flota / Gestion / Certificados) ========== */
@@ -160,12 +374,33 @@
 
 .gestionar-mis-cursos-container .camarote-course-card-main {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem 1.5rem;
+  flex-direction: column;
+  gap: 0.75rem 1.5rem;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.gestionar-mis-cursos-container .camarote-course-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: 100%;
+}
+
+.gestionar-mis-cursos-container .camarote-course-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.gestionar-mis-cursos-container .camarote-course-id {
+  font-size: 0.8rem;
+}
+
+.gestionar-mis-cursos-container .camarote-course-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  align-items: flex-start;
 }
 
 .gestionar-mis-cursos-container .camarote-course-field {
@@ -191,34 +426,26 @@
 .gestionar-mis-cursos-container .camarote-course-card-actions {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
   flex-shrink: 0;
 }
 
-.gestionar-mis-cursos-container .camarote-action-link {
-  white-space: nowrap;
-  cursor: pointer;
-  color: rgba(255, 165, 0, 0.9);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.gestionar-mis-cursos-container .camarote-action-link:hover {
-  color: #ffa500;
-  text-decoration: underline;
+.gestionar-mis-cursos-container .camarote-course-action-btn {
+  flex: 1 1 50%;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
 }
 
 @media (max-width: 767.98px) {
   .gestionar-mis-cursos-container .camarote-course-card-body {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .gestionar-mis-cursos-container .camarote-course-card-main {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .gestionar-mis-cursos-container .camarote-course-card-actions {

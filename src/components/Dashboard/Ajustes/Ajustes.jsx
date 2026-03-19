@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, InputGroup, OverlayTrigger, Popover } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -9,6 +9,65 @@ import { apiService } from "../../../services/apiService";
 
 export const Ajustes = () => {
   const { logout, user, forceLogin } = useAuth();
+  const fintechBanks = ["MERCADO PAGO", "PREX", "OCA BLUE", "MIDINERO"];
+  const emptyBankAccount = {
+    bank: "",
+    number: "",
+    type: "",
+    currency: "",
+  };
+  const bankAccountKindOptions = ["CA", "CC"];
+  const bankAccountCurrencyOptions = ["USD", "UYU"];
+  const normalizeLegacyBankAccountType = (value) => {
+    if (value === "FINTECH") {
+      return { type: "FINTECH", currency: "" };
+    }
+    switch (value) {
+      case "CAJA DE AHORRO EN PESOS":
+        return { type: "CA", currency: "UYU" };
+      case "CAJA DE AHORRO EN DOLARES":
+        return { type: "CA", currency: "USD" };
+      case "CUENTA CORRIENTE EN PESOS":
+        return { type: "CC", currency: "UYU" };
+      case "CUENTA CORRIENTE EN DOLARES":
+        return { type: "CC", currency: "USD" };
+      default:
+        return null;
+    }
+  };
+  const normalizeBankAccount = (bankAccount) => {
+    const rawType = bankAccount?.type || bankAccount?.accountType || "";
+    const legacyType = normalizeLegacyBankAccountType(rawType);
+    const [kind = "", currencyFromType = ""] = String(rawType).split(" ");
+    return {
+      bank: bankAccount?.bank || "",
+      number:
+        bankAccount?.number != null
+          ? String(bankAccount.number)
+          : bankAccount?.accountNumber || "",
+      type:
+        legacyType?.type ||
+        (kind === "FINTECH" ? "FINTECH" : bankAccountKindOptions.includes(kind) ? kind : ""),
+      currency: legacyType?.currency || (bankAccountCurrencyOptions.includes(currencyFromType) ? currencyFromType : ""),
+    };
+  };
+  const bankOptions = [
+    "MERCADO PAGO",
+    "BROU",
+    "SCOTIABANK",
+    "PREX",
+    "OCA BLUE",
+    "CITI",
+    "ITAU",
+    "HSBC",
+    "BHU",
+    "SANTANDER",
+    "HERITAGE",
+    "BANDES",
+    "BBVA",
+    "NACION ARGENTINA",
+    "MIDINERO",
+  ];
   const [userData, setUserData] = useState({
     ...user,
     address: user?.address || {
@@ -20,17 +79,57 @@ export const Ajustes = () => {
       state: "",
       zipCode: "",
       country: ""
-    }
+    },
+    bankAccount: normalizeBankAccount(user?.bankAccount),
   });
   const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
   const [showModal, setShowModal] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [bankAccountLoading, setBankAccountLoading] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [countrySearch, setCountrySearch] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const userCategories = Array.isArray(user?.category) ? user.category : (user?.category ? [user.category] : []);
+  const canViewBankAccountSection = userCategories.includes("Gestor") || userCategories.includes("Instructor");
+  const isFintechBankSelected = fintechBanks.includes(userData.bankAccount?.bank || "");
+  const bankAccountPopoverMessages = {
+    "MERCADO PAGO":
+      'Puedes obtener el número de cuenta en la App de Mercado Pago, en la sección de "Ingresar".',
+    BROU: 
+      "El número de cuenta del BROU tiene 14 dígitos corridos, sin guiones ni espacios.",
+    SCOTIABANK:
+      "La identificación de la cuenta tiene 10 caracteres de largo. Rellenar con ceros a la izquierda hasta completar el largo. (CCCCCCCZII) 7 dígitos que corresponden al número de cliente. Z es el dígito verificador (II) 2 dígitos que corresponden a la identificación de la cuenta.",
+    PREX:
+      "La identificación de la cuenta tiene un máximo de 8 caracteres. No se rellena con 0s a la izquierda, no debe tener espacios ni otros caracteres no numéricos.",
+    "OCA BLUE":
+      "La identificación de cuenta tiene 7 caracteres de largo rellenando con ceros a la izquierda siempre hasta completar el largo.",
+    CITI:
+      "La identificación de cuenta tiene 10 caracteres de largo sin espacios y rellenando con ceros a la izquierda siempre hasta completar el largo. Los números de cuenta comienzan con 0, 1 o 5.",
+    ITAU:
+      "La identificación de cuenta tiene 7 caracteres de largo rellenando con ceros a la izquierda siempre hasta completar el largo.",
+    HSBC:
+      "La identificación de la cuenta tiene entre 4 y 10 caracteres de largo. No rellenar con 0.",
+    BHU:
+      "12 dígitos (XXXYYZZZZZZV) en total: (XXX) 3 dígitos corresponden a las Sucursales y siempre comienza con cero. (YY) corresponden al producto de la cuenta (ZZZZZZ) 6 dígitos corresponden al número de la cuenta rellenando con ceros a la izquierda hasta completar la cantidad de dígitos. (V) 1 dígito corresponde al dígito verificador.",
+    SANTANDER:
+      "La identificación de la cuenta tiene un largo de 16 dígitos. Detalle (SSSS) 4 dígitos que corresponden a la sucursal. Se rellena de 0 a la izquierda hasta completar el largo. (CCCCCCCCCCCC) 12 dígitos para la identificación de la cuenta. Se rellena de 0 a la izquierda hasta completar el largo.",
+    HERITAGE:
+      "La identificación de cuenta está formada por dos secciones. La primera tiene tiene 7 caracteres de largo rellenando con ceros a la izquierda y la segunda corresponde a la subcuenta y tiene 2 caracteres de largo. Detalle (XXXXXXX) 7 dígitos corresponden a la cuenta (YY) 2 dígitos corresponden a la subcuenta.",
+    BBVA:
+      "La identificación de la cuenta tiene un máximo de 9 caracteres. No se rellena con 0s a la izquierda. No debe tener espacios ni otros caracteres no numéricos.",
+    "NACION ARGENTINA":
+      "La identificación de la cuenta tiene un máximo de 12 caracteres.",
+    MIDINERO:
+      "La identificación de cuenta puede tener entre 3 y 11 dígitos. No debe contener espacios ni otros caracteres no numéricos. No se rellena con ceros a la izquierda. El número de cuenta lo obtiene al consultar sus productos en MiDinero App o en TuCajero, en la opción Consulta de Movimientos.",
+  };
+  const renderBankAccountPopover = (message) => (
+    <Popover id="bank-account-popover" className="wallet-popover">
+      <Popover.Body>{message}</Popover.Body>
+    </Popover>
+  );
 
   // Lista de países
   const countries = [
@@ -104,6 +203,7 @@ export const Ajustes = () => {
       setUserData({
         ...user,
         address: address,
+        bankAccount: normalizeBankAccount(user.bankAccount),
         birth: formatDateForInput(user.birth) // Formatear fecha de nacimiento
       });
       setCountrySearch(address.country || "");
@@ -135,6 +235,27 @@ export const Ajustes = () => {
           ...userData.address,
           [field]: value,
         },
+      });
+    } else if (name.startsWith("bankAccount.")) {
+      const field = name.split(".")[1];
+      const nextBankAccount = {
+        ...(userData.bankAccount || emptyBankAccount),
+        [field]: value,
+      };
+
+      if (field === "bank") {
+        if (fintechBanks.includes(value)) {
+          nextBankAccount.type = "FINTECH";
+          nextBankAccount.currency = "";
+        } else if (nextBankAccount.type === "FINTECH") {
+          nextBankAccount.type = "";
+          nextBankAccount.currency = "";
+        }
+      }
+
+      setUserData({
+        ...userData,
+        bankAccount: nextBankAccount,
       });
     } else {
       setUserData({ ...userData, [name]: value });
@@ -171,6 +292,18 @@ export const Ajustes = () => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
+  const handleBankAccountNumberChange = (e) => {
+    const value = e.target.value;
+    const numericValue = value.replace(/\D/g, "");
+    setUserData({
+      ...userData,
+      bankAccount: {
+        ...(userData.bankAccount || emptyBankAccount),
+        number: numericValue,
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -198,7 +331,7 @@ export const Ajustes = () => {
         Swal.fire({
           icon: "success",
           title: "Datos actualizados",
-          text: "Tus datos personales y dirección han sido actualizados correctamente.",
+          text: "Tus datos personales han sido actualizados correctamente.",
           confirmButtonText: "Aceptar",
           background: "#082b55",
           color: "#ffffff",
@@ -223,6 +356,65 @@ export const Ajustes = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBankAccountSubmit = async (e) => {
+    e.preventDefault();
+    setBankAccountLoading(true);
+
+    try {
+      const bankAccountPayload = {
+        _id: user._id || user.id,
+        bankAccount: {
+          bank: userData.bankAccount?.bank || "",
+          number:
+            userData.bankAccount?.number === "" || userData.bankAccount?.number == null
+              ? null
+              : Number(userData.bankAccount.number),
+          type:
+            fintechBanks.includes(userData.bankAccount?.bank || "")
+              ? "FINTECH"
+              : userData.bankAccount?.type && userData.bankAccount?.currency
+              ? `${userData.bankAccount.type} ${userData.bankAccount.currency}`
+              : "",
+        },
+      };
+
+      const response = await apiService.updateUser(bankAccountPayload);
+
+      if (response.status === "success") {
+        const updatedUser = { ...user, bankAccount: bankAccountPayload.bankAccount };
+        forceLogin(updatedUser);
+
+        Swal.fire({
+          icon: "success",
+          title: "Cuenta bancaria actualizada",
+          text: "Los datos bancarios fueron actualizados correctamente.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: {
+            confirmButton: "custom-swal-button",
+          },
+        });
+      } else {
+        throw new Error(response.msg || "Error al actualizar la cuenta bancaria");
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Hubo un problema al actualizar la cuenta bancaria.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: {
+          confirmButton: "custom-swal-button",
+        },
+      });
+    } finally {
+      setBankAccountLoading(false);
     }
   };
 
@@ -520,7 +712,132 @@ export const Ajustes = () => {
             )}
           </Button>
         </Form.Group>
+
       </Form>
+
+      {canViewBankAccountSection && (
+        <>
+          <div className="div-border-color my-4 col-12"></div>
+          <Form className="d-flex justify-content-between flex-wrap gap-3 col-12" onSubmit={handleBankAccountSubmit}>
+            <h4 className="col-12 text-orange mt-2">Cuenta bancaria:</h4>
+
+            <Form.Group className="col-12 bank-account-form-group" style={{ width: "30%" }}>
+              <Form.Label>Banco</Form.Label>
+              <Form.Select
+                name="bankAccount.bank"
+                value={userData.bankAccount?.bank || ""}
+                onChange={handleChange}
+              >
+                <option value="">Seleccione un banco</option>
+                {bankOptions.map((bank) => (
+                  <option key={bank} value={bank}>
+                    {bank}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="col-12 bank-account-form-group" style={{ width: "30%" }}>
+              <Form.Label>Número de cuenta</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  name="bankAccount.number"
+                  value={userData.bankAccount?.number || ""}
+                  onChange={handleBankAccountNumberChange}
+                />
+                <InputGroup.Text className="bank-account-info-icon">
+                  {bankAccountPopoverMessages[userData.bankAccount?.bank] ? (
+                    <OverlayTrigger
+                      placement="top"
+                      overlay={renderBankAccountPopover(bankAccountPopoverMessages[userData.bankAccount?.bank])}
+                    >
+                      <i className="bi bi-info-circle-fill"></i>
+                    </OverlayTrigger>
+                  ) : (
+                    <i className="bi bi-info-circle-fill"></i>
+                  )}
+                </InputGroup.Text>
+              </InputGroup>
+            </Form.Group>
+
+            <Form.Group className="col-12 bank-account-form-group" style={{ width: "30%" }}>
+              <Form.Label>Tipo de cuenta</Form.Label>
+              <div className="d-flex gap-2">
+                <Form.Select
+                  name="bankAccount.type"
+                  value={userData.bankAccount?.type || ""}
+                  onChange={handleChange}
+                  disabled={isFintechBankSelected}
+                >
+                  {isFintechBankSelected ? (
+                    <option value="FINTECH">FINTECH</option>
+                  ) : (
+                    <>
+                      <option value="">Tipo</option>
+                      {bankAccountKindOptions.map((accountType) => (
+                        <option key={accountType} value={accountType}>
+                          {accountType}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </Form.Select>
+                <Form.Select
+                  name="bankAccount.currency"
+                  value={userData.bankAccount?.currency || ""}
+                  onChange={handleChange}
+                  disabled={isFintechBankSelected}
+                >
+                  <option value="">Moneda</option>
+                  {bankAccountCurrencyOptions.map((currency) => (
+                    <option key={currency} value={currency}>
+                      {currency}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+            </Form.Group>
+
+            <small
+              className="text-muted form-text bank-account-note"
+              style={{ width: "64%" }}
+            >
+              Es importante que los datos sean correctos ya que estos serán utilizados para realizar
+              los depósitos a los Instructores y Gestores de la plataforma.
+            </small>
+
+            <Form.Group
+              className="d-flex flex-column col-12 bank-account-form-group justify-content-end"
+              style={{ width: "30%" }}
+            >
+              <Form.Label></Form.Label>
+              <Button variant="warning" type="submit" className="col-12" disabled={bankAccountLoading}>
+                {bankAccountLoading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                      style={{
+                        width: "1em",
+                        height: "1em",
+                        borderWidth: "0.15em",
+                        borderColor: "currentColor",
+                        borderRightColor: "transparent",
+                        verticalAlign: "middle",
+                      }}
+                    ></span>
+                    Guardando...
+                  </>
+                ) : (
+                  "Guardar"
+                )}
+              </Button>
+            </Form.Group>
+          </Form>
+        </>
+      )}
 
       <div className="div-border-color my-4 col-12"></div>
 

@@ -84,9 +84,37 @@
   color: #ff6b35 !important;
 }
 
+.bank-account-info-icon {
+  background-color: rgb(255, 255, 255) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #000000 !important;
+}
+
+.wallet-popover {
+  background-color: #031637;
+  border-color: #031637;
+}
+
+.wallet-popover .popover-body {
+  background-color: #031637;
+  color: #ffffff;
+}
+
+.bank-account-note {
+  display: block;
+}
+
 /* Estilos para inputs de dirección en mobile */
 @media (max-width: 991.98px) {
   .address-form-group {
+    width: 100% !important;
+  }
+
+  .bank-account-form-group {
+    width: 100% !important;
+  }
+
+  .bank-account-note {
     width: 100% !important;
   }
 }

@@ -33,7 +33,9 @@ export function ActualizarCurso({ course }) {
           {
             lessonName: "",
             lessonDescription: "",
-            videoUrl: ""
+            videoUrl: "",
+            supportPdfUrl: "",
+            supportPdfName: ""
           }
         ],
         questionBank: [
@@ -154,12 +156,30 @@ export function ActualizarCurso({ course }) {
         selectedInstructorId: initialSelectedInstructorId,
         modules: course.modules && course.modules.length > 0 ? course.modules.map((mod) => ({
           ...mod,
-          lessons: (mod.lessons || []).map((lesson) => ({
-            lessonId: lesson.lessonId,
-            lessonName: lesson.lessonName || "",
-            lessonDescription: lesson.lessonDescription || "",
-            videoUrl: lesson.videoUrl || ""
-          }))
+          lessons: (mod.lessons || []).map((lesson) => {
+            const filesFromLesson = Array.isArray(lesson.lessonFiles)
+              ? lesson.lessonFiles
+              : Array.isArray(lesson.attachments)
+              ? lesson.attachments
+              : [];
+            const firstFile = filesFromLesson[0];
+            const supportPdfUrl =
+              typeof firstFile === "string"
+                ? firstFile
+                : (firstFile?.url || firstFile?.pdfFile || lesson.supportPdfUrl || "");
+            const supportPdfName =
+              typeof firstFile === "string"
+                ? ""
+                : (firstFile?.name || firstFile?.label || firstFile?.filename || lesson.supportPdfName || "");
+            return {
+              lessonId: lesson.lessonId,
+              lessonName: lesson.lessonName || "",
+              lessonDescription: lesson.lessonDescription || "",
+              videoUrl: lesson.videoUrl || "",
+              supportPdfUrl: supportPdfUrl,
+              supportPdfName: supportPdfName,
+            };
+          })
         })) : [
           {
             moduleName: "",
@@ -168,7 +188,9 @@ export function ActualizarCurso({ course }) {
               {
                 lessonName: "",
                 lessonDescription: "",
-                videoUrl: ""
+                videoUrl: "",
+                supportPdfUrl: "",
+                supportPdfName: ""
               }
             ],
             questionBank: [
@@ -585,6 +607,89 @@ export function ActualizarCurso({ course }) {
     }));
   };
 
+  // Subir PDF de apoyo para una lección
+  const handleLessonPdfUpload = async (moduleIndex, lessonIndex, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      Swal.fire({
+        icon: "error",
+        title: "Archivo no válido",
+        text: "Solo se permiten archivos PDF.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      Swal.fire({
+        icon: "error",
+        title: "Archivo demasiado grande",
+        text: "El PDF no debe superar los 10 MB.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("pdfFile", file);
+      const res = await apiService.uploadCertificatePDF(formData);
+      if (res.status !== "success" || !res.payload?.pdfFile) {
+        throw new Error(res.msg || "No se pudo subir el PDF.");
+      }
+      const pdfUrl = res.payload.pdfFile;
+      const pdfName = res.payload.originalName || file.name;
+
+      setCourseData((prev) => ({
+        ...prev,
+        modules: prev.modules.map((module, modIdx) =>
+          modIdx === moduleIndex
+            ? {
+                ...module,
+                lessons: module.lessons.map((lesson, lesIdx) =>
+                  lesIdx === lessonIndex
+                    ? {
+                        ...lesson,
+                        supportPdfUrl: pdfUrl,
+                        supportPdfName: pdfName,
+                      }
+                    : lesson
+                ),
+              }
+            : module
+        ),
+      }));
+
+      Swal.fire({
+        icon: "success",
+        title: "PDF subido",
+        text: "El archivo de apoyo se ha subido correctamente.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "No se pudo subir el PDF.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } finally {
+      e.target.value = "";
+    }
+  };
+
   // Mantener IDs existentes (no generar nuevos)
   const maintainExistingIds = (data) => {
     // Unificar las partes del SKU en el formato "PART1-PART2-PART3"
@@ -601,7 +706,19 @@ export function ActualizarCurso({ course }) {
           lessonId: lesson.lessonId || `lesson_${moduleIndex}_${lessonIndex}`,
           lessonName: lesson.lessonName || "",
           lessonDescription: lesson.lessonDescription || "",
-          videoUrl: lesson.videoUrl || ""
+          videoUrl: lesson.videoUrl || "",
+          supportPdfUrl: lesson.supportPdfUrl || "",
+          supportPdfName: lesson.supportPdfName || "",
+          lessonFiles: lesson.supportPdfUrl
+            ? [
+                {
+                  url: lesson.supportPdfUrl,
+                  name: lesson.supportPdfName || "",
+                },
+              ]
+            : Array.isArray(lesson.lessonFiles)
+            ? lesson.lessonFiles
+            : [],
         })),
         questionBank: module.questionBank.map((question, questionIndex) => ({
           ...question,
@@ -1159,7 +1276,7 @@ export function ActualizarCurso({ course }) {
                     )}
                   </div>
                   <div className="row g-2">
-                    <Form.Group className="col-12 col-md-6">
+                    <Form.Group className="col-12">
                       <Form.Label>Nombre de la Lección *</Form.Label>
                       <Form.Control
                         type="text"
@@ -1169,10 +1286,11 @@ export function ActualizarCurso({ course }) {
                         required
                       />
                     </Form.Group>
-                    <Form.Group className="col-12 col-md-6">
+                    <Form.Group className="col-12">
                       <Form.Label>Descripción</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="textarea"
+                        rows={3}
                         name="lessonDescription"
                         value={lesson.lessonDescription}
                         onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, e)}
@@ -1186,6 +1304,21 @@ export function ActualizarCurso({ course }) {
                         value={lesson.videoUrl}
                         onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, e)}
                       />
+                    </Form.Group>
+                    <Form.Group className="col-12 col-md-6">
+                      <Form.Label>PDF de apoyo (opcional)</Form.Label>
+                      <div className="d-flex flex-column gap-2">
+                        <Form.Control
+                          type="file"
+                          accept="application/pdf"
+                          onChange={(e) => handleLessonPdfUpload(moduleIndex, lessonIndex, e)}
+                        />
+                        {lesson.supportPdfUrl && (
+                          <span className="text-white-50 small">
+                            Archivo seleccionado: {lesson.supportPdfName || "PDF adjunto"}
+                          </span>
+                        )}
+                      </div>
                     </Form.Group>
                   </div>
                 </div>

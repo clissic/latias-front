@@ -462,15 +462,18 @@
 }
 
 .curso-vista-ayudas-link {
-  color: #ffa500;
+  color: #000000;
   text-decoration: none;
   font-size: 0.9rem;
   display: inline-flex;
   align-items: center;
+  background-color:#ff8c00;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
 }
 
 .curso-vista-ayudas-link:hover {
-  color: #cc8400;
+  color: #000000;
   text-decoration: underline;
 }
 

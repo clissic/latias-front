@@ -364,7 +364,7 @@ export function Cursos({ user }) {
               return (
                 <div
                   key={`curso-${curso.courseId}-${index}`}
-                  className="col-12 col-md-4"
+                  className="col-12 col-sm-6 col-lg-4"
                 >
                   <div className="dashboard-item-build-cursos cursos-card h-100 d-flex flex-column">
                     <div className="cursos-card-image-wrapper position-relative">

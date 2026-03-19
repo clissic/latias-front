@@ -340,3 +340,46 @@
   font-weight: 600 !important;
   font-size: inherit !important;
 }
+
+/* Input de código con botón de flecha interno */
+.discount-code-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.discount-code-input-inner {
+  padding-right: 3rem; /* espacio para el botón con flecha */
+}
+
+.discount-code-icon-button {
+  position: absolute;
+  top: 50%;
+  right: 0.3rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 5px;
+  border: none;
+  background: linear-gradient(135deg, #ffc107, #fd7e14);
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.discount-code-icon-button:hover:enabled {
+  background: linear-gradient(135deg, #e0a800, #e55a00);
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+}
+
+.discount-code-icon-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.discount-code-icon-button i {
+  font-size: 1rem;
+}

@@ -30,6 +30,8 @@ import { VerifyTicket } from './components/VerifyTicket/VerifyTicket.jsx'
 import { Checkin } from './components/Checkin/Checkin.jsx'
 import { ApproveBoatRegistration } from './components/BoatRegistration/ApproveBoatRegistration.jsx'
 import { RejectBoatRegistration } from './components/BoatRegistration/RejectBoatRegistration.jsx'
+import { ProtectedAdminRoute } from './components/ProtectedAdminRoute/ProtectedAdminRoute.jsx'
+import { AdminWithdrawalsProcess } from './components/AdminWithdrawalsProcess/AdminWithdrawalsProcess.jsx'
 
 export function App () {
     return (
@@ -55,6 +57,7 @@ export function App () {
                             <Route path='/payment/success' element={<ProtectedRoute><CheckinRedirect><PaymentSuccess /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/payment/procedure' element={<ProtectedRoute><CheckinRedirect><ProcedurePayment /></CheckinRedirect></ProtectedRoute>} />
                             <Route path='/dashboard/*' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                            <Route path='/admin/withdrawals/process' element={<ProtectedRoute><ProtectedAdminRoute><AdminWithdrawalsProcess /></ProtectedAdminRoute></ProtectedRoute>} />
                             <Route path="/reset-password" element={<CheckinRedirect><ResetPassword /></CheckinRedirect>} />
                             <Route path="/verify-ticket/:ticketId" element={<CheckinRedirect><VerifyTicket /></CheckinRedirect>} />
                             <Route path="/boat-registration/approve/:id" element={<CheckinRedirect><ApproveBoatRegistration /></CheckinRedirect>} />

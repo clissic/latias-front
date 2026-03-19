@@ -16,6 +16,7 @@ import { BuscarEvento } from "./BuscarEvento";
 import { ActualizarEvento } from "./ActualizarEvento";
 import { VerLogsCheckin } from "./VerLogsCheckin";
 import { GestionPagos } from "./GestionPagos";
+import { GestionRetiros } from "./GestionRetiros";
 import { CrearCodigoDescuento } from "./CrearCodigoDescuento";
 import { BuscarCodigoDescuento } from "./BuscarCodigoDescuento";
 import { ActualizarCodigoDescuento } from "./ActualizarCodigoDescuento";
@@ -71,6 +72,7 @@ export function Gestion({ user }) {
   const CERTIFICATES_PER_PAGE = 10;
   const [shipsCount, setShipsCount] = useState(0);
   const [paymentsCount, setPaymentsCount] = useState(0);
+  const [withdrawalsCount, setWithdrawalsCount] = useState(0);
   const [discountCodesCount, setDiscountCodesCount] = useState(0);
   const [managersCount, setManagersCount] = useState(0);
   const [gestoresList, setGestoresList] = useState([]);
@@ -148,6 +150,16 @@ export function Gestion({ user }) {
             const paymentsRes = await apiService.getProcessedPayments({ limit: 1, page: 1 });
             if (paymentsRes.status === "success" && paymentsRes.payload?.totalDocs != null) {
               setPaymentsCount(paymentsRes.payload.totalDocs);
+            }
+          } catch (_) {}
+        }
+
+        // Contador de withdrawals (solo si es admin)
+        if (user?.category?.includes?.("Administrador")) {
+          try {
+            const withdrawalsRes = await apiService.getAdminWithdrawals({ limit: 1, page: 1 });
+            if (withdrawalsRes.status === "success" && withdrawalsRes.payload?.totalDocs != null) {
+              setWithdrawalsCount(withdrawalsRes.payload.totalDocs);
             }
           } catch (_) {}
         }
@@ -495,6 +507,23 @@ export function Gestion({ user }) {
               <div className="d-flex align-items-center justify-content-center gap-2">
                 <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
                 <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{paymentsCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {user?.category?.includes?.("Administrador") && (
+        <div className="col-12 col-md-6 col-lg-4">
+          <div 
+            className={`gestion-card h-100 ${isTransitioning ? 'gestion-card-fade-out' : ''}`}
+            onClick={() => handleCardClick('withdrawals')}
+          >
+            <div className="gestion-card-content">
+              <i className="bi bi-cash-coin text-orange mb-3" style={{ fontSize: "4rem" }}></i>
+              <h4 className="text-white mb-3">Gestión de retiros</h4>
+              <div className="d-flex align-items-center justify-content-center gap-2">
+                <span className="text-orange" style={{ fontSize: "1rem" }}>Total:</span>
+                <span className="text-orange" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{withdrawalsCount}</span>
               </div>
             </div>
           </div>
@@ -1131,6 +1160,18 @@ export function Gestion({ user }) {
     </div>
   );
 
+  const renderWithdrawalsSection = () => (
+    <div className={`gestion-section ${activeSection === 'withdrawals' ? 'gestion-section-active' : ''}`}>
+      <GestionRetiros />
+      <div className="mt-4 d-flex justify-content-end">
+        <button className="btn btn-outline-orange" onClick={handleBackClick}>
+          <i className="bi bi-arrow-left-circle-fill me-2"></i>
+          Volver
+        </button>
+      </div>
+    </div>
+  );
+
   // Renderizar sección de gestores (usuarios con "Gestor" en category)
   const renderManagersSection = () => (
     <div className={`gestion-section ${activeSection === 'managers' ? 'gestion-section-active' : ''}`}>
@@ -1445,6 +1486,7 @@ export function Gestion({ user }) {
         {activeSection === 'certificates' && renderCertificatesSection()}
         {activeSection === 'ships' && renderShipsSection()}
         {activeSection === 'payments' && renderPaymentsSection()}
+        {activeSection === 'withdrawals' && renderWithdrawalsSection()}
         {activeSection === 'managers' && renderManagersSection()}
         {activeSection === 'discounts' && renderDiscountsSection()}
       </div>

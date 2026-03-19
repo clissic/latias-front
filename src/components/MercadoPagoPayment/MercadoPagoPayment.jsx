@@ -52,6 +52,8 @@ export function MercadoPagoPayment() {
   const [devPurchaseLoading, setDevPurchaseLoading] = useState(false);
   const [devPurchaseError, setDevPurchaseError] = useState(null);
   const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(null); // { code, percentage }
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [redeemFreeLoading, setRedeemFreeLoading] = useState(false);
   const freeCoursesCount = user?.premium?.freeCourses ?? 0;
 
@@ -70,6 +72,79 @@ export function MercadoPagoPayment() {
       'PYG': '₲'
     };
     return currencySymbols[currencyCode?.toUpperCase()] || '$';
+  };
+
+  // Moneda y cálculo de precios (subtotal, descuento y total)
+  const courseCurrency = course?.currency || 'USD';
+  const currencySymbol = getCurrencySymbol(courseCurrency);
+  const basePrice = Number(course?.price) || 0;
+  const discountAmount =
+    appliedDiscount && basePrice > 0
+      ? Math.round((basePrice * (appliedDiscount.percentage / 100)) * 100) / 100
+      : 0;
+  const finalPrice = Math.max(0, Math.round((basePrice - discountAmount) * 100) / 100);
+
+  const handleApplyDiscount = async () => {
+    const codeToApply = discountCode.trim().toUpperCase();
+    if (!codeToApply || applyingDiscount) return;
+    setApplyingDiscount(true);
+    try {
+      const res = await apiService.applyDiscountCode(codeToApply);
+      if (res.status !== "success" || !res.payload) {
+        // Caso especial: sesión expirada / usuario no autenticado
+        if (res.msg && res.msg.toLowerCase().includes("usuario no autenticado")) {
+          Swal.fire({
+            icon: "warning",
+            title: "Inicia sesión para usar un código",
+            text: "Tu sesión ha expirado o no estás autenticado.",
+            confirmButtonText: "Ir a iniciar sesión",
+            background: "#082b55",
+            color: "#ffffff",
+            customClass: { confirmButton: "custom-swal-button" },
+          }).then(() => {
+            window.location.href = "/login";
+          });
+          return;
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Código no válido",
+          text: res.msg || "El código ingresado no es correcto.",
+          confirmButtonText: "Aceptar",
+          background: "#082b55",
+          color: "#ffffff",
+          customClass: { confirmButton: "custom-swal-button" },
+        });
+        return;
+      }
+      const { percentage, code } = res.payload;
+      setAppliedDiscount({
+        code: String(code || codeToApply).toUpperCase(),
+        percentage: Number(percentage) || 0,
+      });
+      setPreferenceId(null); // forzar recreación de la preferencia con el nuevo total
+      Swal.fire({
+        icon: "success",
+        title: "Código aplicado",
+        text: "Tu código de descuento ha sido aplicado correctamente.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message || "No se pudo validar el código de descuento.",
+        confirmButtonText: "Aceptar",
+        background: "#082b55",
+        color: "#ffffff",
+        customClass: { confirmButton: "custom-swal-button" },
+      });
+    } finally {
+      setApplyingDiscount(false);
+    }
   };
 
   // Cargar información del curso
@@ -121,9 +196,10 @@ export function MercadoPagoPayment() {
           body: JSON.stringify({
             courseId: course.courseId || course._id,
             courseName: course.courseName || course.name,
-            price: numericPrice,
+            price: appliedDiscount ? finalPrice : numericPrice,
             currency: course.currency || 'USD',
-            userId: user.id
+            userId: user.id,
+            discountCode: appliedDiscount?.code || null,
           }),
         });
 
@@ -147,13 +223,12 @@ export function MercadoPagoPayment() {
     };
 
     createPreference();
-  }, [course, user, preferenceId, creatingPreference, selectedPaymentMethod]);
+  }, [course, user, preferenceId, creatingPreference, selectedPaymentMethod, appliedDiscount, finalPrice]);
 
-  // Obtener la moneda del curso o usar USD por defecto
-  const courseCurrency = course?.currency || 'USD';
-  const currencySymbol = getCurrencySymbol(courseCurrency);
-
-  if (loading || creatingPreference) {
+  // Mientras se carga la información del curso mostramos solo el loader.
+  // Nota: no usamos creatingPreference aquí para evitar que parpadee el botón de Mercado Pago
+  // cuando se recrea la preferencia (por ejemplo, al aplicar un código de descuento).
+  if (loading) {
     return (
       <div className="container payment-wrapper">
         <div className="d-flex justify-content-center align-items-center">
@@ -250,13 +325,31 @@ export function MercadoPagoPayment() {
                     <span className="text-white">{course.difficulty}</span>
                   </div>
                   <hr className="text-white" />
+                  <div className="d-flex justify-content-between mb-2">
+                    <span className="text-white">Subtotal:</span>
+                    <span className="text-white price-unified-text">
+                      <span className="price-symbol">{currencySymbol} </span>
+                      <span className="price-value">{basePrice.toFixed(2)}</span>
+                      <span className="price-currency ms-1">{courseCurrency}</span>
+                    </span>
+                  </div>
+                  {appliedDiscount && (
+                    <div className="d-flex justify-content-between mb-2">
+                      <span className="text-white">
+                        Descuento ({appliedDiscount.code} - {appliedDiscount.percentage}%)
+                      </span>
+                      <span className="text-success price-unified-text">
+                        -{currencySymbol} {discountAmount.toFixed(2)} <span className="price-currency ms-1">{courseCurrency}</span>
+                      </span>
+                    </div>
+                  )}
+                  <hr className="text-white" />
                   <div className="d-flex justify-content-between">
                     <span className="text-white"><strong>Total:</strong></span>
                     <span className="text-orange price-unified-text">
-                      <span className="price-symbol">{currencySymbol} </span> 
-                      <span className="price-value">{course.price}</span>
-                      <span className="price-decimal">.00 </span>
-                      <span className="price-currency">{courseCurrency}</span>
+                      <span className="price-symbol">{currencySymbol} </span>
+                      <span className="price-value">{finalPrice.toFixed(2)}</span>
+                      <span className="price-currency ms-1">{courseCurrency}</span>
                     </span>
                   </div>
                 </div>
@@ -265,15 +358,64 @@ export function MercadoPagoPayment() {
               <div className="payment-summary mb-4">
                 <h5 className="text-orange mb-3">Código de descuento</h5>
                 <div className="payment-details">
-                  <input
-                    id="checkout-discount-code"
-                    type="text"
-                    className="form-control bg-dark text-white border-secondary"
-                    value={discountCode}
-                    onChange={(e) => setDiscountCode(e.target.value)}
-                    autoComplete="off"
-                    aria-label="Código de descuento"
-                  />
+                  {appliedDiscount ? (
+                    <div className="p-3 rounded-3" style={{ backgroundColor: "rgba(255, 165, 0, 0.08)", border: "1px solid #ffa50033" }}>
+                      <div className="d-flex justify-content-between align-items-center mb-1">
+                        <span className="text-white fw-bold">
+                          Código aplicado: <span className="text-orange">{appliedDiscount.code}</span>
+                        </span>
+                        <span className="badge bg-success">
+                          {appliedDiscount.percentage}% OFF
+                        </span>
+                      </div>
+                      <small className="text-white-50 d-block mb-2">
+                        Se aplicará el descuento al procesar el pago.
+                      </small>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-orange"
+                        onClick={() => {
+                          setAppliedDiscount(null);
+                          setDiscountCode("");
+                          setPreferenceId(null);
+                        }}
+                      >
+                        Eliminar código
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="discount-code-input-wrapper">
+                      <input
+                        id="checkout-discount-code"
+                        type="text"
+                        className="form-control bg-dark text-white border-secondary discount-code-input-inner"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleApplyDiscount();
+                          }
+                        }}
+                        autoComplete="off"
+                        aria-label="Código de descuento"
+                        placeholder="INGRESA TU CÓDIGO"
+                      />
+                      <button
+                        type="button"
+                        className="discount-code-icon-button"
+                        disabled={!discountCode.trim() || applyingDiscount}
+                        onClick={handleApplyDiscount}
+                        aria-label="Aplicar código de descuento"
+                      >
+                        {applyingDiscount ? (
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+                        ) : (
+                          <i className="bi bi-arrow-return-left" />
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -473,10 +615,10 @@ export function MercadoPagoPayment() {
             <div className="mt-4 d-flex justify-content-end">
               <button 
                 className="btn btn-outline-orange" 
-                onClick={() => navigate(`/course/${courseId}/learn`)}
+                onClick={() => navigate('/cursos')}
               >
                 <i className="bi bi-arrow-left-circle-fill me-2"></i>
-                Volver al Curso
+                Volver a Cursos
               </button>
             </div>
           </div>

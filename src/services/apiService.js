@@ -1,5 +1,3 @@
-import { useAuth } from '../context/AuthContext';
-
 class ApiService {
   constructor() {
     this.baseURL = '/api';
@@ -328,6 +326,61 @@ class ApiService {
     const response = await this.request('/users/profile', {
       method: 'GET',
     });
+    return response.json();
+  }
+
+  /** Wallet del usuario (solo propio o Admin). payload: { balance, pendingBalance, totalEarnings, totalWithdrawn, currency, lastPayoutDate } */
+  async getWallet(userId) {
+    const response = await this.request(`/users/${userId}/wallet`, { method: 'GET' });
+    return response.json();
+  }
+
+  async createWithdrawal(amount) {
+    const response = await this.request('/withdrawals', {
+      method: 'POST',
+      body: JSON.stringify({ amount }),
+    });
+    return response.json();
+  }
+
+  async getAdminWithdrawalProcess(token) {
+    const response = await this.request(`/withdrawals/admin/process?token=${encodeURIComponent(token)}`, {
+      method: 'GET',
+    });
+    return response.json();
+  }
+
+  /** Withdrawals para administrador con filtros y paginación. */
+  async getAdminWithdrawals(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const url = query ? `/withdrawals/admin/list?${query}` : "/withdrawals/admin/list";
+    const response = await this.request(url, { method: "GET" });
+    return response.json();
+  }
+
+  async processWithdrawal(withdrawalId, proofUrl, token) {
+    const query = token ? `?token=${encodeURIComponent(token)}` : '';
+    const response = await this.request(`/withdrawals/${withdrawalId}/process${query}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ proofUrl }),
+    });
+    return response.json();
+  }
+
+  async rejectWithdrawal(withdrawalId, reason = '', token) {
+    const query = token ? `?token=${encodeURIComponent(token)}` : '';
+    const response = await this.request(`/withdrawals/${withdrawalId}/reject${query}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    });
+    return response.json();
+  }
+
+  /** Transacciones del usuario. Query: status, type, limit. Solo propio o Admin. */
+  async getTransactions(userId, params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const url = query ? `/users/${userId}/transactions?${query}` : `/users/${userId}/transactions`;
+    const response = await this.request(url, { method: 'GET' });
     return response.json();
   }
 
@@ -806,6 +859,18 @@ class ApiService {
   async uploadCertificatePDF(formData) {
     const accessToken = localStorage.getItem('accessToken');
     const response = await fetch(`${this.baseURL}/upload/certificate-pdf`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+    return response.json();
+  }
+
+  async uploadWithdrawalProof(formData) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await fetch(`${this.baseURL}/upload/withdrawal-proof`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${accessToken}`,

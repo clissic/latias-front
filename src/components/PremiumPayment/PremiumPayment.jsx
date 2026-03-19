@@ -18,6 +18,15 @@ const PREMIUM_PLANS = {
   capitan: { name: 'Plan Capitán', price: 699, currency: 'USD' },
 };
 
+function getPlanRankFromName(name) {
+  if (!name) return 0;
+  const n = String(name).toLowerCase();
+  if (n.includes('capitan') || n.includes('capitán')) return 3;
+  if (n.includes('navegante')) return 2;
+  if (n.includes('basico') || n.includes('básico')) return 1;
+  return 0;
+}
+
 function getCurrencySymbol(currencyCode) {
   const symbols = { USD: '$', UYU: '$U', EUR: '€', ARS: '$', BRL: 'R$', MXN: '$', CLP: '$', COP: '$', PEN: 'S/', PYG: '₲' };
   return symbols[currencyCode?.toUpperCase()] || '$';
@@ -44,6 +53,19 @@ export function PremiumPayment() {
       setError('Debes iniciar sesión para contratar un plan.');
       return;
     }
+
+    // Si el usuario ya tiene un plan activo igual o superior, bloquear la compra desde el front
+    const currentSubscription = user?.premium?.subscription;
+    const isActive = user?.premium?.isActive;
+    if (isActive && currentSubscription) {
+      const currentRank = getPlanRankFromName(currentSubscription);
+      const targetRank = getPlanRankFromName(plan.name);
+      if (currentRank > 0 && targetRank > 0 && currentRank >= targetRank) {
+        setError('Ya cuentas con un plan comprado igual o con mayores beneficios.');
+        return;
+      }
+    }
+
     setError(null);
   }, [planId, plan, user]);
 
@@ -55,6 +77,8 @@ export function PremiumPayment() {
 
   useEffect(() => {
     const createPreference = async () => {
+      // Si ya hay un error (por ejemplo, plan igual o superior ya activo), no reintentar crear la preferencia
+      if (error) return;
       if (!plan || !user || preferenceId || creatingPreference || selectedPaymentMethod !== 'mercadopago') return;
 
       setCreatingPreference(true);
@@ -79,7 +103,7 @@ export function PremiumPayment() {
     };
 
     createPreference();
-  }, [planId, plan, user, preferenceId, creatingPreference, selectedPaymentMethod]);
+  }, [planId, plan, user, preferenceId, creatingPreference, selectedPaymentMethod, error]);
 
   const currencySymbol = getCurrencySymbol(plan?.currency || 'USD');
 

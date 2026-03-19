@@ -16,6 +16,21 @@ export function Gestoria() {
   });
   const [loading, setLoading] = useState(false);
 
+  const getPlanRank = (plan) => {
+    if (!plan) return 0;
+    const normalized = String(plan).toLowerCase();
+    if (normalized.includes("capitan")) return 3;
+    if (normalized.includes("navegante")) return 2;
+    if (normalized.includes("basico") || normalized.includes("básico")) return 1;
+    if (normalized === "capitan" || normalized === "capitán") return 3;
+    if (normalized === "navegante") return 2;
+    if (normalized === "basico" || normalized === "básico") return 1;
+    return 0;
+  };
+
+  const currentPlanRank = getPlanRank(user?.premium?.subscription);
+  const hasActivePlan = Boolean(user?.premium?.isActive && currentPlanRank > 0);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -311,6 +326,7 @@ export function Gestoria() {
                   <button
                     type="button"
                     className="btn btn-orange fw-bold"
+                    disabled={hasActivePlan && currentPlanRank >= getPlanRank("basico")}
                     onClick={() => handleContratarPlan("basico")}
                   >
                     CONTRATAR
@@ -353,6 +369,7 @@ export function Gestoria() {
                   <button
                     type="button"
                     className="btn btn-orange fw-bold"
+                    disabled={hasActivePlan && currentPlanRank >= getPlanRank("navegante")}
                     onClick={() => handleContratarPlan("navegante")}
                   >
                     CONTRATAR
@@ -395,6 +412,7 @@ export function Gestoria() {
                   <button
                     type="button"
                     className="btn btn-orange fw-bold"
+                    disabled={hasActivePlan && currentPlanRank >= getPlanRank("capitan")}
                     onClick={() => handleContratarPlan("capitan")}
                   >
                     CONTRATAR
